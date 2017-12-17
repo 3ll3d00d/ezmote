@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {Button, Grid, LinearProgress, Paper} from "material-ui";
 import Chip from 'material-ui/Chip';
+import { connect } from 'react-redux';
 
 const deltas = [-10, -5, -1, 1, 5, 10];
 
-export default class Volume extends Component {
+class Volume extends Component {
 
     state = {
         value: 40,
@@ -54,3 +55,9 @@ export default class Volume extends Component {
         )
     };
 }
+
+function mapStateToProps(state) {
+    return {};
+}
+
+export default connect(mapStateToProps)(Volume);
