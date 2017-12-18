@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 
 import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
+import Config from "./scenes/config";
 import Volume from "./scenes/volume";
 import Mode from "./scenes/mode";
 import {Grid} from "material-ui";
@@ -16,6 +17,9 @@ class App extends Component {
         return (
             <MuiThemeProvider theme={theme}>
                 <Grid container>
+                    <Grid item xs={12}>
+                        <Config/>
+                    </Grid>
                     <Grid item xs={12}>
                         <Volume/>
                     </Grid>

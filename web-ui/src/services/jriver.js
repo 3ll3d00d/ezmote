@@ -1,10 +1,9 @@
 import {xml2js} from 'xml-js';
 import base64 from 'base-64';
 
-const JRIVER_URL = 'http://paradroid:63412/MCWS/v1';
 const ENDPOINTS = {
-    'GET_ZONES': {path: 'Playback/Zones', params: []},
-    'GET_ZONE_INFO': {path: 'Playback/Info', params: ['Zone']}
+    'GET_ZONES': {path: '/MCWS/v1/Playback/Zones', params: []},
+    'GET_ZONE_INFO': {path: '/MCWS/v1/Playback/Info', params: ['Zone']}
 };
 
 const COMPACT = {compact: true, ignoreDeclaration: true};
@@ -18,13 +17,13 @@ class JRiverService {
         return paramKeys.map((k, i) => esc(k) + '=' + esc(paramValues[i])).join('&');
     };
 
-    getUrl = (target, params = []) => {
+    getUrl = (url, target, params = []) => {
         if (ENDPOINTS.hasOwnProperty(target)) {
             if (params.length > 0) {
                 // TODO check both vals and keys are same length or use an object instead
-                return `${JRIVER_URL}/${ENDPOINTS[target].path}?${this.getParams(ENDPOINTS[target].params, params)}`;
+                return `${url}/${ENDPOINTS[target].path}?${this.getParams(ENDPOINTS[target].params, params)}`;
             } else {
-                return `${JRIVER_URL}/${ENDPOINTS[target].path}`;
+                return `${url}/${ENDPOINTS[target].path}`;
             }
         }
         throw `Unknown target - ${target}`;
@@ -36,13 +35,12 @@ class JRiverService {
         };
     };
 
-    // TODO deal with authentication
     /**
      * Gets basic information about all zones.
      * @returns {Promise<void>}
      */
-    getZones = async (username, password) => {
-        return this._getMCWS({username, password, target: 'GET_ZONES', converter: this.extractZones});
+    getZones = async (url, username, password) => {
+        return this._getMCWS({url, username, password, target: 'GET_ZONES', converter: this.extractZones});
     };
 
     /**
@@ -92,8 +90,9 @@ class JRiverService {
      * @param zoneId the zoneId.
      * @returns {Promise<{volume, volumedb, fileKey, imageURL}>}
      */
-    getZoneInfo = async (username, password, zoneId) => {
+    getZoneInfo = async (url, username, password, zoneId) => {
         return this._getMCWS({
+            url,
             username,
             password,
             target: 'GET_ZONE_INFO',
@@ -134,8 +133,8 @@ class JRiverService {
      * @param converter
      * @returns {Promise<*>}
      */
-    _getMCWS = async ({username, password, target, params = [], converter}) => {
-        const url = this.getUrl(target, params);
+    _getMCWS = async ({url, username, password, target, params = [], converter}) => {
+        const url = this.getUrl(url, target, params);
         const response = await fetch(url, {
             method: 'GET',
             headers: this.getAuthHeader(username, password)
