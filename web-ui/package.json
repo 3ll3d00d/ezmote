@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "base-64": "^0.1.0",
+    "lodash": "^4.17.4",
     "material-design-icons": "^3.0.1",
     "material-ui": "^1.0.0-beta.23",
     "material-ui-icons": "^1.0.0-beta.17",

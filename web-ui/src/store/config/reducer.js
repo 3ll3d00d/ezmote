@@ -2,7 +2,7 @@ import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 
 // TOOD wrap in an mcws object?
-const initialState = Immutable({
+export const initialState = Immutable({
     url: 'https://localhost:52199',
     user: '',
     pass: ''
@@ -17,9 +17,7 @@ const initialState = Immutable({
 const reduce = (state = initialState, action = {}) => {
     switch (action.type) {
         case types.CONFIG_VALUE_UPDATE:
-            return state.merge({
-                [action.payload.field]: action.payload.value
-            });
+            return Immutable.merge(state, { [action.payload.field]: action.payload.value });
         default:
             return state;
     }

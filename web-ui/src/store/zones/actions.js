@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as types from "./actionTypes";
 import jriver from '../../services/jriver';
 import {getConfigValues} from "../config/reducer";
@@ -11,9 +12,9 @@ const fetchZones = () => {
         const config = getConfigValues(getState());
         try {
             const zones = await jriver.getZones(config.url, config.user, config.pass);
-            // TODO group by zone id
+            const zonesById = _.keyBy(zones, 'id');
+            dispatch({type: types.ZONES_FETCHED, payload: zonesById});
             // TODO now we have zones, we need to dispatch zone status calls periodically
-            dispatch({type: types.ZONES_FETCHED, payload: {zones}});
         } catch (error) {
             console.error(error);
         }
@@ -29,7 +30,7 @@ const fetchZoneInfo = (zoneId) => {
         const config = getConfigValues(getState());
         try {
             const zoneInfo = await jriver.getZoneInfo(config.url, config.user, config.pass, zoneId);
-            dispatch({type: types.ZONE_INFO_FETCHED, payload: {zoneInfo}});
+            dispatch({type: types.ZONE_INFO_FETCHED, payload: zoneInfo});
         } catch (error) {
             console.error(error);
         }

@@ -133,8 +133,8 @@ class JRiverService {
      * @param converter
      * @returns {Promise<*>}
      */
-    _getMCWS = async ({url, username, password, target, params = [], converter}) => {
-        const url = this.getUrl(url, target, params);
+    _getMCWS = async ({url: urlRoot, username, password, target, params = [], converter}) => {
+        const url = this.getUrl(urlRoot, target, params);
         const response = await fetch(url, {
             method: 'GET',
             headers: this.getAuthHeader(username, password)
