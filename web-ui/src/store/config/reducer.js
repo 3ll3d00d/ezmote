@@ -1,20 +1,13 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
-import {createSelector} from "reselect";
-
-// config values
-export const MC_USE_SSL = 'mcssl';
-export const MC_HOST = 'mchost';
-export const MC_PORT = 'mcport';
-export const MC_USERNAME = 'mcusername';
-export const MC_PASSWORD = 'mcpassword';
+import * as fields from './config';
 
 export const initialState = Immutable({
-    [MC_USE_SSL]: false,
-    [MC_HOST]: 'localhost',
-    [MC_PORT]: 52199,
-    [MC_USERNAME]: '',
-    [MC_PASSWORD]: ''
+    [fields.MC_USE_SSL]: false,
+    [fields.MC_HOST]: 'localhost',
+    [fields.MC_PORT]: 52199,
+    [fields.MC_USERNAME]: '',
+    [fields.MC_PASSWORD]: ''
 });
 
 /**
@@ -26,9 +19,34 @@ export const initialState = Immutable({
 const reduce = (state = initialState, action = {}) => {
     switch (action.type) {
         case types.CONFIG_VALUE_UPDATE:
-            return Immutable.merge(state, {[action.payload.field]: action.payload.value});
+            return validatedConfig(Immutable.merge(state, {[action.payload.field]: action.payload.value}));
         default:
-            return state;
+            return validatedConfig(state);
+    }
+};
+
+const isValidValue = (config, key) => {
+    return config.hasOwnProperty(key) && config[key];
+};
+
+const collectInvalid = (config, invalids, field) => {
+    if (!isValidValue(config, field)) invalids.push(field);
+};
+
+const validatedConfig = config => {
+    if (config) {
+        const invalids = [];
+        collectInvalid(config, invalids, fields.MC_HOST);
+        collectInvalid(config, invalids, fields.MC_PORT);
+        collectInvalid(config, invalids, fields.MC_USERNAME);
+        collectInvalid(config, invalids, fields.MC_PASSWORD);
+        if (invalids.length === 0) {
+            return Immutable.without(Immutable.merge(config, {valid: true}), 'error');
+        } else {
+            return Immutable.merge(config, {valid: false, error: `Missing values: ${invalids.toString()}`});
+        }
+    } else {
+        return Immutable({valid: false, error: 'No config'});
     }
 };
 
@@ -36,24 +54,8 @@ const reduce = (state = initialState, action = {}) => {
 const config = state => {
     return state.config;
 };
-const isValidValue = (config, key) => {
-    return config.hasOwnProperty(key) && config[key];
-};
-const validConfig = config => {
-    if (config
-        && isValidValue(config, MC_HOST)
-        && isValidValue(config, MC_PORT)
-        && isValidValue(config, MC_USERNAME)
-        && isValidValue(config, MC_PASSWORD)) {
-        return Object.assign(config, {valid: true});
-    } else {
-        // TODO add error
-        return {valid: false};
-    }
-};
 
 // selectors
-export const getConfigValues = config;
-export const getValidConfig = createSelector(config, validConfig);
+export const getConfig = config;
 
 export default reduce;

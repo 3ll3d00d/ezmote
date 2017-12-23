@@ -1,5 +1,6 @@
 import {xml2js} from 'xml-js';
 import base64 from 'base-64';
+import * as fields from "../store/config/config";
 
 const ENDPOINTS = {
     'GET_ZONES': {path: 'MCWS/v1/Playback/Zones', params: []},
@@ -18,13 +19,9 @@ class JRiverService {
      * Sets the volume in the specified zone.
      * @returns {Promise<void>}
      */
-    setVolume = async (host, port, usessl, username, password, zoneId, volume) => {
+    setVolume = async (config, zoneId, volume) => {
         return this._getMCWS({
-            host,
-            port,
-            usessl,
-            username,
-            password,
+            config,
             target: 'SET_VOLUME',
             params: {Zone: zoneId, Level: volume},
             converter: this.extractSetVolumeSuccess
@@ -46,8 +43,8 @@ class JRiverService {
      * Gets basic information about all zones.
      * @returns {Promise<void>}
      */
-    getZones = async (host, port, usessl, username, password) => {
-        return this._getMCWS({host, port, usessl, username, password, target: 'GET_ZONES', converter: this.extractZones});
+    getZones = async (config) => {
+        return this._getMCWS({config, target: 'GET_ZONES', converter: this.extractZones});
     };
 
     getParams = (params) => {
@@ -57,16 +54,16 @@ class JRiverService {
 
     validateParams = (suppliedParams, expectedParams) => {
         if (Object.keys(suppliedParams).length === expectedParams.length) {
-            return Object.keys(suppliedParams).every(k => expectedParams.findIdx(k) > -1);
+            return Object.keys(suppliedParams).every(k => expectedParams.findIndex(p => k === p) > -1);
         }
         return false;
     };
 
-    getUrl = (host, port, usessl, target, suppliedParams = {}) => {
+    getUrl = (config, target, suppliedParams = {}) => {
         if (ENDPOINTS.hasOwnProperty(target)) {
             const endpoint = ENDPOINTS[target];
-            const root = `http${usessl?'s':''}//${host}:${port}/${endpoint.path}`;
-            if (suppliedParams.length > 0) {
+            const root = `http${config[fields.MC_USE_SSL]?'s':''}://${config[fields.MC_HOST]}:${config[fields.MC_PORT]}/${endpoint.path}`;
+            if (Object.keys(suppliedParams).length > 0) {
                 if (this.validateParams(suppliedParams, endpoint.params)) {
                     return `${root}?${this.getParams(suppliedParams)}`;
                 } else {
@@ -130,13 +127,9 @@ class JRiverService {
      * Gets detailed information about a particular zone.
      * @returns {Promise<{volume, volumedb, fileKey, imageURL}>}
      */
-    getZoneInfo = async (host, port, usessl, username, password, zoneId) => {
+    getZoneInfo = async (config, zoneId) => {
         return this._getMCWS({
-            host,
-            port,
-            usessl,
-            username,
-            password,
+            config,
             target: 'GET_ZONE_INFO',
             params: {Zone: zoneId},
             converter: this.extractZoneInfo
@@ -151,7 +144,8 @@ class JRiverService {
                 volumeRatio: Number(json.Response.Item.find(this.findByName('Volume'))._text),
                 volumedb: Number(this.extractVolumedB(json.Response.Item.find(this.findByName('VolumeDisplay'))._text)),
                 fileKey: json.Response.Item.find(this.findByName('FileKey'))._text,
-                imageURL: json.Response.Item.find(this.findByName('ImageURL'))._text
+                imageURL: json.Response.Item.find(this.findByName('ImageURL'))._text,
+                status: json.Response.Item.find(this.findByName('Status'))._text
             }
         } else {
             // TODO send error type
@@ -171,11 +165,11 @@ class JRiverService {
      * GETs some specific MCWS endpoint.
      * @returns {Promise<*>}
      */
-    _getMCWS = async ({host, port, usessl, username, password, target, params = {}, converter}) => {
-        const url = this.getUrl(host, port, usessl, target, params);
+    _getMCWS = async ({config, target, params = {}, converter}) => {
+        const url = this.getUrl(config, target, params);
         const response = await fetch(url, {
             method: 'GET',
-            headers: this.getAuthHeader(username, password)
+            headers: this.getAuthHeader(config[fields.MC_USERNAME], config[fields.MC_PASSWORD])
         });
         if (!response.ok) {
             throw new Error(`JRiverService.${target} failed, HTTP status ${response.status}`);

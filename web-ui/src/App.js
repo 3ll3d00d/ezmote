@@ -4,30 +4,58 @@ import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import Config from "./scenes/config";
 import Volume from "./scenes/volume";
 import Mode from "./scenes/mode";
-import {Grid} from "material-ui";
+import {FullScreenMenu, NotFullScreenMenu} from "./scenes/menu";
+import Grid from "material-ui/Grid";
+import grey from 'material-ui/colors/grey';
+import blueGrey from 'material-ui/colors/blueGrey';
+import red from 'material-ui/colors/red';
+import Fullscreen from "react-full-screen";
 
 const theme = createMuiTheme({
     palette: {
-        type: 'light',
-    },
+        type: 'dark',
+        primary: grey,
+        secondary: blueGrey,
+        error: red
+    }
 });
 
 class App extends Component {
+    state = {
+        selected: 'Volume',
+        fullscreen: false
+    };
+
+    handleMenuSelect = (selected) => {
+        this.setState({selected});
+    };
+
+    toggleFullScreen = () => {
+        this.setState((prevState, prevProps) => {
+            return {fullscreen: !prevState.fullscreen};
+        });
+    };
+
     render() {
+        const {selected, fullscreen} = this.state;
+        const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
         return (
-            <MuiThemeProvider theme={theme}>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Config/>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Volume/>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Mode/>
-                    </Grid>
-                </Grid>
-            </MuiThemeProvider>
+            <Fullscreen enabled={fullscreen}>
+                <MuiThemeProvider theme={theme}>
+                    <MenuComponent handler={this.handleMenuSelect}
+                                   selected={selected}
+                                   fullscreen={fullscreen}
+                                   toggleFullScreen={this.toggleFullScreen}>
+                        <Grid container>
+                            <Grid item xs={12}>
+                                {'Settings' === selected ? <Config/> : null}
+                                {'Volume' === selected ? <Volume/> : null}
+                                {'Source' === selected ? <Mode/> : null}
+                            </Grid>
+                        </Grid>
+                    </MenuComponent>
+                </MuiThemeProvider>
+            </Fullscreen>
         );
     }
 }

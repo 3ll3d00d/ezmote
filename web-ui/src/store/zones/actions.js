@@ -2,7 +2,7 @@ import _ from 'lodash';
 import * as types from "./actionTypes";
 import jriver from '../../services/jriver';
 import poller from '../../services/timer';
-import {getValidConfig} from "../config/reducer";
+import {getConfig} from "../config/reducer";
 import {getActiveZone} from "./reducer";
 
 /**
@@ -12,11 +12,10 @@ import {getActiveZone} from "./reducer";
  */
 const setVolume = (zoneId, volume) => {
     return async (dispatch, getState) => {
-        const state = getState();
-        const config = getValidConfig(state);
+        const config = getConfig(getState());
         if (config.valid) {
             try {
-                const response = await jriver.setVolume(config.host, config.port, config.usessl, config.user, config.pass, zoneId, volume);
+                const response = await jriver.setVolume(config, zoneId, volume);
                 dispatch(Object.assign({type: types.SET_VOLUME}, response));
             } catch (error) {
                 dispatchError(dispatch, types.SET_VOLUME, error);
@@ -38,16 +37,18 @@ const dispatchError = (dispatch, type, error) => {
 const fetchZones = () => {
     return async (dispatch, getState) => {
         const state = getState();
-        const config = getValidConfig(state);
+        const config = getConfig(state);
         if (config.valid) {
             try {
-                const zones = await jriver.getZones(config.host, config.port, config.usessl, config.user, config.pass);
+                const zones = await jriver.getZones(config);
                 const zonesById = _.keyBy(zones, 'id');
                 ensureZoneInfoPollerIsRunning(zones, state, dispatch);
                 dispatch({type: types.ZONES_FETCHED, payload: zonesById});
             } catch (error) {
                 dispatchError(dispatch, types.ZONES_FETCHED, error);
             }
+        } else {
+            dispatch({type: types.ZONES_FETCHED, error: 'Invalid MC Config'})
         }
     };
 };
@@ -70,7 +71,6 @@ const ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
         doStart(newActiveZone, dispatch);
     } else {
         if (!poller.isPolling(matchById(newActiveZone))) {
-            // TODO dispatch error action
             console.debug(`No interval for zone ${newActiveZone.id}/${newActiveZone.name}`);
             doStart(newActiveZone, dispatch);
         }
@@ -98,10 +98,13 @@ const doStart = (newActiveZone, dispatch) => {
  */
 const fetchZoneInfo = (zoneId) => {
     return async (dispatch, getState) => {
-        const config = getValidConfig(getState());
+        const config = getConfig(getState());
         try {
-            const zoneInfo = await jriver.getZoneInfo(config.host, config.port, config.usessl, config.user, config.pass, zoneId);
+            const zoneInfo = await jriver.getZoneInfo(config, zoneId);
             dispatch({type: types.ZONE_INFO_FETCHED, payload: zoneInfo});
+            if (zoneInfo.status === 'Stopped') {
+                dispatch(fetchZones())
+            }
         } catch (error) {
             dispatchError(dispatch, types.ZONE_INFO_FETCHED, error);
         }

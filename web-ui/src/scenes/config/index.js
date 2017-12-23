@@ -4,8 +4,9 @@ import {withStyles} from 'material-ui/styles';
 import Input from 'material-ui/Input';
 import {connect} from "react-redux";
 import * as configActions from '../../store/config/actions';
-import {MC_USE_SSL, MC_PASSWORD, MC_USERNAME, MC_HOST, MC_PORT, getConfigValues} from "../../store/config/reducer";
-import {FormControlLabel, IconButton, InputAdornment, Switch} from "material-ui";
+import {getConfig} from "../../store/config/reducer";
+import * as configFields from "../../store/config/config";
+import {FormControl, FormControlLabel, IconButton, InputAdornment, InputLabel, Switch} from "material-ui";
 import {Visibility, VisibilityOff} from "material-ui-icons";
 
 const styles = (theme) => ({
@@ -16,6 +17,12 @@ const styles = (theme) => ({
     input: {
         margin: theme.spacing.unit,
     },
+    formControl: {
+        margin: theme.spacing.unit,
+    },
+    withoutLabel: {
+        marginTop: theme.spacing.unit * 3,
+    }
 });
 
 class Config extends Component {
@@ -50,65 +57,69 @@ class Config extends Component {
 
         return (
             <div className={classes.container}>
-                <Input value={config[MC_HOST]}
-                       id="mchost"
-                       label="JRMC Host"
-                       className={classes.input}
-                       inputProps={{
-                           'aria-label': 'Description',
-                       }}
-                       onChange={this.handleInput(MC_HOST)}
-                />
-                <Input value={config[MC_PORT]}
-                       id="mcport"
-                       label="JRMC Port"
-                       type="number"
-                       className={classes.input}
-                       inputProps={{
-                           'aria-label': 'Description',
-                       }}
-                       onChange={this.handleInput(MC_PORT)}
-                />
+                <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="mchose">Host</InputLabel>
+                    <Input value={config[configFields.MC_HOST]}
+                           id="mchost"
+                           label="JRMC Host"
+                           className={classes.input}
+                           inputProps={{
+                               'aria-label': 'Description',
+                           }}
+                           onChange={this.handleInput(configFields.MC_HOST)}/>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="mcport">Port</InputLabel>
+                    <Input value={config[configFields.MC_PORT]}
+                           id="mcport"
+                           label="JRMC Port"
+                           type="number"
+                           className={classes.input}
+                           inputProps={{
+                               'aria-label': 'Description',
+                           }}
+                           onChange={this.handleInput(configFields.MC_PORT)}/>
+                </FormControl>
                 <FormControlLabel
                     control={
-                        <Switch
-                            checked={config[MC_USE_SSL]}
-                            onChange={this.handleSwitch(MC_USE_SSL)}
-                        />
+                        <Switch checked={config[configFields.MC_USE_SSL]}
+                                onChange={this.handleSwitch(configFields.MC_USE_SSL)}/>
                     }
-                    label="Use SSL?"
-                />
-                <Input value={config[MC_USERNAME]}
-                       id="mcwsuser"
-                       label="JRMC Username"
-                       className={classes.input}
-                       inputProps={{
-                           'aria-label': 'Description',
-                       }}
-                       onChange={this.handleInput(MC_USERNAME)}
-                />
-                <Input
-                    id="password"
-                    type={this.state.showPassword ? 'text' : 'password'}
-                    value={config[MC_PASSWORD]}
-                    onChange={this.handleInput(MC_PASSWORD)}
-                    endAdornment={
-                        <InputAdornment position="end">
-                            <IconButton
-                                onClick={this.handleClickShowPassword}
-                                onMouseDown={this.handleMouseDownPassword}>
-                                {this.state.showPassword ? <VisibilityOff/> : <Visibility/>}
-                            </IconButton>
-                        </InputAdornment>
-                    }
-                />
+                    label="Use SSL?"/>
+                <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="mcuser">Username</InputLabel>
+                    <Input value={config[configFields.MC_USERNAME]}
+                           id="mcuser"
+                           label="JRMC Username"
+                           className={classes.input}
+                           inputProps={{
+                               'aria-label': 'Description',
+                           }}
+                           onChange={this.handleInput(configFields.MC_USERNAME)}/>
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <InputLabel htmlFor="mcpassword">Password</InputLabel>
+                    <Input id="mcpassword"
+                           type={this.state.showPassword ? 'text' : 'password'}
+                           value={config[configFields.MC_PASSWORD]}
+                           onChange={this.handleInput(configFields.MC_PASSWORD)}
+                           endAdornment={
+                               <InputAdornment position="end">
+                                   <IconButton
+                                       onClick={this.handleClickShowPassword}
+                                       onMouseDown={this.handleMouseDownPassword}>
+                                       {this.state.showPassword ? <VisibilityOff/> : <Visibility/>}
+                                   </IconButton>
+                               </InputAdornment>
+                           }/>
+                </FormControl>
             </div>
         );
     };
 }
 
 const mapStateToProps = (state) => {
-    return {config: getConfigValues(state)};
+    return {config: getConfig(state)};
 };
 
 export default connect(mapStateToProps)(withStyles(styles)(Config));

@@ -4,23 +4,33 @@ import Chip from 'material-ui/Chip';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/zones/reducer";
 import {setVolume, fetchZones} from "../../store/zones/actions";
+import {getConfig} from "../../store/config/reducer";
 
 const deltas = [-10, -5, -1, 1, 5, 10];
 
 class Volume extends Component {
 
     componentDidMount = () => {
+        console.warn("Fetching zones on mount");
         this.props.dispatch(fetchZones());
     };
 
-    applyDelta = (delta, zoneId, currentVolume) => {
-        this.props.dispatch(setVolume(zoneId, Math.max(0, Math.min(100, currentVolume + delta))/100));
+    componentWillReceiveProps = (nextProps) => {
+        if (this.props.config.valid === false && nextProps.config.valid === true) {
+            console.warn("Fetching zones on validate");
+            this.props.dispatch(fetchZones());
+        }
     };
 
-    getButton = (delta, currentVolume) => {
+    applyDelta = (delta, zoneId, currentVolume) => {
+        this.props.dispatch(setVolume(zoneId, Math.max(0, Math.min(100, currentVolume + delta)) / 100));
+    };
+
+    getButton = (delta, zoneId, currentVolume) => {
         return (
             <Grid key={`volume${delta}`} item xs={2}>
-                <Button raised onClick={() => this.applyDelta(delta, currentVolume)}>{delta > 0 ? '+' : ''}{delta}</Button>
+                <Button raised
+                        onClick={() => this.applyDelta(delta, zoneId, currentVolume)}>{delta > 0 ? '+' : ''}{delta}</Button>
             </Grid>
         );
     };
@@ -66,6 +76,9 @@ class Volume extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {zone: getActiveZone(state)};
+    return {
+        zone: getActiveZone(state),
+        config: getConfig(state)
+    };
 };
 export default connect(mapStateToProps)(Volume);
