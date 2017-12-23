@@ -8,7 +8,7 @@ describe('services/jriver', () => {
         jest.resetAllMocks();
     });
 
-    describe('getZoneData', () => {
+    describe('getAllZones', () => {
 
         it('should get data', async () => {
             fetch.mockResponseOnce(manyZones);

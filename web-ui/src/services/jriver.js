@@ -2,8 +2,9 @@ import {xml2js} from 'xml-js';
 import base64 from 'base-64';
 
 const ENDPOINTS = {
-    'GET_ZONES': {path: '/MCWS/v1/Playback/Zones', params: []},
-    'GET_ZONE_INFO': {path: '/MCWS/v1/Playback/Info', params: ['Zone']}
+    'GET_ZONES': {path: 'MCWS/v1/Playback/Zones', params: []},
+    'GET_ZONE_INFO': {path: 'MCWS/v1/Playback/Info', params: ['Zone']},
+    'SET_VOLUME': {path: 'MCWS/v1/Playback/Volume', params: ['Level', 'Zone']}
 };
 
 const COMPACT = {compact: true, ignoreDeclaration: true};
@@ -12,35 +13,77 @@ const COMPACT = {compact: true, ignoreDeclaration: true};
  * Encapsulates any calls to MCWS.
  */
 class JRiverService {
-    getParams = (paramKeys, paramValues) => {
-        const esc = encodeURIComponent;
-        return paramKeys.map((k, i) => esc(k) + '=' + esc(paramValues[i])).join('&');
+
+    /**
+     * Sets the volume in the specified zone.
+     * @returns {Promise<void>}
+     */
+    setVolume = async (host, port, usessl, username, password, zoneId, volume) => {
+        return this._getMCWS({
+            host,
+            port,
+            usessl,
+            username,
+            password,
+            target: 'SET_VOLUME',
+            params: {Zone: zoneId, Level: volume},
+            converter: this.extractSetVolumeSuccess
+        });
     };
 
-    getUrl = (url, target, params = []) => {
-        if (ENDPOINTS.hasOwnProperty(target)) {
-            if (params.length > 0) {
-                // TODO check both vals and keys are same length or use an object instead
-                return `${url}/${ENDPOINTS[target].path}?${this.getParams(ENDPOINTS[target].params, params)}`;
-            } else {
-                return `${url}/${ENDPOINTS[target].path}`;
+    extractSetVolumeSuccess = (json) => {
+        if (json.Response._attributes.Status === 'OK' && json.Response.hasOwnProperty('Item')) {
+            const level = json.Response.Item.find(this.findByName('Level'));
+            if (level) {
+                return {payload: level}
             }
         }
-        throw `Unknown target - ${target}`;
-    };
-
-    getAuthHeader = (username, password) => {
-        return {
-            Authorization: 'Basic ' + base64.encode(username + ":" + password)
-        };
+        // TODO return error
+        return {error: true}
     };
 
     /**
      * Gets basic information about all zones.
      * @returns {Promise<void>}
      */
-    getZones = async (url, username, password) => {
-        return this._getMCWS({url, username, password, target: 'GET_ZONES', converter: this.extractZones});
+    getZones = async (host, port, usessl, username, password) => {
+        return this._getMCWS({host, port, usessl, username, password, target: 'GET_ZONES', converter: this.extractZones});
+    };
+
+    getParams = (params) => {
+        const esc = encodeURIComponent;
+        return Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
+    };
+
+    validateParams = (suppliedParams, expectedParams) => {
+        if (Object.keys(suppliedParams).length === expectedParams.length) {
+            return Object.keys(suppliedParams).every(k => expectedParams.findIdx(k) > -1);
+        }
+        return false;
+    };
+
+    getUrl = (host, port, usessl, target, suppliedParams = {}) => {
+        if (ENDPOINTS.hasOwnProperty(target)) {
+            const endpoint = ENDPOINTS[target];
+            const root = `http${usessl?'s':''}//${host}:${port}/${endpoint.path}`;
+            if (suppliedParams.length > 0) {
+                if (this.validateParams(suppliedParams, endpoint.params)) {
+                    return `${root}?${this.getParams(suppliedParams)}`;
+                } else {
+                    // TODO format error to show the bad params
+                    throw new Error(`Invalid params for target ${endpoint} - ${suppliedParams}`)
+                }
+            } else {
+                return root;
+            }
+        }
+        throw new Error(`Unknown target - ${target}`);
+    };
+
+    getAuthHeader = (username, password) => {
+        return {
+            Authorization: 'Basic ' + base64.encode(username + ":" + password)
+        };
     };
 
     /**
@@ -76,7 +119,7 @@ class JRiverService {
                 }
             });
             return Array.from(zones.values())
-                        .map(z => Object.assign(z, {active: activeZoneId && z.id === activeZoneId}));
+                        .map(z => Object.assign(z, {active: (activeZoneId && z.id === activeZoneId)}));
         } else {
             // TODO report error?
             return [];
@@ -85,18 +128,17 @@ class JRiverService {
 
     /**
      * Gets detailed information about a particular zone.
-     * @param username the username.
-     * @param password the password.
-     * @param zoneId the zoneId.
      * @returns {Promise<{volume, volumedb, fileKey, imageURL}>}
      */
-    getZoneInfo = async (url, username, password, zoneId) => {
+    getZoneInfo = async (host, port, usessl, username, password, zoneId) => {
         return this._getMCWS({
-            url,
+            host,
+            port,
+            usessl,
             username,
             password,
             target: 'GET_ZONE_INFO',
-            params: [zoneId],
+            params: {Zone: zoneId},
             converter: this.extractZoneInfo
         });
     };
@@ -112,6 +154,7 @@ class JRiverService {
                 imageURL: json.Response.Item.find(this.findByName('ImageURL'))._text
             }
         } else {
+            // TODO send error type
             return {};
         }
     };
@@ -126,15 +169,10 @@ class JRiverService {
 
     /**
      * GETs some specific MCWS endpoint.
-     * @param username
-     * @param password
-     * @param target
-     * @param params
-     * @param converter
      * @returns {Promise<*>}
      */
-    _getMCWS = async ({url: urlRoot, username, password, target, params = [], converter}) => {
-        const url = this.getUrl(urlRoot, target, params);
+    _getMCWS = async ({host, port, usessl, username, password, target, params = {}, converter}) => {
+        const url = this.getUrl(host, port, usessl, target, params);
         const response = await fetch(url, {
             method: 'GET',
             headers: this.getAuthHeader(username, password)

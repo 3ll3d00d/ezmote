@@ -1,4 +1,4 @@
-import reduce, {initialState, getZoneData} from "../reducer";
+import reduce, {initialState, getAllZones} from "../reducer";
 import {Reducer, Selector} from 'redux-testkit';
 import * as actionTypes from '../actionTypes';
 import Immutable from 'seamless-immutable';
@@ -103,11 +103,11 @@ describe('store/zone/selectors', () => {
 
     it('should select no zones', () => {
         const expected = Immutable({});
-        Selector(getZoneData).expect(initialState).toReturn(expected);
+        Selector(getAllZones).expect(initialState).toReturn(expected);
     });
 
     it('should select known zones', () => {
-        Selector(getZoneData).expect(enrichedZone1).toReturn(enrichedZone1.zones);
+        Selector(getAllZones).expect(enrichedZone1).toReturn(enrichedZone1.zones);
     });
 
 });

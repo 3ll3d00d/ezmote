@@ -1,17 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'typeface-roboto'
-import {applyMiddleware, combineReducers, createStore} from 'redux';
 import {Provider} from 'react-redux';
-import thunk from 'redux-thunk';
 import App from './App';
-import * as reducers from './store/reducers';
+import {PersistGate} from "redux-persist/es/integration/react";
+import {configureStore} from "./store/store";
 
-const store = createStore(combineReducers(reducers), applyMiddleware(thunk));
+const {persistor, store} = configureStore();
 
 ReactDOM.render(
-    <Provider store={store}>
-        <App/>
-    </Provider>,
+    <PersistGate persistor={persistor}>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </PersistGate>,
     document.getElementById('root')
 );

@@ -1,4 +1,7 @@
-import reduce, {initialState, getConfigValues} from "../reducer";
+import reduce, {
+    initialState, getConfigValues, MC_USE_SSL, MC_USERNAME, MC_HOST, MC_PASSWORD,
+    MC_PORT
+} from "../reducer";
 import {Reducer, Selector} from 'redux-testkit';
 import * as actionTypes from '../actionTypes';
 
@@ -41,9 +44,11 @@ describe('store/zone/selectors', () => {
 
     it('should select the config', () => {
         const expected = {
-            user: initialState.user,
-            pass: initialState.pass,
-            url: initialState.url
+            [MC_USE_SSL]: false,
+            [MC_HOST]: 'localhost',
+            [MC_PORT]: 52199,
+            [MC_USERNAME]: '',
+            [MC_PASSWORD]: ''
         };
         Selector(getConfigValues).expect(initialState).toReturn(expected);
     });
