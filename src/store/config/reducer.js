@@ -7,7 +7,8 @@ export const initialState = Immutable({
     [fields.MC_HOST]: 'localhost',
     [fields.MC_PORT]: 52199,
     [fields.MC_USERNAME]: '',
-    [fields.MC_PASSWORD]: ''
+    [fields.MC_PASSWORD]: '',
+    [fields.CMDSERVER_PORT]: 53199
 });
 
 /**

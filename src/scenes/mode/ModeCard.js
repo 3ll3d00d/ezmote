@@ -12,13 +12,13 @@ const styles = {
     },
 };
 
-function ModeCard({classes, name, img, active}) {
+function ModeCard({classes, name, img, sendCommand}) {
     return (
-        <Card elevation={10} raised={active} className={classes.card}>
+        <Card elevation={10} className={classes.card}>
             <CardMedia className={classes.media}
                        image={img}
                        title={name}
-                       onClick={() => alert(`Activating ${name}`)}/>
+                       onClick={() => sendCommand(name)}/>
         </Card>
     );
 }
@@ -26,8 +26,8 @@ function ModeCard({classes, name, img, active}) {
 ModeCard.propTypes = {
     name: PropTypes.string.isRequired,
     img: PropTypes.string.isRequired,
-    active: PropTypes.bool.isRequired,
-    classes: PropTypes.object.isRequired
+    classes: PropTypes.object.isRequired,
+    sendCommand: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(ModeCard);
