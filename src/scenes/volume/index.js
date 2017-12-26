@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import {Button, Grid, LinearProgress, Paper} from "material-ui";
+import Paper from "material-ui/Paper";
+import Button from "material-ui/Button";
+import Grid from "material-ui/Grid";
 import Chip from 'material-ui/Chip';
+import {FontIcon, Slider} from 'react-md';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/zones/reducer";
-import {setVolume, fetchZones} from "../../store/zones/actions";
+import {fetchZones, setVolume} from "../../store/zones/actions";
 import {getConfig} from "../../store/config/reducer";
-
-const deltas = [-10, -5, -1, 1, 5, 10];
 
 class Volume extends Component {
 
@@ -22,43 +23,29 @@ class Volume extends Component {
         }
     };
 
-    applyDelta = (delta, zoneId, currentVolume) => {
-        this.props.dispatch(setVolume(zoneId, Math.max(0, Math.min(100, currentVolume + delta)) / 100));
-    };
-
-    getButton = (delta, zoneId, currentVolume) => {
-        return (
-            <Grid key={`volume${delta}`} item xs={2}>
-                <Button raised
-                        onClick={() => this.applyDelta(delta, zoneId, currentVolume)}>{delta > 0 ? '+' : ''}{delta}</Button>
-            </Grid>
-        );
+    setVolume = zoneId => (value, event) => {
+        this.props.dispatch(setVolume(zoneId, value/100));
     };
 
     render() {
         const {zone, dispatch} = this.props;
         if (zone) {
-            const currentVolume = zone.volumeRatio * 100;
+            const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
                 <Paper>
                     <Grid container>
-                        <Grid item xs={12}>
-                            <Grid container>
-                                {
-                                    deltas.map(d => this.getButton(d, zone.id, currentVolume))
-                                }
-                            </Grid>
-                        </Grid>
                         <Grid item xs={12}>
                             <Grid container justify={'space-around'} alignItems={'center'}>
                                 <Grid item xs={2}>
                                     <Chip label={zone.name}/>
                                 </Grid>
                                 <Grid item xs={10}>
-                                    <LinearProgress mode="determinate"
-                                                    value={currentVolume}
-                                                    min={0}
-                                                    max={100}/>
+                                    <Slider id="volume-slider"
+                                            label="Volume"
+                                            leftIcon={<FontIcon>volume_up</FontIcon>}
+                                            discrete
+                                            onChange={this.setVolume(zone.id)}
+                                            defaultValue={currentVolume}/>
                                 </Grid>
                             </Grid>
                         </Grid>

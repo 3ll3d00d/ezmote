@@ -22,3 +22,6 @@ yarn-error.log*
 *.ipr
 *.iml
 *.iws
+
++# build artifacts
++src/**/*.css

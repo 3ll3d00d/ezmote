@@ -14,7 +14,13 @@ const reduce = (state = initialState, action = {}) => {
     switch (action.type) {
         case types.ZONES_FETCHED:
             if (action.hasOwnProperty('payload')) {
-                return Immutable.merge(state, action.payload, {deep: true});
+                const incomingKeys = Object.keys(action.payload);
+                if (incomingKeys.length === 0) {
+                    return Immutable({});
+                } else {
+                    const removedOld = Immutable.without(state, (value, key) => incomingKeys.indexOf(key) === -1);
+                    return Immutable.merge(removedOld, action.payload, {deep: true});
+                }
             } else if (action.hasOwnProperty('error')) {
                 // TODO handle
                 return state;
@@ -45,7 +51,7 @@ const activeZone = zones => {
     return null;
 };
 // selectors
-export const getAllZones = createSelector(zones);
+export const getAllZones = zones;
 export const getActiveZone = createSelector(zones, activeZone);
 
 export default reduce;

@@ -14,13 +14,6 @@ class Mode extends Component {
         }
     };
 
-    // componentWillReceiveProps = (nextProps) => {
-    //     if (this.props.config.valid === false && nextProps.config.valid === true) {
-    //         console.warn("Fetching zones on validate");
-    //         this.props.dispatch(fetchZones());
-    //     }
-    // };
-
     sendCommand = (commandId) => {
         this.props.dispatch(sendCommand(commandId));
     };
