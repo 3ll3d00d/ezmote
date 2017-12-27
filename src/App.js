@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import Config from "./scenes/config";
-import Volume from "./scenes/volume";
+import Control from "./scenes/control";
 import Mode from "./scenes/mode";
 import {FullScreenMenu, NotFullScreenMenu} from "./scenes/menu";
 import Grid from "material-ui/Grid";
@@ -22,7 +22,7 @@ const theme = createMuiTheme({
 
 class App extends Component {
     state = {
-        selected: 'Volume',
+        selected: 'Control',
         fullscreen: false
     };
 
@@ -49,7 +49,7 @@ class App extends Component {
                         <Grid container>
                             <Grid item xs={12}>
                                 {'Settings' === selected ? <Config/> : null}
-                                {'Volume' === selected ? <Volume/> : null}
+                                {'Control' === selected ? <Control/> : null}
                                 {'Source' === selected ? <Mode/> : null}
                             </Grid>
                         </Grid>

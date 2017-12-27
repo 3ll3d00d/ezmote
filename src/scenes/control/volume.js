@@ -52,22 +52,18 @@ class Volume extends Component {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
                 <Paper>
-                    <Grid container>
-                        <Grid item xs={12}>
-                            <Grid container justify={'space-around'} alignItems={'center'}>
-                                <Grid item xs={2}>
-                                    <Chip label={zone.name}/>
-                                </Grid>
-                                <Grid item xs={10}>
-                                    <Slider id="volume-slider"
-                                            label="Volume"
-                                            leftIcon={this.makeMuteButton(zone.id)}
-                                            discrete
-                                            discreteTicks={5}
-                                            onChange={this.slowSetVolume(zone.id)}
-                                            value={currentVolume}/>
-                                </Grid>
-                            </Grid>
+                    <Grid container justify={'space-around'} alignItems={'center'}>
+                        <Grid item xs={2}>
+                            <Chip label={zone.name}/>
+                        </Grid>
+                        <Grid item xs={9}>
+                            <Slider id="volume-slider"
+                                    label="Volume"
+                                    leftIcon={this.makeMuteButton(zone.id)}
+                                    discrete
+                                    discreteTicks={5}
+                                    onChange={this.slowSetVolume(zone.id)}
+                                    value={currentVolume}/>
                         </Grid>
                     </Grid>
                 </Paper>

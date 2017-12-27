@@ -11,7 +11,7 @@ import Divider from 'material-ui/Divider';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import SettingsIcon from 'material-ui-icons/Settings';
-import VolumeIcon from 'material-ui-icons/VolumeUp';
+import SettingsRemoteIcon from 'material-ui-icons/SettingsRemote';
 import VideoLibraryIcon from 'material-ui-icons/VideoLibrary';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 import ChevronRightIcon from 'material-ui-icons/ChevronRight';
@@ -156,11 +156,11 @@ class Menu extends Component {
                             </ListItemIcon>
                             <ListItemText primary="Settings"/>
                         </ListItem>
-                        <ListItem button onClick={() => handler('Volume')}>
+                        <ListItem button onClick={() => handler('Control')}>
                             <ListItemIcon>
-                                <VolumeIcon/>
+                                <SettingsRemoteIcon/>
                             </ListItemIcon>
-                            <ListItemText primary="Volume"/>
+                            <ListItemText primary="Control"/>
                         </ListItem>
                         <ListItem button onClick={() => handler('Source')}>
                             <ListItemIcon>
