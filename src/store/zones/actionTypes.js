@@ -1,6 +1,12 @@
-export const ZONES_FETCHED = 'zones.ZONES_FETCHED';
-export const ZONES_FETCHED_FAIL = 'zones.ZONES_FETCHED_FAIL';
-export const ZONE_INFO_FETCHED = 'zones.ZONE_INFO_FETCHED';
-export const ZONE_INFO_FETCHED_FAIL = 'zones.ZONE_INFO_FETCHED_FAIL';
+export const IS_ALIVE = 'zones.IS_ALIVE';
+export const IS_ALIVE_FAIL = 'zones.IS_ALIVE_FAIL';
+export const FETCH_ZONES = 'zones.FETCH_ZONES';
+export const FETCH_ZONES_FAIL = 'zones.FETCH_ZONES_FAIL';
+export const FETCH_ZONE_INFO = 'zones.FETCH_ZONE_INFO';
+export const FETCH_ZONE_INFO_FAIL = 'zones.FETCH_ZONE_INFO_FAIL';
 export const SET_VOLUME = 'zones.SET_VOLUME';
 export const SET_VOLUME_FAIL = 'zones.SET_VOLUME_FAIL';
+export const MUTE_VOLUME = 'zones.MUTE_VOLUME';
+export const MUTE_VOLUME_FAIL = 'zones.MUTE_VOLUME_FAIL';
+export const UNMUTE_VOLUME = 'zones.UNMUTE_VOLUME';
+export const UNMUTE_VOLUME_FAIL = 'zones.UNMUTE_VOLUME_FAIL';

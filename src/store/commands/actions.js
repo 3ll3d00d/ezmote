@@ -4,7 +4,7 @@ import cmdserver from '../../services/cmdserver';
 import {getConfig} from "../config/reducer";
 
 const dispatchError = (dispatch, type, error) => {
-    dispatch({type: type, error: `${error.name} - ${error.message}`});
+    dispatch({type: type, error: true, payload: `${error.name} - ${error.message}`});
 };
 
 /**
@@ -24,7 +24,7 @@ const fetchCommands = () => {
                 dispatchError(dispatch, types.COMMANDS_FETCHED, error);
             }
         } else {
-            dispatch({type: types.COMMANDS_FETCHED, error: 'Invalid CMDServer Config'})
+            dispatch({type: types.COMMANDS_FETCHED, error: true, payload: 'Invalid CMDServer Config'})
         }
     };
 };
@@ -41,7 +41,7 @@ const sendCommand = (commandId) => {
                 dispatchError(dispatch, types.SENT_COMMAND, error);
             }
         } else {
-            dispatch({type: types.SENT_COMMAND, error: 'Invalid CMDServer Config'})
+            dispatch({type: types.SENT_COMMAND, error: true, payload: 'Invalid CMDServer Config'})
         }
     };
 };

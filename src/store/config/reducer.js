@@ -44,7 +44,10 @@ const validatedConfig = config => {
         if (invalids.length === 0) {
             return Immutable.without(Immutable.merge(config, {valid: true}), 'error');
         } else {
-            return Immutable.merge(config, {valid: false, error: `Missing values: ${invalids.toString()}`});
+            return Immutable.merge(config, {
+                valid: false,
+                error: `Missing values: ${invalids.toString()}`
+            });
         }
     } else {
         return Immutable({valid: false, error: 'No config'});
@@ -52,11 +55,13 @@ const validatedConfig = config => {
 };
 
 // selector functions
-const config = state => {
-    return state.config;
-};
-
-// selectors
-export const getConfig = config;
+export const getConfig = state => state.config;
 
 export default reduce;
+
+export class InvalidConfigError extends Error {
+    constructor(config, message = '') {
+        super(message);
+        this.config = config;
+    }
+}

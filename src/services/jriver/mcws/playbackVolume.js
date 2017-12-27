@@ -4,7 +4,7 @@ const converter = (json) => {
     if (json.Response._attributes.Status === 'OK' && json.Response.hasOwnProperty('Item')) {
         const level = safeGetNumber(json.Response.Item.find(findItemByName('Level')));
         if (level) {
-            return {payload: level}
+            return level;
         }
     }
     throw new Error(`Bad response ${JSON.stringify(json)}`)

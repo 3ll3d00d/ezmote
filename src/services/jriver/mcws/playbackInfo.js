@@ -2,12 +2,13 @@ import {findItemByName, safeGetNumber, safeGetText} from "./functions";
 
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
+        const volumeDisplay = safeGetText(json.Response.Item.find(findItemByName('VolumeDisplay')));
         return {
             id: safeGetText(json.Response.Item.find(findItemByName('ZoneID'))),
             name: safeGetText(json.Response.Item.find(findItemByName('ZoneName'))),
-            // TODO use volumedB to show whether it is muted or not
             volumeRatio: safeGetNumber(json.Response.Item.find(findItemByName('Volume'))),
-            volumedb: extractVolumedB(json.Response.Item.find(findItemByName('VolumeDisplay'))),
+            muted: isMuted(volumeDisplay),
+            volumedb: extractVolumedB(volumeDisplay),
             fileKey: safeGetText(json.Response.Item.find(findItemByName('FileKey'))),
             imageURL: safeGetText(json.Response.Item.find(findItemByName('ImageURL'))),
             status: safeGetText(json.Response.Item.find(findItemByName('Status')))
@@ -17,8 +18,11 @@ const converter = (json) => {
     }
 };
 
-const extractVolumedB = (displayText) => {
-    const text = safeGetText(displayText);
+const isMuted = (text) => {
+    return 'Muted' === text;
+};
+
+const extractVolumedB = (text) => {
     if (text) {
         if (text === 'Muted') {
             return -100;
@@ -44,4 +48,4 @@ const endpoint = {
     converter
 };
 
-export default (config, zoneId) => Object.assign({}, {config}, {suppliedParams: {Zone: zoneId}}, endpoint);
+export default (config, zoneId) => Object.assign({}, {suppliedParams: {Zone: zoneId}}, {config}, endpoint);

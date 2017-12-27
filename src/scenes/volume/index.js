@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import _ from "lodash";
 import Paper from "material-ui/Paper";
 import Button from "material-ui/Button";
 import Grid from "material-ui/Grid";
@@ -6,13 +7,12 @@ import Chip from 'material-ui/Chip';
 import {FontIcon, Slider} from 'react-md';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/zones/reducer";
-import {fetchZones, setVolume} from "../../store/zones/actions";
+import {fetchZones, setVolume, muteVolume, unmuteVolume} from "../../store/zones/actions";
 import {getConfig} from "../../store/config/reducer";
 
 class Volume extends Component {
 
     componentDidMount = () => {
-        console.warn("Fetching zones on mount");
         this.props.dispatch(fetchZones());
     };
 
@@ -24,7 +24,26 @@ class Volume extends Component {
     };
 
     setVolume = zoneId => (value, event) => {
-        this.props.dispatch(setVolume(zoneId, value/100));
+        this.props.dispatch(setVolume(zoneId, value / 100));
+    };
+
+    slowSetVolume = zoneId => _.debounce(this.setVolume(zoneId), 50);
+
+    muteVolume = zoneId => () => {
+        this.props.dispatch(muteVolume(zoneId));
+    };
+
+    unmuteVolume = zoneId => () => {
+        this.props.dispatch(unmuteVolume(zoneId));
+    };
+
+    makeMuteButton = (zoneId) => {
+        const {zone} = this.props;
+        if (!zone.muted) {
+            return <FontIcon onClick={this.muteVolume(zoneId)}>volume_up</FontIcon>;
+        } else {
+            return <FontIcon onClick={this.unmuteVolume(zoneId)}>volume_off</FontIcon>;
+        }
     };
 
     render() {
@@ -42,10 +61,11 @@ class Volume extends Component {
                                 <Grid item xs={10}>
                                     <Slider id="volume-slider"
                                             label="Volume"
-                                            leftIcon={<FontIcon>volume_up</FontIcon>}
+                                            leftIcon={this.makeMuteButton(zone.id)}
                                             discrete
-                                            onChange={this.setVolume(zone.id)}
-                                            defaultValue={currentVolume}/>
+                                            discreteTicks={5}
+                                            onChange={this.slowSetVolume(zone.id)}
+                                            value={currentVolume}/>
                                 </Grid>
                             </Grid>
                         </Grid>

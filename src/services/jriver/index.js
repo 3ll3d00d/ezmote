@@ -58,28 +58,6 @@ class JRiverService {
             Authorization: 'Basic ' + base64.encode(username + ":" + password)
         };
     };
-
-    /**
-     * GETs some specific MCWS endpoint.
-     * @returns {Promise<*>}
-     */
-    _getMCWS = async ({config, target, params = {}}) => {
-        const endpoint = ENDPOINTS.hasOwnProperty(target) ? ENDPOINTS[target] : null;
-        if (!endpoint) {
-            throw new Error(`Unknown target - ${target}`);
-        }
-        const url = this._getUrl(config, endpoint, params);
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: this._getAuthHeader(config[fields.MC_USERNAME], config[fields.MC_PASSWORD])
-        });
-        if (!response.ok) {
-            throw new Error(`JRiverService.${target} failed, HTTP status ${response.status}`);
-        }
-        const data = await response.text();
-        const json = xml2js(data, COMPACT);
-        return endpoint.converter(json);
-    };
 }
 
 export default new JRiverService();

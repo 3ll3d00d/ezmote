@@ -2,9 +2,37 @@ import _ from 'lodash';
 import * as types from "./actionTypes";
 import jriver from '../../services/jriver';
 import poller from '../../services/timer';
-import {getConfig} from "../config/reducer";
+import {getConfig, InvalidConfigError} from "../config/reducer";
 import {getActiveZone} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
+
+/**
+ * tests if the server is alive.
+ * @returns {*}
+ */
+const isAlive = () => {
+    return _invoke(types.IS_ALIVE, types.IS_ALIVE_FAIL, (config) => mcws.alive(config));
+};
+
+/**
+ * mutes the volume in the specified zone.
+ * @param zoneId the zoneId.
+ */
+const muteVolume = (zoneId) => {
+    return _invoke(types.MUTE_VOLUME, types.MUTE_VOLUME_FAIL, (config) => mcws.playbackMute(config, zoneId, true), dispatchMute(zoneId));
+};
+
+/**
+ * unmutes the volume in the specified zone.
+ * @param zoneId the zoneId.
+ */
+const unmuteVolume = (zoneId) => {
+    return _invoke(types.UNMUTE_VOLUME, types.UNMUTE_VOLUME_FAIL, (config) => mcws.playbackMute(config, zoneId, false), dispatchMute(zoneId));
+};
+
+const dispatchMute = (zoneId) => (successAction, response, state, dispatch) => {
+    dispatch({type: successAction, payload: {muted: response, zoneId}});
+};
 
 /**
  * Sets the volume for the specified zone.
@@ -12,23 +40,9 @@ import * as mcws from '../../services/jriver/mcws';
  * @param volume the volume.
  */
 const setVolume = (zoneId, volume) => {
-    return async (dispatch, getState) => {
-        const config = getConfig(getState());
-        if (config.valid) {
-            try {
-                const response = await jriver.invoke(mcws.playbackVolume(config, zoneId, volume));
-                dispatch(Object.assign({type: types.SET_VOLUME}, response));
-            } catch (error) {
-                dispatchError(dispatch, types.SET_VOLUME, error);
-            }
-        } else {
-            dispatch({type: types.SET_VOLUME, error: 'Invalid MC Config'})
-        }
-    };
-};
-
-const dispatchError = (dispatch, type, error) => {
-    dispatch({type: type, error: `${error.name} - ${error.message}`});
+    return _invoke(types.SET_VOLUME, types.SET_VOLUME_FAIL, (config) => mcws.playbackVolume(config, zoneId, volume), (successAction, response, state, dispatch) => {
+        dispatch({type: successAction, payload: {volumeRatio: response, zoneId}});
+    });
 };
 
 /**
@@ -36,22 +50,11 @@ const dispatchError = (dispatch, type, error) => {
  * @returns {function(*, *)}
  */
 const fetchZones = () => {
-    return async (dispatch, getState) => {
-        const state = getState();
-        const config = getConfig(state);
-        if (config.valid) {
-            try {
-                const zones = await jriver.invoke(mcws.playbackZones(config));
-                const zonesById = _.keyBy(zones, 'id');
-                ensureZoneInfoPollerIsRunning(zones, state, dispatch);
-                dispatch({type: types.ZONES_FETCHED, payload: zonesById});
-            } catch (error) {
-                dispatchError(dispatch, types.ZONES_FETCHED, error);
-            }
-        } else {
-            dispatch({type: types.ZONES_FETCHED, error: 'Invalid MC Config'})
-        }
-    };
+    return _invoke(types.FETCH_ZONES, types.FETCH_ZONES_FAIL, (config) => mcws.playbackZones(config), (successAction, response, state, dispatch) => {
+        const zonesById = _.keyBy(response, 'id');
+        ensureZoneInfoPollerIsRunning(response, state, dispatch);
+        dispatch({type: successAction, payload: zonesById});
+    });
 };
 
 /**
@@ -65,32 +68,36 @@ const ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
     const newActiveZone = getActiveZone({zones});
     if (existingActiveZone) {
         if (!newActiveZone || existingActiveZone.id !== newActiveZone.id) {
-            doStop(existingActiveZone, dispatch);
+            _doStop(existingActiveZone, dispatch);
         }
     }
     if (newActiveZone) {
         if (!existingActiveZone || existingActiveZone.id !== newActiveZone.id) {
-            doStart(newActiveZone, dispatch);
-        } else if (!poller.isPolling(matchById(newActiveZone))) {
-            console.debug(`Poller for zone ${newActiveZone.id}/${newActiveZone.name} should be running but isn't, starting`);
-            doStart(newActiveZone, dispatch);
+            _doStart(newActiveZone, dispatch);
+        } else if (!poller.isPolling(_matchById(newActiveZone))) {
+            console.info(`Poller for zone ${newActiveZone.id}/${newActiveZone.name} should be running but isn't, starting`);
+            _doStart(newActiveZone, dispatch);
         }
     }
 };
 
-const matchById = (targetZone) => z => z.id === targetZone.id;
+const _dispatchError = (dispatch, type, error) => {
+    dispatch({type: type, error: true, payload: error});
+};
 
-const doStop = (existingActiveZone) => {
-    if (poller.stopPolling(matchById(existingActiveZone))) {
-        console.debug(`Cleared interval for zone ${existingActiveZone.id}/${existingActiveZone.name}`);
+const _matchById = (targetZone) => z => z.id === targetZone.id;
+
+const _doStop = (existingActiveZone) => {
+    if (poller.stopPolling(_matchById(existingActiveZone))) {
+        console.info(`Cleared interval for zone ${existingActiveZone.id}/${existingActiveZone.name}`);
     } else {
         console.error(`Unable to clear interval for zone ${existingActiveZone.id}/${existingActiveZone.name}`)
     }
 };
 
-const doStart = (newActiveZone, dispatch) => {
+const _doStart = (newActiveZone, dispatch) => {
     console.info(`Starting interval for zone ${newActiveZone.id}/${newActiveZone.name}`);
-    poller.startPolling(newActiveZone.id, () => dispatch(fetchZoneInfo(newActiveZone.id)), 500);
+    poller.startPolling(newActiveZone.id, () => dispatch(fetchZoneInfo(newActiveZone.id)), 5000);
 };
 
 /**
@@ -98,18 +105,33 @@ const doStart = (newActiveZone, dispatch) => {
  * @returns {function(*, *)}
  */
 const fetchZoneInfo = (zoneId) => {
+    return _invoke(types.FETCH_ZONE_INFO, types.FETCH_ZONE_INFO_FAIL, (config) => mcws.playbackInfo(config, zoneId), (successAction, response, state, dispatch) => {
+        dispatch({type: successAction, payload: response});
+        if (response.status === 'Stopped') {
+            // TODO only do this if the last known state was running
+            dispatch(fetchZones())
+        }
+    });
+};
+
+const _dispatchResponseDirectly = (successAction, response, state, dispatch) => {
+    dispatch(Object.assign({type: successAction}, {payload: response}));
+};
+
+const _invoke = (successAction, failureAction, getPayload, dispatcher = _dispatchResponseDirectly) => {
     return async (dispatch, getState) => {
-        const config = getConfig(getState());
-        try {
-            const zoneInfo = await jriver.invoke(mcws.playbackInfo(config, zoneId));
-            dispatch({type: types.ZONE_INFO_FETCHED, payload: zoneInfo});
-            if (zoneInfo.status === 'Stopped') {
-                dispatch(fetchZones())
+        const state = getState();
+        const config = getConfig(state);
+        if (config.valid === true) {
+            try {
+                dispatcher(successAction, await jriver.invoke(getPayload(config)), state, dispatch)
+            } catch (error) {
+                _dispatchError(dispatch, failureAction, error);
             }
-        } catch (error) {
-            dispatchError(dispatch, types.ZONE_INFO_FETCHED, error);
+        } else {
+            dispatch({type: failureAction, error: true, payload: new InvalidConfigError(config)})
         }
     };
 };
 
-export {fetchZones, fetchZoneInfo, setVolume};
+export {fetchZones, fetchZoneInfo, setVolume, muteVolume, unmuteVolume};

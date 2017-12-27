@@ -27,6 +27,7 @@ describe('services/jriver', () => {
                     name: 'Tivo & Netflix',
                     volumeRatio: 0.38,
                     volumedb: -31,
+                    muted: false,
                     fileKey: '723010',
                     imageURL: 'MCWS/v1/File/GetImage?File=723010',
                     status: 'Stopped'
@@ -42,6 +43,7 @@ describe('services/jriver', () => {
                     name: null,
                     volumeRatio: 0.38,
                     volumedb: -31,
+                    muted: false,
                     fileKey: '723010',
                     imageURL: 'MCWS/v1/File/GetImage?File=723010',
                     status: 'Stopped'
@@ -57,6 +59,7 @@ describe('services/jriver', () => {
                     name: 'Tivo & Netflix',
                     volumeRatio: 0.38,
                     volumedb: -100,
+                    muted: true,
                     fileKey: '723010',
                     imageURL: 'MCWS/v1/File/GetImage?File=723010',
                     status: 'Stopped'

@@ -9,4 +9,4 @@ const endpoint = {
     converter
 };
 
-export default config => Object.assign({}, endpoint, {config});
+export default config => Object.assign({}, {config}, endpoint);

@@ -18,18 +18,24 @@ describe('services/jriver', () => {
         jest.resetAllMocks();
     });
 
-    describe('playbackVolume', () => {
-        it('should set volume', async () => {
-            fetch.mockResponseOnce(volumeSet);
-            const response = await jriver.invoke(mcws.playbackVolume(goodConfig, '10015', 0.5));
-            expect(response).toEqual(0.5);
+    describe('playbackMute', () => {
+        it('should mute', async () => {
+            fetch.mockResponseOnce(muteSet);
+            const response = await jriver.invoke(mcws.playbackMute(goodConfig, '10015', true));
+            expect(response).toEqual(true);
+        });
+
+        it('should unmute', async () => {
+            fetch.mockResponseOnce(muteUnset);
+            const response = await jriver.invoke(mcws.playbackMute(goodConfig, '10015', false));
+            expect(response).toEqual(false);
         });
 
         it('should handle Failure response', async () => {
             fetch.mockResponseOnce(failed);
             let error;
             try {
-                await jriver.invoke(mcws.playbackVolume(goodConfig, '10015', 0.5));
+                await jriver.invoke(mcws.playbackMute(goodConfig, '10015', true));
             } catch (e) {
                 error = e;
             }
@@ -40,11 +46,11 @@ describe('services/jriver', () => {
             fetch.mockResponseOnce('', {status: 500});
             let error;
             try {
-                await jriver.invoke(mcws.playbackVolume(goodConfig, '10015', 0.5));
+                await jriver.invoke(mcws.playbackMute(goodConfig, '10015', true));
             } catch (e) {
                 error = e;
             }
-            expect(error).toEqual(new Error('JRiverService.SET_VOLUME failed, HTTP status 500'));
+            expect(error).toEqual(new Error('JRiverService.MUTE failed, HTTP status 500'));
         });
     });
 });
@@ -54,9 +60,13 @@ const failed =
     "<Response Status=\"Failure\">\n" +
     "</Response>";
 
-const volumeSet =
+const muteSet =
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n" +
     "<Response Status=\"OK\">\n" +
-    "    <Item Name=\"Level\">0.5</Item>\n" +
-    "    <Item Name=\"Display\">50%  (-25.0 dB)</Item>\n" +
+    "    <Item Name=\"State\">1</Item>\n" +
+    "</Response>";
+const muteUnset =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n" +
+    "<Response Status=\"OK\">\n" +
+    "    <Item Name=\"State\">0</Item>\n" +
     "</Response>";
