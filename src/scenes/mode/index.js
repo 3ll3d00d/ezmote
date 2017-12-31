@@ -10,12 +10,12 @@ import {CMDSERVER_PORT} from "../../store/config/config";
 class Mode extends Component {
     componentDidMount = () => {
         if (this.props.config.valid && this.props.config[CMDSERVER_PORT]) {
-            this.props.dispatch(fetchCommands());
+            this.props.fetchCommands();
         }
     };
 
     sendCommand = (commandId) => {
-        this.props.dispatch(sendCommand(commandId));
+        this.props.sendCommand(commandId);
     };
 
     render() {
@@ -35,4 +35,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps)(Mode);
+export default connect(mapStateToProps, {fetchCommands, sendCommand})(Mode);

@@ -5,7 +5,7 @@ import Immutable from 'seamless-immutable';
 import * as zd from "../__data__";
 
 
-describe('store/zones/reducer', () => {
+describe('store/jriver/reducer', () => {
 
     it('should have initial state', () => {
         expect(reduce()).toEqual(initialState);
@@ -20,7 +20,7 @@ describe('store/zones/reducer', () => {
         it('should handle load of zones into initial state', () => {
             const basicZones = zd.zones(zd.zone(10001, 'Music'), zd.zone(10002, 'Films'));
             const action = {type: actionTypes.FETCH_ZONES, payload: basicZones.zones};
-            const expectedValue = Immutable(basicZones.zones);
+            const expectedValue = Immutable(basicZones);
             Reducer(reduce).expect(action).toReturnState(expectedValue);
         });
 
@@ -29,9 +29,9 @@ describe('store/zones/reducer', () => {
             const enrichedZones = zd.zones(zd.zone(10001, 'Music'), zd.enriched(zd.enrichedData, zd.zone(10002, 'Films')));
             const action = {type: actionTypes.FETCH_ZONES, payload: basicZones.zones};
             Reducer(reduce)
-                .withState(Immutable(enrichedZones.zones))
+                .withState(Immutable(enrichedZones))
                 .expect(action)
-                .toReturnState(Immutable(enrichedZones.zones));
+                .toReturnState(Immutable(enrichedZones));
         });
 
         it('should handle a deleted zone', () => {
@@ -39,9 +39,9 @@ describe('store/zones/reducer', () => {
             const deletedZones = zd.zones(zd.zone(10001, 'Music'));
             const action = {type: actionTypes.FETCH_ZONES, payload: deletedZones.zones};
             Reducer(reduce)
-                .withState(Immutable(basicZones.zones))
+                .withState(Immutable(basicZones))
                 .expect(action)
-                .toReturnState(Immutable(deletedZones.zones));
+                .toReturnState(Immutable(deletedZones));
 
         });
     });
@@ -61,9 +61,9 @@ describe('store/zones/reducer', () => {
                     imageURL: 'URL 1234'
                 }
             };
-            Reducer(reduce).withState(Immutable(basicZones.zones))
+            Reducer(reduce).withState(Immutable(basicZones))
                 .expect(action)
-                .toReturnState(Immutable(enrichedZones.zones));
+                .toReturnState(Immutable(enrichedZones));
         });
 
         it('should handle fresh zone info', () => {
@@ -86,7 +86,7 @@ describe('store/zones/reducer', () => {
                     }
                 }
             });
-            Reducer(reduce).withState(enrichedZones.zones).expect(action).toReturnState(updatedZone1.zones);
+            Reducer(reduce).withState(enrichedZones).expect(action).toReturnState(updatedZone1);
         });
 
         it('zone info with no name does not trash existing state', () => {
@@ -101,9 +101,9 @@ describe('store/zones/reducer', () => {
                     imageURL: 'URL 1234'
                 }
             };
-            Reducer(reduce).withState(Immutable(basicZones.zones))
+            Reducer(reduce).withState(Immutable(basicZones))
                 .expect(action)
-                .toReturnState(Immutable(enrichedZones.zones));
+                .toReturnState(Immutable(enrichedZones));
         });
     });
 
@@ -125,7 +125,7 @@ describe('store/zones/reducer', () => {
                     }
                 }
             });
-            Reducer(reduce).withState(enrichedZones.zones).expect(action).toReturnState(updatedZone1.zones);
+            Reducer(reduce).withState(enrichedZones).expect(action).toReturnState(updatedZone1);
         });
     });
 
@@ -146,7 +146,7 @@ describe('store/zones/reducer', () => {
                         }
                     }
                 });
-                Reducer(reduce).withState(enrichedZones.zones).expect(action).toReturnState(updatedZone1.zones);
+                Reducer(reduce).withState(enrichedZones).expect(action).toReturnState(updatedZone1);
             });
         }
 
@@ -156,17 +156,17 @@ describe('store/zones/reducer', () => {
 describe('store/zone/selectors', () => {
 
     it('should select no zones', () => {
-        Selector(getAllZones).expect({zones: initialState}).toReturn({});
+        Selector(getAllZones).expect({jriver: {zones: initialState}}).toReturn({zones: {}});
     });
 
     it('should select known zones', () => {
         const enrichedZones = zd.zones(zd.enriched(zd.enrichedData, zd.zone(10001, 'Music')), zd.zone(10002, 'Films'));
-        Selector(getAllZones).expect(enrichedZones).toReturn(enrichedZones.zones);
+        Selector(getAllZones).expect({jriver: enrichedZones}).toReturn(enrichedZones.zones);
     });
 
     it('should select the active zone', () => {
         const enrichedZones = zd.zones(zd.enriched(zd.enrichedData, zd.zone(10001, 'Music')), zd.withActive(zd.zone(10002, 'Films')));
-        Selector(getActiveZone).expect(enrichedZones).toReturn(enrichedZones.zones[10002]);
+        Selector(getActiveZone).expect({jriver: enrichedZones}).toReturn(enrichedZones.zones[10002]);
     });
 
 });

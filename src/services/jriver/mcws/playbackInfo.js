@@ -1,18 +1,56 @@
-import {findItemByName, safeGetNumber, safeGetText} from "./functions";
+import {safeGetNumber, safeGetText} from "./functions";
 
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
-        const volumeDisplay = safeGetText(json.Response.Item.find(findItemByName('VolumeDisplay')));
-        return {
-            id: safeGetText(json.Response.Item.find(findItemByName('ZoneID'))),
-            name: safeGetText(json.Response.Item.find(findItemByName('ZoneName'))),
-            volumeRatio: safeGetNumber(json.Response.Item.find(findItemByName('Volume'))),
-            muted: isMuted(volumeDisplay),
-            volumedb: extractVolumedB(volumeDisplay),
-            fileKey: safeGetText(json.Response.Item.find(findItemByName('FileKey'))),
-            imageURL: safeGetText(json.Response.Item.find(findItemByName('ImageURL'))),
-            status: safeGetText(json.Response.Item.find(findItemByName('Status')))
-        }
+        let val = {playingNow: {}};
+        json.Response.Item.forEach(item => {
+            switch (item._attributes.Name) {
+                case 'ZoneID':
+                    val.id = safeGetText(item);
+                    break;
+                case 'ZoneName':
+                    val.name = safeGetText(item);
+                    break;
+                case 'Volume':
+                    val.volumeRatio = safeGetNumber(item);
+                    break;
+                case 'VolumeDisplay':
+                    const txt = safeGetText(item);
+                    val.muted = isMuted(txt);
+                    val.volumedb = extractVolumedB(txt);
+                    break;
+                case 'Status':
+                    val.playingNow.status = safeGetText(item);
+                    break;
+                case 'FileKey':
+                    val.playingNow.fileKey = safeGetText(item);
+                    break;
+                case 'ImageURL':
+                    val.playingNow.imageURL = safeGetText(item);
+                    break;
+                case 'PositionMS':
+                    val.playingNow.positionMillis = safeGetNumber(item);
+                    break;
+                case 'DurationMS':
+                    val.playingNow.durationMillis = safeGetNumber(item);
+                    break;
+                case 'PlayingNowPositionDisplay':
+                    val.playingNow.positionDisplay = safeGetText(item);
+                    break;
+                case 'Artist':
+                    val.playingNow.artist = safeGetText(item);
+                    break;
+                case 'Album':
+                    val.playingNow.album = safeGetText(item);
+                    break;
+                case 'Name':
+                    val.playingNow.name = safeGetText(item);
+                    break;
+                default:
+                    // ignore
+            }
+        });
+        return val;
     } else {
         throw new Error(`Bad response ${JSON.stringify(json)}`)
     }

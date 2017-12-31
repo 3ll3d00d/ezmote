@@ -1,6 +1,7 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 import * as fields from './config';
+import {createSelector} from 'reselect';
 
 export const initialState = Immutable({
     [fields.MC_USE_SSL]: false,
@@ -56,6 +57,8 @@ const validatedConfig = config => {
 
 // selector functions
 export const getConfig = state => state.config;
+const jriverURL = config => `http${config[fields.MC_USE_SSL] ? 's' : ''}://${config[fields.MC_HOST]}:${config[fields.MC_PORT]}`;
+export const getJRiverURL = createSelector([getConfig], jriverURL);
 
 export default reduce;
 

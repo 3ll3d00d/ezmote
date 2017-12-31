@@ -1,5 +1,5 @@
 import React from 'react';
 
-const NoModesAvailable = () => 'No Modes Available bro';
+const NoModesAvailable = () => <div>No Modes Available bro</div>;
 
 export default NoModesAvailable;

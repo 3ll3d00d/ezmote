@@ -6,35 +6,35 @@ import Grid from "material-ui/Grid";
 import Chip from 'material-ui/Chip';
 import {FontIcon, Slider} from 'react-md';
 import {connect} from 'react-redux';
-import {getActiveZone} from "../../store/zones/reducer";
-import {fetchZones, setVolume, muteVolume, unmuteVolume} from "../../store/zones/actions";
+import {getActiveZone} from "../../store/jriver/reducer";
+import {fetchZones, setVolume, muteVolume, unmuteVolume} from "../../store/jriver/actions";
 import {getConfig} from "../../store/config/reducer";
 
 class Volume extends Component {
 
     componentDidMount = () => {
-        this.props.dispatch(fetchZones());
+        this.props.fetchZones();
     };
 
     componentWillReceiveProps = (nextProps) => {
         if (this.props.config.valid === false && nextProps.config.valid === true) {
             console.warn("Fetching zones on validate");
-            this.props.dispatch(fetchZones());
+            this.props.fetchZones();
         }
     };
 
     setVolume = zoneId => (value, event) => {
-        this.props.dispatch(setVolume(zoneId, value / 100));
+        this.props.setVolume(zoneId, value / 100);
     };
 
     slowSetVolume = zoneId => _.debounce(this.setVolume(zoneId), 50);
 
     muteVolume = zoneId => () => {
-        this.props.dispatch(muteVolume(zoneId));
+        this.props.muteVolume(zoneId);
     };
 
     unmuteVolume = zoneId => () => {
-        this.props.dispatch(unmuteVolume(zoneId));
+        this.props.unmuteVolume(zoneId);
     };
 
     makeMuteButton = (zoneId) => {
@@ -47,7 +47,7 @@ class Volume extends Component {
     };
 
     render() {
-        const {zone, dispatch} = this.props;
+        const {zone, fetchZones} = this.props;
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
@@ -58,10 +58,9 @@ class Volume extends Component {
                         </Grid>
                         <Grid item xs={9}>
                             <Slider id="volume-slider"
-                                    label="Volume"
                                     leftIcon={this.makeMuteButton(zone.id)}
                                     discrete
-                                    discreteTicks={5}
+                                    discreteTicks={10}
                                     onChange={this.slowSetVolume(zone.id)}
                                     value={currentVolume}/>
                         </Grid>
@@ -71,7 +70,7 @@ class Volume extends Component {
         } else {
             return (
                 <Paper>
-                    <Button raised onClick={() => dispatch(fetchZones())}>Load Zones</Button>
+                    <Button raised onClick={fetchZones}>Load Zones</Button>
                 </Paper>
             );
         }
@@ -84,4 +83,4 @@ const mapStateToProps = (state) => {
         config: getConfig(state)
     };
 };
-export default connect(mapStateToProps)(Volume);
+export default connect(mapStateToProps, {setVolume, muteVolume, unmuteVolume, fetchZones})(Volume);

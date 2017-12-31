@@ -1,9 +1,9 @@
-import zones from './zones/reducer';
+import jriver from './jriver/reducer';
 import config from './config/reducer';
 import commands from './commands/reducer';
 
 export {
-    zones,
+    jriver,
     config,
     commands
 };

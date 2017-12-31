@@ -10,7 +10,7 @@ import {InvalidConfigError} from "../../config/reducer";
 jest.mock('../../../services/jriver');
 jest.mock('../../../services/timer');
 
-describe('store/zones/actions', () => {
+describe('store/jriver/actions', () => {
 
     const goodConfig = {
         [configTypes.MC_USE_SSL]: false,
@@ -34,7 +34,7 @@ describe('store/zones/actions', () => {
         it('should get zones when nothing is active', async () => {
             jriver.invoke.mockReturnValueOnce(basicZones.zones);
             const dispatches = await Thunk(uut.fetchZones)
-                .withState({config: goodConfig, zones: {}})
+                .withState({config: goodConfig, jriver: {zones: {}}})
                 .execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -47,7 +47,7 @@ describe('store/zones/actions', () => {
         it('should start a poller when a zone goes active', async () => {
             jriver.invoke.mockReturnValueOnce(withActive1.zones);
             const dispatches = await Thunk(uut.fetchZones)
-                .withState({config: goodConfig, zones: {}})
+                .withState({config: goodConfig, jriver: {zones: {}}})
                 .execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -61,7 +61,7 @@ describe('store/zones/actions', () => {
             jriver.invoke.mockReturnValueOnce(basicZones.zones);
             poller.stopPolling.mockReturnValue(true);
             const dispatches = await Thunk(uut.fetchZones)
-                .withState({config: goodConfig, zones: withActive1.zones})
+                .withState({config: goodConfig, jriver: {zones: withActive1.zones}})
                 .execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -75,7 +75,7 @@ describe('store/zones/actions', () => {
             jriver.invoke.mockReturnValueOnce(withActive2.zones);
             poller.stopPolling.mockReturnValue(true);
             const dispatches = await Thunk(uut.fetchZones)
-                .withState({config: goodConfig, zones: withActive1.zones})
+                .withState({config: goodConfig, jriver: {zones: withActive1.zones}})
                 .execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -91,7 +91,7 @@ describe('store/zones/actions', () => {
         it('should get zone info', async () => {
             const enriched1 = zd.enriched(zd.enrichedData, zd.zone(10001, 'Music'));
             jriver.invoke.mockReturnValueOnce(enriched1);
-            const dispatches = await Thunk(uut.fetchZoneInfo).withState({config: goodConfig, zones: {}}).execute();
+            const dispatches = await Thunk(uut.fetchZoneInfo).withState({config: goodConfig, jriver: {zones: {}}}).execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
             expect(dispatches[0].getAction()).toEqual({
@@ -112,7 +112,7 @@ describe('store/zones/actions', () => {
             jriver.invoke.mockReturnValueOnce(0.15);
             const dispatches = await Thunk(() => uut.setVolume(10001)).withState({
                 config: goodConfig,
-                zones: enriched1
+                jriver: {jriver: {zones: enriched1}}
             }).execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -136,7 +136,7 @@ describe('store/zones/actions', () => {
             jriver.invoke.mockReturnValueOnce(true);
             const dispatches = await Thunk(() => uut.muteVolume(10001)).withState({
                 config: goodConfig,
-                zones: enriched1
+                jriver: {zones: enriched1}
             }).execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -154,7 +154,7 @@ describe('store/zones/actions', () => {
             jriver.invoke.mockReturnValueOnce(false);
             const dispatches = await Thunk(() => uut.unmuteVolume(10001)).withState({
                 config: goodConfig,
-                zones: enriched1
+                jriver: {zones: enriched1}
             }).execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
             expect(dispatches.length).toBe(1);
@@ -167,6 +167,38 @@ describe('store/zones/actions', () => {
             expect(poller.isPolling).not.toHaveBeenCalled();
         });
 
+    });
+
+    describe('alive', () => {
+        it('should report server state', async () => {
+            jriver.invoke.mockReturnValueOnce({serverName: 'hello', version: '23.0.92'});
+            const dispatches = await Thunk(uut.isAlive).withState({config: goodConfig, jriver: {}}).execute();
+            expect(jriver.invoke.mock.calls.length).toBe(1);
+            expect(dispatches.length).toBe(1);
+            expect(dispatches[0].getAction()).toEqual({
+                type: types.IS_ALIVE,
+                payload: {serverName: 'hello', version: '23.0.92'}
+            });
+            expect(poller.startPolling).not.toHaveBeenCalled();
+            expect(poller.stopPolling).not.toHaveBeenCalled();
+            expect(poller.isPolling).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('auth', () => {
+        it('should provide an auth token', async () => {
+            jriver.invoke.mockReturnValueOnce('abcdefg');
+            const dispatches = await Thunk(uut.authenticate).withState({config: goodConfig, jriver: {}}).execute();
+            expect(jriver.invoke.mock.calls.length).toBe(1);
+            expect(dispatches.length).toBe(1);
+            expect(dispatches[0].getAction()).toEqual({
+                type: types.AUTHENTICATE,
+                payload: 'abcdefg'
+            });
+            expect(poller.startPolling).not.toHaveBeenCalled();
+            expect(poller.stopPolling).not.toHaveBeenCalled();
+            expect(poller.isPolling).not.toHaveBeenCalled();
+        });
     });
 
     describe('generic failure handling', () => {
@@ -191,6 +223,14 @@ describe('store/zones/actions', () => {
             'fetch zone info': {
                 func: uut.fetchZoneInfo,
                 errorType: types.FETCH_ZONE_INFO_FAIL
+            },
+            'alive': {
+                func: uut.isAlive,
+                errorType: types.IS_ALIVE_FAIL
+            },
+            'auth': {
+                func: uut.authenticate,
+                errorType: types.AUTHENTICATE_FAIL
             }
         };
         Object.keys(tests).forEach(test => {
@@ -201,7 +241,7 @@ describe('store/zones/actions', () => {
                 });
                 const dispatches = await Thunk(tests[test].func).withState({
                     config: goodConfig,
-                    zones: enriched1
+                    jriver: {zones: enriched1}
                 }).execute();
                 expect(jriver.invoke.mock.calls.length).toBe(1);
                 expect(dispatches.length).toBe(1);
@@ -218,7 +258,7 @@ describe('store/zones/actions', () => {
             it(`${test} should fail when the config is bad`, async () => {
                 const dispatches = await Thunk(tests[test].func).withState({
                     config: {valid: false},
-                    zones: enriched1
+                    jriver: {zones: enriched1}
                 }).execute();
                 expect(jriver.invoke.mock.calls.length).toBe(0);
                 expect(dispatches.length).toBe(1);

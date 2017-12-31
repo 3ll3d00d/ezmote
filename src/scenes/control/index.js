@@ -1,8 +1,14 @@
 import React, {Component} from 'react';
-import Volume from "./volume";
+import Volume from "./Volume";
+import PlayingNow from "./PlayingNow";
 
 export default class Control extends Component {
     render() {
-        return <Volume/>;
+        return (
+            <div>
+                <Volume/>
+                <PlayingNow/>
+            </div>
+        );
     }
 }

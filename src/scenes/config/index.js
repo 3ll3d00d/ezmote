@@ -3,10 +3,15 @@ import PropTypes from 'prop-types';
 import {withStyles} from 'material-ui/styles';
 import Input from 'material-ui/Input';
 import {connect} from "react-redux";
-import * as configActions from '../../store/config/actions';
+import {updateValue} from "../../store/config/actions";
 import {getConfig} from "../../store/config/reducer";
 import * as configFields from "../../store/config/config";
-import {FormControl, FormControlLabel, IconButton, InputAdornment, InputLabel, Switch} from "material-ui";
+import FormControl from "material-ui/Form/FormControl";
+import FormControlLabel from "material-ui/Form/FormControlLabel";
+import IconButton from "material-ui/IconButton";
+import InputAdornment from "material-ui/Input/InputAdornment";
+import InputLabel from "material-ui/Input/InputLabel";
+import Switch from "material-ui/Switch";
 import {Visibility, VisibilityOff} from "material-ui-icons";
 
 const styles = (theme) => ({
@@ -35,11 +40,11 @@ class Config extends Component {
     };
 
     handleInput = (field) => (event) => {
-        this.props.dispatch(configActions.updateValue(field, event.target.value));
+        this.props.updateValue(field, event.target.value);
     };
 
     handleSwitch = (field) => (event, checked) => {
-        this.props.dispatch(configActions.updateValue(field, checked));
+        this.props.updateValue(field, checked);
     };
 
     handleMouseDownPassword = event => {
@@ -134,4 +139,4 @@ const mapStateToProps = (state) => {
     return {config: getConfig(state)};
 };
 
-export default connect(mapStateToProps)(withStyles(styles)(Config));
+export default connect(mapStateToProps, {updateValue})(withStyles(styles)(Config));

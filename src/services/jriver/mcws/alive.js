@@ -1,5 +1,14 @@
+import {findItemByName, safeGetText} from "./functions";
+
 const converter = (json) => {
-    return {};
+    if (json.Response._attributes.Status === 'OK' && json.Response.hasOwnProperty('Item')) {
+        return {
+            serverName: safeGetText(json.Response.Item.find(findItemByName('FriendlyName'))),
+            version: safeGetText(json.Response.Item.find(findItemByName('ProgramVersion'))),
+            pingTime: new Date().getTime()
+        };
+    }
+    throw new Error(`Bad response ${JSON.stringify(json)}`)
 };
 
 const endpoint = {

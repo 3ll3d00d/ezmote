@@ -13,11 +13,11 @@ class JRiverService {
      * Calls MCWS.
      * @returns {Promise<*>}
      */
-    invoke = async ({config, name, path, requiredParams, suppliedParams = {}, converter}) => {
-        const url = this._getUrl(config, path, requiredParams, suppliedParams);
+    invoke = async ({config, name, path, requiredParams, suppliedParams = {}, converter, token = undefined}) => {
+        const url = this._getUrl(config, token, path, requiredParams, suppliedParams);
         const response = await fetch(url, {
             method: 'GET',
-            headers: this._getAuthHeader(config[fields.MC_USERNAME], config[fields.MC_PASSWORD])
+            headers: this._getAuthHeader(token, config[fields.MC_USERNAME], config[fields.MC_PASSWORD])
         });
         if (!response.ok) {
             throw new Error(`JRiverService.${name} failed, HTTP status ${response.status}`);
@@ -39,24 +39,35 @@ class JRiverService {
         return false;
     };
 
-    _getUrl = (config, path, requiredParams, suppliedParams) => {
+    _getUrl = (config, token, path, requiredParams, suppliedParams) => {
         const root = `http${config[fields.MC_USE_SSL] ? 's' : ''}://${config[fields.MC_HOST]}:${config[fields.MC_PORT]}/${path}`;
         if (Object.keys(suppliedParams).length > 0) {
             if (this._validateParams(suppliedParams, requiredParams)) {
-                return `${root}?${this._getParams(suppliedParams)}`;
+                return this._withToken(token, `${root}?${this._getParams(suppliedParams)}`, true);
             } else {
                 // TODO format error to show the bad params
                 throw new Error(`Invalid params for target ${path} - ${suppliedParams}`)
             }
         } else {
-            return root;
+            return this._withToken(token, root, false);
         }
     };
 
-    _getAuthHeader = (username, password) => {
-        return {
-            Authorization: 'Basic ' + base64.encode(username + ":" + password)
-        };
+    _withToken = (token, url, hasParams) => {
+        if (token) {
+            return `${url}${hasParams ? '&' : '?'}Token=${token}`;
+        }
+        return url;
+    };
+
+    _getAuthHeader = (token, username, password) => {
+        if (token) {
+            return {};
+        } else {
+            return {
+                Authorization: 'Basic ' + base64.encode(username + ":" + password)
+            };
+        }
     };
 }
 

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-
 import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
@@ -10,6 +9,10 @@ import grey from 'material-ui/colors/grey';
 import blueGrey from 'material-ui/colors/blueGrey';
 import red from 'material-ui/colors/red';
 import Fullscreen from "react-full-screen";
+import {connect} from 'react-redux';
+import {isAlive, stopServerPoller} from "./store/jriver/actions";
+import {getConfig} from "./store/config/reducer";
+import {getServerName} from "./store/jriver/reducer";
 
 const theme = createMuiTheme({
     palette: {
@@ -24,6 +27,25 @@ class App extends Component {
     state = {
         selected: 'Control',
         fullscreen: false
+    };
+
+    componentDidMount = () => {
+        this.props.isAlive();
+    };
+
+    componentWillReceiveProps = (nextProps) => {
+        if (nextProps.config.valid && !this.props.config.valid) {
+            this.setState({selected: 'Control'});
+        } else if (!nextProps.config.valid) {
+            this.setState({selected: 'Settings'});
+        }
+    };
+
+    componentWillUnmount = () => {
+        const {serverName} = this.props;
+        if (serverName) {
+            stopServerPoller(serverName);
+        }
     };
 
     handleMenuSelect = (selected) => {
@@ -60,4 +82,10 @@ class App extends Component {
     }
 }
 
-export default App;
+const mapStateToProps = (state) => {
+    return {
+        config: getConfig(state),
+        serverName: getServerName(state)
+    };
+};
+export default connect(mapStateToProps, {isAlive})(App);
