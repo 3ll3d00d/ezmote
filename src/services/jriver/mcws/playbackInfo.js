@@ -19,8 +19,21 @@ const converter = (json) => {
                     val.muted = isMuted(txt);
                     val.volumedb = extractVolumedB(txt);
                     break;
-                case 'Status':
-                    val.playingNow.status = safeGetText(item);
+                case 'State':
+                    const state = safeGetNumber(item);
+                    switch (state) {
+                        case 0:
+                            val.playingNow.status = 'Stopped';
+                            break;
+                        case 1:
+                            val.playingNow.status = 'Paused';
+                            break;
+                        case 2:
+                            val.playingNow.status = 'Playing';
+                            break;
+                        default:
+                            val.playingNow.status = 'Unknown';
+                    }
                     break;
                 case 'FileKey':
                     val.playingNow.fileKey = safeGetText(item);

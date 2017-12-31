@@ -10,9 +10,10 @@ import PlayArrowIcon from 'material-ui-icons/PlayArrow';
 import PauseIcon from 'material-ui-icons/Pause';
 import StopIcon from 'material-ui-icons/Stop';
 import SkipNextIcon from 'material-ui-icons/SkipNext';
-import {getAuthToken, getPlayingNow} from "../../store/jriver/reducer";
+import {getActiveZone, getAuthToken, getPlayingNow} from "../../store/jriver/reducer";
 import {connect} from "react-redux";
 import {Slider} from 'react-md';
+import {playPause, stopPlaying, playNext, playPrevious, setPosition} from '../../store/jriver/actions';
 
 const styles = theme => ({
     card: {
@@ -49,7 +50,7 @@ const hhmmss = (millis) => {
 };
 
 const PlayingNow = (props) => {
-    const {classes, authToken, playingNow} = props;
+    const {classes, authToken, playingNow, playPause, stopPlaying, playNext, playPrevious, setPosition, zoneId} = props;
     return (
         <Card className={classes.card}>
             <Grid container>
@@ -69,9 +70,10 @@ const PlayingNow = (props) => {
                         <Slider id="position-slider"
                                 discrete
                                 min={0}
+                                disabled={playingNow.status === 'Stopped'}
                                 max={Math.round(playingNow.durationMillis / 1000)}
                                 value={Math.round(playingNow.positionMillis / 1000)}
-                                onChange={(value, event) => console.debug(value)}/>
+                                onChange={(value, event) => setPosition(zoneId, value*1000)}/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -91,20 +93,20 @@ const PlayingNow = (props) => {
             </CardContent>
             <div className={classes.controls}>
                 <IconButton aria-label="Previous">
-                    <SkipPreviousIcon className={classes.icon}/>
+                    <SkipPreviousIcon onClick={() => playPrevious(zoneId)} className={classes.icon}/>
                 </IconButton>
                 <IconButton aria-label="Play/pause">
                     {
                         (playingNow.status === 'Stopped' || playingNow.status === 'Paused')
-                            ? <PlayArrowIcon className={classes.icon}/>
-                            : <PauseIcon className={classes.icon}/>
+                            ? <PlayArrowIcon onClick={() => playPause(zoneId)} className={classes.icon}/>
+                            : <PauseIcon onClick={() => playPause(zoneId)} className={classes.icon}/>
                     }
                 </IconButton>
                 <IconButton aria-label="Stop">
-                    <StopIcon className={classes.icon}/>
+                    <StopIcon onClick={() => stopPlaying(zoneId)} className={classes.icon}/>
                 </IconButton>
                 <IconButton aria-label="Next">
-                    <SkipNextIcon className={classes.icon}/>
+                    <SkipNextIcon onClick={() => playNext(zoneId)} className={classes.icon}/>
                 </IconButton>
             </div>
         </Card>
@@ -119,7 +121,14 @@ PlayingNow.propTypes = {
 const mapStateToProps = (state) => {
     return {
         playingNow: getPlayingNow(state),
-        authToken: getAuthToken(state)
+        authToken: getAuthToken(state),
+        zoneId: getActiveZone(state).id
     };
 };
-export default connect(mapStateToProps)(withStyles(styles, {withTheme: true})(PlayingNow));
+export default connect(mapStateToProps, {
+    playPause,
+    stopPlaying,
+    playNext,
+    playPrevious,
+    setPosition
+})(withStyles(styles, {withTheme: true})(PlayingNow));

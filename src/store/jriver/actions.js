@@ -7,6 +7,44 @@ import {getActiveZone, getAuthToken} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
 
 /**
+ * Sets the position for the currently playing file.
+ * @param zoneId the zone id.
+ * @param position the position in millis.
+ * @returns {*}
+ */
+const setPosition = (zoneId, position) => {
+    return _invoke(types.SET_POSITION, types.SET_POSITION_FAIL, (config) => mcws.playbackPosition(config, zoneId, position));
+};
+
+/**
+ * sends play/pause for the currently active zone.
+ */
+const playPause = (zoneId) => {
+    return _invoke(types.PLAY_PAUSE, types.PLAY_PAUSE_FAIL, (config) => mcws.playbackPlayPause(config, zoneId));
+};
+
+/**
+ * sends stop for the currently active zone.
+ */
+const stopPlaying = (zoneId) => {
+    return _invoke(types.STOP, types.STOP_FAIL, (config) => mcws.playbackStop(config, zoneId));
+};
+
+/**
+ * sends next for the currently active zone.
+ */
+const playNext = (zoneId) => {
+    return _invoke(types.NEXT, types.NEXT_FAIL, (config) => mcws.playbackNext(config, zoneId));
+};
+
+/**
+ * sends previous for the currently active zone.
+ */
+const playPrevious = (zoneId) => {
+    return _invoke(types.PREVIOUS, types.PREVIOUS_FAIL, (config) => mcws.playbackPrevious(config, zoneId));
+};
+
+/**
  * tests if the server is alive.
  * @returns {*}
  */
@@ -171,4 +209,18 @@ const _invoke = (successAction, failureAction, getPayload, dispatcher = _dispatc
     };
 };
 
-export {fetchZones, fetchZoneInfo, setVolume, muteVolume, unmuteVolume, isAlive, authenticate, stopServerPoller};
+export {
+    fetchZones,
+    fetchZoneInfo,
+    setVolume,
+    muteVolume,
+    unmuteVolume,
+    isAlive,
+    authenticate,
+    stopServerPoller,
+    playPause,
+    stopPlaying,
+    playNext,
+    playPrevious,
+    setPosition
+};
