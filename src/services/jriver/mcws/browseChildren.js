@@ -1,5 +1,3 @@
-import {safeGetNumber, safeGetText} from "./functions";
-
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
         if (json.Response.hasOwnProperty('Item')) {

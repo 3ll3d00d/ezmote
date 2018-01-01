@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import _ from "lodash";
+import {withStyles} from 'material-ui/styles';
 import Paper from "material-ui/Paper";
 import Button from "material-ui/Button";
 import Grid from "material-ui/Grid";
@@ -9,6 +10,12 @@ import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
 import {fetchZones, setVolume, muteVolume, unmuteVolume} from "../../store/jriver/actions";
 import {getConfig} from "../../store/config/reducer";
+
+const styles = theme => ({
+    padded: {
+        marginBottom: '8px'
+    },
+});
 
 class Volume extends Component {
 
@@ -47,25 +54,23 @@ class Volume extends Component {
     };
 
     render() {
-        const {zone, fetchZones} = this.props;
+        const {zone, fetchZones, classes} = this.props;
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
-                <Paper>
-                    <Grid container justify={'space-around'} alignItems={'center'}>
-                        <Grid item xs={2}>
-                            <Chip label={zone.name}/>
-                        </Grid>
-                        <Grid item xs={9}>
-                            <Slider id="volume-slider"
-                                    leftIcon={this.makeMuteButton(zone.id)}
-                                    discrete
-                                    discreteTicks={10}
-                                    onChange={this.slowSetVolume(zone.id)}
-                                    value={currentVolume}/>
-                        </Grid>
+                <Grid className={classes.padded} container justify={'space-around'} alignItems={'center'}>
+                    <Grid item xs={2}>
+                        <Chip label={zone.name}/>
                     </Grid>
-                </Paper>
+                    <Grid item xs={9}>
+                        <Slider id="volume-slider"
+                                leftIcon={this.makeMuteButton(zone.id)}
+                                discrete
+                                discreteTicks={10}
+                                onChange={this.slowSetVolume(zone.id)}
+                                value={currentVolume}/>
+                    </Grid>
+                </Grid>
             );
         } else {
             return (
@@ -83,4 +88,9 @@ const mapStateToProps = (state) => {
         config: getConfig(state)
     };
 };
-export default connect(mapStateToProps, {setVolume, muteVolume, unmuteVolume, fetchZones})(Volume);
+export default connect(mapStateToProps, {
+    setVolume,
+    muteVolume,
+    unmuteVolume,
+    fetchZones
+})(withStyles(styles, {withTheme: true})(Volume));

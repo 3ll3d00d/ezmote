@@ -21,7 +21,7 @@ const fetchCommands = () => {
                 const byId = _.keyBy(commands, 'id');
                 dispatch({type: types.COMMANDS_FETCHED, payload: byId});
             } catch (error) {
-                dispatchError(dispatch, types.COMMANDS_FETCHED, error);
+                dispatchError(dispatch, types.COMMANDS_FETCHED_FAIL, error);
             }
         } else {
             dispatch({type: types.COMMANDS_FETCHED, error: true, payload: 'Invalid CMDServer Config'})
@@ -38,10 +38,10 @@ const sendCommand = (commandId) => {
                 const response = await cmdserver.sendCommand(config, commandId);
                 dispatch({type: types.SENT_COMMAND, payload: response});
             } catch (error) {
-                dispatchError(dispatch, types.SENT_COMMAND, error);
+                dispatchError(dispatch, types.SENT_COMMAND_FAIL, error);
             }
         } else {
-            dispatch({type: types.SENT_COMMAND, error: true, payload: 'Invalid CMDServer Config'})
+            dispatch({type: types.SENT_COMMAND_FAIL, error: true, payload: 'Invalid CMDServer Config'})
         }
     };
 };

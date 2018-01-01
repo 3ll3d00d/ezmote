@@ -13,7 +13,10 @@ import Select from 'material-ui/Select';
 import jriver from "../../services/jriver";
 import {getActiveZone, getAuthToken} from "../../store/jriver/reducer";
 import {getConfig, getJRiverURL} from "../../store/config/reducer";
-import {browseChildren as mcwsBrowseChildren} from '../../services/jriver/mcws';
+import {
+    browseChildren as mcwsBrowseChildren,
+    browseFiles as mcwsBrowseFiles
+} from '../../services/jriver/mcws';
 import {startPlayback} from "../../store/jriver/actions";
 import {connect} from 'react-redux';
 
@@ -49,11 +52,11 @@ const renderSuggestion = (rootURL, authToken) => (suggestion, {query, isHighligh
             <div>
                 {parts.map((part, index) => {
                     return part.highlight ? (
-                        <span key={String(index)} style={{fontWeight: 300}}>
+                        <span key={String(index)} style={{fontWeight: 300, fontSize: '0.875em'}}>
               {part.text}
             </span>
                     ) : (
-                        <strong key={String(index)} style={{fontWeight: 500}}>
+                        <strong key={String(index)} style={{fontWeight: 500, fontSize: '0.875em'}}>
                             {part.text}
                         </strong>
                     );
@@ -74,6 +77,11 @@ const renderSuggestionsContainer = ({containerProps, children}) => {
 const getSuggestionValue = suggestion => suggestion.name;
 
 const styles = theme => ({
+    searchBox: {
+        display: 'flex',
+        flex: 3,
+        flexDirection: 'row'
+    },
     container: {
         flexGrow: 1,
         position: 'relative'
@@ -95,7 +103,7 @@ const styles = theme => ({
         width: '100%'
     },
     formControl: {
-        flex: 1,
+        flexGrow: 1,
         paddingRight: '10px',
         paddingBottom: '4px'
     },
@@ -105,7 +113,6 @@ const styles = theme => ({
 });
 
 class JRiverSelector extends Component {
-
     state = {
         suggestionText: '',
         suggestions: [],
@@ -114,19 +121,17 @@ class JRiverSelector extends Component {
         selectedCategoryId: ''
     };
 
-    getChildren = async (nodeId) => {
-        const {config, authToken} = this.props;
-        if (config.valid === true) {
-            // TODO try-catch
-            const payload = mcwsBrowseChildren(config, nodeId);
-            const response = await jriver.invoke({authToken, ...payload});
-            return {parent: nodeId, children: response};
-        }
-        return [];
+    componentDidMount = async () => {
+        await this.loadCategories(this.props.categoryId);
     };
 
-    componentDidMount = async () => {
-        const {categoryId} = this.props;
+    componentWillReceiveProps = async (nextProps) => {
+        if (nextProps.categoryId !== this.props.categoryId) {
+            await this.loadCategories(nextProps.categoryId);
+        }
+    };
+
+    loadCategories = async (categoryId) => {
         const categories = await this.getChildren(categoryId);
         const childCategories = await Promise.all(categories.children.map(c => this.getChildren(c.id)));
         const selectedCategoryId = categories.children.length > 0 ? categories.children[0].id : '';
@@ -137,6 +142,19 @@ class JRiverSelector extends Component {
             selectedCategoryId,
             suggestions
         });
+    };
+
+    getChildren = async (nodeId) => {
+        const {config, authToken} = this.props;
+        if (config.valid === true) {
+            // TODO try-catch
+            let response = await jriver.invoke({authToken, ...mcwsBrowseChildren(config, nodeId)});
+            if (response.length === 0) {
+                response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId, 'MPL')});
+            }
+            return {parent: nodeId, children: response};
+        }
+        return {parent: nodeId, children: []};
     };
 
     filterSuggestions = (value) => {
@@ -199,7 +217,7 @@ class JRiverSelector extends Component {
         const {categories, selectedCategoryId, suggestions} = this.state;
         const children = categories.children ? categories.children : [];
         return (
-            <div style={{display: 'flex', flex: 3, flexDirection: 'row'}}>
+            <div className={classes.searchBox}>
                 <FormControl className={classes.formControl}>
                     <Select
                         value={this.state.selectedCategoryId}
@@ -253,5 +271,3 @@ const mapStateToProps = (state) => {
     };
 };
 export default connect(mapStateToProps, {startPlayback})(withStyles(styles)(JRiverSelector));
-
-// TODO add images to the dropdown - https://codepen.io/moroshko/pen/PZWbzK

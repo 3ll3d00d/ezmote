@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from 'material-ui/styles';
+import Chip from 'material-ui/Chip';
 import Card, {CardContent, CardMedia} from 'material-ui/Card';
 import Grid from "material-ui/Grid";
 import IconButton from 'material-ui/IconButton';
@@ -19,7 +20,8 @@ const styles = theme => ({
     card: {
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
+        background: theme.palette.background.default
     },
     content: {
         flex: '1 100%'
@@ -49,20 +51,20 @@ const hhmmss = (millis) => {
     return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
 };
 
-const PlayingNow = (props) => {
+const JRiverPlayingNow = (props) => {
     const {classes, authToken, playingNow, playPause, stopPlaying, playNext, playPrevious, setPosition, zoneId} = props;
     return (
-        <Card className={classes.card}>
+        <Card className={classes.card} elevation={0}>
             <Grid container>
                 <Grid container justify={'space-around'} alignItems={'center'}>
                     <Grid item>
-                        {hhmmss(playingNow.positionMillis)}
+                        <Chip label={hhmmss(playingNow.positionMillis)}/>
                     </Grid>
                     <Grid item>
-                        {playingNow.positionDisplay}
+                        <Chip label={playingNow.positionDisplay}/>
                     </Grid>
                     <Grid item>
-                        {hhmmss(playingNow.durationMillis - playingNow.positionMillis)}
+                        <Chip label={hhmmss(playingNow.durationMillis - playingNow.positionMillis)}/>
                     </Grid>
                 </Grid>
                 <Grid container justify={'center'}>
@@ -118,7 +120,7 @@ const PlayingNow = (props) => {
     );
 };
 
-PlayingNow.propTypes = {
+JRiverPlayingNow.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
@@ -136,4 +138,4 @@ export default connect(mapStateToProps, {
     playNext,
     playPrevious,
     setPosition
-})(withStyles(styles, {withTheme: true})(PlayingNow));
+})(withStyles(styles, {withTheme: true})(JRiverPlayingNow));
