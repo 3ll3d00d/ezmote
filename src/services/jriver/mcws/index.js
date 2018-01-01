@@ -1,3 +1,5 @@
+import browseChildren from './browseChildren';
+import browseFiles from './browseFiles';
 import playbackInfo from './playbackInfo';
 import playbackMute from './playbackMute';
 import playbackPlayPause from './playbackPlayPause';
@@ -13,6 +15,8 @@ import authenticate from './authenticate';
 export {
     alive,
     authenticate,
+    browseChildren,
+    browseFiles,
     playbackInfo,
     playbackMute,
     playbackNext,

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "autosuggest-highlight": "^3.1.1",
     "base-64": "^0.1.0",
     "lodash": "^4.17.4",
     "material-design-icons": "^3.0.1",
@@ -11,6 +12,7 @@
     "node-sass-chokidar": "^0.0.3",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
+    "react-autosuggest": "^9.3.2",
     "react-dom": "^16.2.0",
     "react-full-screen": "^0.2.2",
     "react-md": "^1.2.9",

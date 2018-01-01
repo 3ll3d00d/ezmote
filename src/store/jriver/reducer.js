@@ -25,6 +25,7 @@ const reduce = (state = initialState, action = {}) => {
                 return Immutable.merge(removedOld, {zones: action.payload}, {deep: true});
             }
         case types.FETCH_ZONE_INFO:
+            // TODO album/artist is not always present
             return Immutable.merge(state, {zones: {[action.payload.id]: action.payload}}, {deep: true});
         // volume
         case types.SET_VOLUME:
@@ -49,6 +50,8 @@ const reduce = (state = initialState, action = {}) => {
             return state;
         case types.SET_POSITION:
             return Immutable.setIn(state, ['zones', 'playingNow', 'positionMillis'], action.payload);
+        case types.START_PLAYBACK:
+            return state;
         // errors
         case types.FETCH_ZONES_FAIL:
         case types.FETCH_ZONE_INFO_FAIL:
@@ -62,6 +65,7 @@ const reduce = (state = initialState, action = {}) => {
         case types.NEXT_FAIL:
         case types.PREVIOUS_FAIL:
         case types.SET_POSITION_FAIL:
+        case types.START_PLAYBACK_FAIL:
             console.error(action.payload);
             return state;
         default:
@@ -83,11 +87,14 @@ const activeZone = zones => {
     return null;
 };
 const playingNow = (zone, rootURL) => {
-    const {playingNow} = zone;
-    if (playingNow.imageURL) {
-        return Immutable.set(playingNow, 'imageURL', `${rootURL}/${playingNow.imageURL}`);
+    if (zone) {
+        const {playingNow} = zone;
+        if (playingNow && playingNow.imageURL) {
+            return Immutable.set(playingNow, 'imageURL', `${rootURL}/${playingNow.imageURL}`);
+        }
+        return playingNow;
     }
-    return playingNow;
+    return null;
 };
 // selectors
 export const getAllZones = zones;

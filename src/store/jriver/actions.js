@@ -7,6 +7,15 @@ import {getActiveZone, getAuthToken} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
 
 /**
+ * Starts playback for files at the specified node.
+ * @param nodeId
+ * @returns {*}
+ */
+const startPlayback = (nodeId) => {
+    return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.browseFiles(config, nodeId));
+};
+
+/**
  * Sets the position for the currently playing file.
  * @param zoneId the zone id.
  * @param position the position in millis.
@@ -222,5 +231,6 @@ export {
     stopPlaying,
     playNext,
     playPrevious,
-    setPosition
+    setPosition,
+    startPlayback
 };

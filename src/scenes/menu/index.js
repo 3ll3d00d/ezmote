@@ -20,6 +20,7 @@ import ExitFullScreenIcon from 'material-ui-icons/FullscreenExit';
 import ListItem from "material-ui/List/ListItem";
 import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
+import Search from "../selector/JRiverSelector";
 
 const drawerWidth = 160;
 
@@ -192,6 +193,8 @@ class Menu extends Component {
                             <Typography type="title" color="inherit" noWrap className={classes.flex}>
                                 {selected}
                             </Typography>
+                            {/*TODO work out which search to use*/}
+                            <Search categoryId={1}/>
                             <IconButton
                                 aria-owns={open ? 'menu-appbar' : null}
                                 aria-haspopup="true"

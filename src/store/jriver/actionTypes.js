@@ -26,3 +26,5 @@ export const STOP = 'jriver.STOP';
 export const STOP_FAIL = 'jriver.STOP_FAIL';
 export const SET_POSITION = 'jriver.SET_POSITION';
 export const SET_POSITION_FAIL = 'jriver.SET_POSITION_FAIL';
+export const START_PLAYBACK = 'jriver.START_PLAYBACK';
+export const START_PLAYBACK_FAIL = 'jriver.START_PLAYBACK_FAIL';

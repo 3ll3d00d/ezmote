@@ -73,7 +73,7 @@ const PlayingNow = (props) => {
                                 disabled={playingNow.status === 'Stopped'}
                                 max={Math.round(playingNow.durationMillis / 1000)}
                                 value={Math.round(playingNow.positionMillis / 1000)}
-                                onChange={(value, event) => setPosition(zoneId, value*1000)}/>
+                                onChange={(value, event) => setPosition(zoneId, value * 1000)}/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -82,14 +82,19 @@ const PlayingNow = (props) => {
                     ?
                     <CardMedia className={classes.cover}
                                image={`${playingNow.imageURL}&Token=${authToken}`}
-                               title={`${playingNow.artist}/${playingNow.album}`}/>
+                               title={playingNow.artist ? `${playingNow.artist}/${playingNow.album}` : playingNow.name}/>
                     : null
             }
             <CardContent className={classes.content}>
                 <Typography type="headline">{playingNow.name}</Typography>
-                <Typography type="subheading" color="secondary">
-                    {playingNow.artist} / {playingNow.album}
-                </Typography>
+                {
+                    playingNow.artist
+                        ?
+                        <Typography type="subheading" color="secondary">
+                            {playingNow.artist} / {playingNow.album}
+                        </Typography>
+                        : null
+                }
             </CardContent>
             <div className={classes.controls}>
                 <IconButton aria-label="Previous">
