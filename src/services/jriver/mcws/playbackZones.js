@@ -27,7 +27,7 @@ const converter = (json) => {
             }
         });
         return Array.from(zones.values())
-            .map(z => Object.assign(z, {active: (activeZoneId && z.id === activeZoneId)}));
+                    .map(z => Object.assign(z, {active: (activeZoneId && z.id === activeZoneId)}));
     } else {
         throw new Error(`Bad response ${JSON.stringify(json)}`)
     }

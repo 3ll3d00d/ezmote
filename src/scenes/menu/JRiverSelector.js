@@ -15,7 +15,8 @@ import {getActiveZone, getAuthToken} from "../../store/jriver/reducer";
 import {getConfig, getJRiverURL} from "../../store/config/reducer";
 import {
     browseChildren as mcwsBrowseChildren,
-    browseFiles as mcwsBrowseFiles
+    browseFiles as mcwsBrowseFiles,
+    PLAY_TYPE_BROWSE
 } from '../../services/jriver/mcws';
 import {startPlayback} from "../../store/jriver/actions";
 import {connect} from 'react-redux';
@@ -42,12 +43,12 @@ const renderInput = (inputProps) => {
 const renderSuggestion = (rootURL, authToken) => (suggestion, {query, isHighlighted}) => {
     const matches = match(suggestion.name, query);
     const parts = parse(suggestion.name, matches);
+    const imgURL = suggestion.type === PLAY_TYPE_BROWSE
+        ? `${rootURL}/MCWS/v1/Browse/Image?Token=${authToken}&ID=${suggestion.id}&Format=png&Width=32&Height=32&Pad=1`
+        : `${rootURL}/MCWS/v1/File/GetImage?Token=${authToken}&File=${suggestion.id}&Format=png&Width=32&Height=32&Pad=1`;
     return (
         <MenuItem selected={isHighlighted} component="div">
-            <img alt={suggestion.name}
-                 src={`${rootURL}/MCWS/v1/Browse/Image?Token=${authToken}&ID=${suggestion.id}&Format=png&Width=32&Height=32&Pad=1`}
-                 width={32}
-                 height={32}/>
+            <img alt={suggestion.name} src={imgURL} width={32} height={32}/>
             &nbsp;&nbsp;
             <div>
                 {parts.map((part, index) => {
@@ -150,7 +151,7 @@ class JRiverSelector extends Component {
             // TODO try-catch
             let response = await jriver.invoke({authToken, ...mcwsBrowseChildren(config, nodeId)});
             if (response.length === 0) {
-                response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId, 'MPL')});
+                response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId)});
             }
             return {parent: nodeId, children: response};
         }
@@ -164,9 +165,7 @@ class JRiverSelector extends Component {
         const {selectedCategoryId, suggestionsByCategory} = this.state;
         const suggestions = this.getUnfilteredSuggestions(suggestionsByCategory, selectedCategoryId);
         if (inputLength === 0) {
-            return suggestions;
-        } else if (inputLength === '*') {
-            return suggestions;
+            return suggestions.slice(0, 8);
         } else {
             return suggestions.filter(suggestion => {
                 const keep =
@@ -209,7 +208,7 @@ class JRiverSelector extends Component {
     };
 
     handleSuggestionSelected = (event, { suggestion }) => {
-        this.props.startPlayback(suggestion.id);
+        this.props.startPlayback(suggestion.type, suggestion.id);
     };
 
     render() {

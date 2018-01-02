@@ -1,6 +1,9 @@
-const converter = (json) => {
+const converter = (zoneId) => (json) => {
     if (json.Response._attributes.Status === 'OK') {
-        return true;
+        return {
+            zoneId,
+            status: true
+        };
     }
     throw new Error(`Bad response ${JSON.stringify(json)}`)
 };
@@ -8,8 +11,7 @@ const converter = (json) => {
 const endpoint = {
     name: 'STOP',
     path: 'MCWS/v1/Playback/Stop',
-    requiredParams: ['Zone'],
-    converter
+    requiredParams: ['Zone']
 };
 
-export default (config, zoneId) => Object.assign({}, {suppliedParams: {Zone: zoneId}}, {config}, endpoint);
+export default (config, zoneId) => Object.assign({}, {suppliedParams: {Zone: zoneId}}, {config}, Object.assign(endpoint, {converter: converter(zoneId)}));

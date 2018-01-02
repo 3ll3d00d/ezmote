@@ -25,8 +25,13 @@ const reduce = (state = initialState, action = {}) => {
                 return Immutable.merge(removedOld, {zones: action.payload}, {deep: true});
             }
         case types.FETCH_ZONE_INFO:
-            // TODO album/artist is not always present
-            return Immutable.merge(state, {zones: {[action.payload.id]: action.payload}}, {deep: true});
+            // this is basically just removing artist/album if it's not present on the inbound payload
+            const zoneInfoProperties = Object.keys(action.payload);
+            let toMerge = state;
+            if (zoneInfoProperties.length > 0) {
+                toMerge = Immutable.updateIn(state, ['zones', action.payload.id], z => Immutable.without(z, (value, key) => zoneInfoProperties.indexOf(key) === -1));
+            }
+            return Immutable.merge(toMerge, {zones: {[action.payload.id]: action.payload}}, {deep: true});
         // volume
         case types.SET_VOLUME:
             return Immutable.setIn(state, ['zones', action.payload.zoneId, 'volumeRatio'], action.payload.volumeRatio);
@@ -41,9 +46,9 @@ const reduce = (state = initialState, action = {}) => {
             return Immutable.merge(state, action.payload, {deep: true});
         // playback
         case types.PLAY_PAUSE:
-            return Immutable.updateIn(state, ['zones', 'playingNow', 'status'], flipPlayingState);
+            return Immutable.updateIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], flipPlayingState);
         case types.STOP:
-            return Immutable.setIn(state, ['zones', 'playingNow', 'status'], 'Stopped');
+            return Immutable.setIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], 'Stopped');
         case types.NEXT:
             return state;
         case types.PREVIOUS:

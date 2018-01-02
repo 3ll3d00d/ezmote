@@ -5,14 +5,23 @@ import poller from '../../services/timer';
 import {getConfig, InvalidConfigError} from "../config/reducer";
 import {getActiveZone, getAuthToken} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
+import {PLAY_TYPE_BROWSE} from "../../services/jriver/mcws";
+import {PLAY_TYPE_FILE} from "../../services/jriver/mcws";
 
 /**
- * Starts playback for files at the specified node.
- * @param nodeId
+ * Starts playback for files at the specified browse node (if type is browse) or the file (if type is file).
+ * @param type the play type (browse or file)
+ * @param id the play key id.
  * @returns {*}
  */
-const startPlayback = (nodeId) => {
-    return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.browseFiles(config, nodeId));
+const startPlayback = (type, id) => {
+    if (type === PLAY_TYPE_BROWSE) {
+        return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.browseFiles(config, id));
+    } else if (type === PLAY_TYPE_FILE) {
+        return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.fileGetInfo(config, id));
+    } else {
+        throw new Error(`Unknown playback type ${type} for id ${id}`);
+    }
 };
 
 /**

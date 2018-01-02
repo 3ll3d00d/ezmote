@@ -1,8 +1,11 @@
+import {PLAY_TYPE_BROWSE} from "./index";
+
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
         if (json.Response.hasOwnProperty('Item')) {
             return json.Response.Item.map(item => {
                 return {
+                    type: PLAY_TYPE_BROWSE,
                     id: item._text,
                     name: item._attributes.Name
                 };

@@ -2,7 +2,7 @@ import {safeGetNumber, safeGetText} from "./functions";
 
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
-        let val = {playingNow: {}};
+        let val = {active: true, playingNow: {}};
         json.Response.Item.forEach(item => {
             switch (item._attributes.Name) {
                 case 'ZoneID':
@@ -78,7 +78,7 @@ const extractVolumedB = (text) => {
         if (text === 'Muted') {
             return -100;
         } else {
-            const pattern = /.*\((-[0-9]+\.[0-9]) dB\)/;
+            const pattern = /.*\(([-+][0-9]+\.[0-9]) dB\)/;
             const match = pattern.exec(text);
             if (match) {
                 return Number(match[1]);

@@ -1,5 +1,6 @@
 import browseChildren from './browseChildren';
-import browseFiles from './browseFiles';
+import {browseFiles, playBrowse} from './browseFiles';
+import fileGetInfo from './fileGetInfo';
 import playbackInfo from './playbackInfo';
 import playbackMute from './playbackMute';
 import playbackPlayPause from './playbackPlayPause';
@@ -17,6 +18,8 @@ export {
     authenticate,
     browseChildren,
     browseFiles,
+    fileGetInfo,
+    playBrowse,
     playbackInfo,
     playbackMute,
     playbackNext,
@@ -27,3 +30,6 @@ export {
     playbackPlayPause,
     playbackStop
 };
+
+export const PLAY_TYPE_FILE = 'file';
+export const PLAY_TYPE_BROWSE = 'browse';
