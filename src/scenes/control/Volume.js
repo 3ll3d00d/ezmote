@@ -3,8 +3,11 @@ import _ from "lodash";
 import {withStyles} from 'material-ui/styles';
 import Paper from "material-ui/Paper";
 import Button from "material-ui/Button";
+import IconButton from "material-ui/IconButton";
 import Grid from "material-ui/Grid";
 import Chip from 'material-ui/Chip';
+import ChevronLeft from 'material-ui-icons/ChevronLeft';
+import ChevronRight from 'material-ui-icons/ChevronRight';
 import {FontIcon, Slider} from 'react-md';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
@@ -28,6 +31,10 @@ class Volume extends Component {
             console.warn("Fetching zones on validate");
             this.props.fetchZones();
         }
+    };
+
+    tweakVolume = (zoneId, newVolume) => {
+        this.props.setVolume(zoneId, newVolume);
     };
 
     setVolume = zoneId => (value, event) => {
@@ -62,13 +69,25 @@ class Volume extends Component {
                     <Grid item xs={2}>
                         <Chip label={zone.name}/>
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid item xs={1}>
+                        <IconButton disabled={zone.volumeRatio === 0}
+                                    onClick={() => this.tweakVolume(zone.id, zone.volumeRatio - 0.01)}>
+                            <ChevronLeft/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={8}>
                         <Slider id="volume-slider"
                                 leftIcon={this.makeMuteButton(zone.id)}
                                 discrete
-                                discreteTicks={10}
+                                discreteTicks={20}
                                 onChange={this.slowSetVolume(zone.id)}
                                 value={currentVolume}/>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <IconButton disabled={zone.volumeRatio === 1}
+                                    onClick={() => this.tweakVolume(zone.id, zone.volumeRatio + 0.01)}>
+                            <ChevronRight/>
+                        </IconButton>
                     </Grid>
                 </Grid>
             );

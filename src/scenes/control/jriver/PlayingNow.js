@@ -11,10 +11,10 @@ import PlayArrowIcon from 'material-ui-icons/PlayArrow';
 import PauseIcon from 'material-ui-icons/Pause';
 import StopIcon from 'material-ui-icons/Stop';
 import SkipNextIcon from 'material-ui-icons/SkipNext';
-import {getActiveZone, getAuthToken, getPlayingNow} from "../../store/jriver/reducer";
+import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
 import {connect} from "react-redux";
 import {Slider} from 'react-md';
-import {playPause, stopPlaying, playNext, playPrevious, setPosition} from '../../store/jriver/actions';
+import {playPause, stopPlaying, playNext, playPrevious, setPosition} from '../../../store/jriver/actions';
 
 const styles = theme => ({
     card: {
@@ -39,6 +39,13 @@ const styles = theme => ({
         height: 38,
         width: 38,
     },
+    tabAware: {
+        marginTop: '1em'
+    },
+    paddedContainer: {
+        marginTop: '0em',
+        marginBottom: '0.5em'
+    }
 });
 
 const padZero = (val) => val < 10 ? `0${val}` : val;
@@ -51,12 +58,12 @@ const hhmmss = (millis) => {
     return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
 };
 
-const JRiverPlayingNow = (props) => {
+const PlayingNow = (props) => {
     const {classes, authToken, playingNow, playPause, stopPlaying, playNext, playPrevious, setPosition, zoneId} = props;
     return (
         <Card className={classes.card} elevation={0}>
-            <Grid container>
-                <Grid container justify={'space-around'} alignItems={'center'}>
+            <Grid container className={classes.tabAware}>
+                <Grid container justify={'space-around'} alignItems={'center'} className={classes.paddedContainer}>
                     <Grid item>
                         <Chip label={hhmmss(playingNow.positionMillis)}/>
                     </Grid>
@@ -67,8 +74,9 @@ const JRiverPlayingNow = (props) => {
                         <Chip label={hhmmss(playingNow.durationMillis - playingNow.positionMillis)}/>
                     </Grid>
                 </Grid>
-                <Grid container justify={'center'}>
+                <Grid container justify={'center'} className={classes.paddedContainer}>
                     <Grid item xs={10}>
+                        {/*TODO fix the disabled style */}
                         <Slider id="position-slider"
                                 discrete
                                 min={0}
@@ -120,7 +128,7 @@ const JRiverPlayingNow = (props) => {
     );
 };
 
-JRiverPlayingNow.propTypes = {
+PlayingNow.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
 };
@@ -138,4 +146,4 @@ export default connect(mapStateToProps, {
     playNext,
     playPrevious,
     setPosition
-})(withStyles(styles, {withTheme: true})(JRiverPlayingNow));
+})(withStyles(styles, {withTheme: true})(PlayingNow));

@@ -28,3 +28,6 @@ export const SET_POSITION = 'jriver.SET_POSITION';
 export const SET_POSITION_FAIL = 'jriver.SET_POSITION_FAIL';
 export const START_PLAYBACK = 'jriver.START_PLAYBACK';
 export const START_PLAYBACK_FAIL = 'jriver.START_PLAYBACK_FAIL';
+// control
+export const SEND_KEYPRESS = 'jriver.SEND_KEYPRESS';
+export const SEND_KEYPRESS_FAIL = 'jriver.SEND_KEYPRESS_FAIL';

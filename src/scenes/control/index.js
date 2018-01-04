@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Volume from "./Volume";
-import JRiverPlayingNow from "./JRiverPlayingNow";
+import JRiver from "./jriver";
 import {getActiveZone} from "../../store/jriver/reducer";
 import {connect} from "react-redux";
 
@@ -9,7 +9,7 @@ const Control = ({activeZone, selectedCommand}) => {
     return (
         <div>
             <Volume/>
-            { activeZone && selectedCommand && selectedCommand.nodeId ? <JRiverPlayingNow /> : null }
+            {activeZone && selectedCommand && selectedCommand.nodeId ? <JRiver/> : null}
         </div>
     );
 };

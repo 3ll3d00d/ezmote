@@ -9,6 +9,16 @@ import {PLAY_TYPE_BROWSE} from "../../services/jriver/mcws";
 import {PLAY_TYPE_FILE} from "../../services/jriver/mcws";
 
 /**
+ * Sends the given key press(es).
+ * @param keys the keys to press.
+ * @returns {*}
+ */
+const sendKeyPresses = (keys) => {
+    const keyPressArray = Array.isArray(keys) ? keys : [keys];
+    return _invoke(types.SEND_KEYPRESS, types.SEND_KEYPRESS_FAIL, (config) => mcws.controlKey(config, keyPressArray));
+};
+
+/**
  * Starts playback for files at the specified browse node (if type is browse) or the file (if type is file).
  * @param type the play type (browse or file)
  * @param id the play key id.
@@ -240,6 +250,7 @@ export {
     stopPlaying,
     playNext,
     playPrevious,
+    sendKeyPresses,
     setPosition,
     startPlayback
 };

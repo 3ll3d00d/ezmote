@@ -1,5 +1,6 @@
 import browseChildren from './browseChildren';
 import {browseFiles, playBrowse} from './browseFiles';
+import controlKey from './controlKey';
 import fileGetInfo from './fileGetInfo';
 import playbackInfo from './playbackInfo';
 import playbackMute from './playbackMute';
@@ -18,6 +19,7 @@ export {
     authenticate,
     browseChildren,
     browseFiles,
+    controlKey,
     fileGetInfo,
     playBrowse,
     playbackInfo,
