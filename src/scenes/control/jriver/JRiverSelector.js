@@ -10,15 +10,15 @@ import {withStyles} from 'material-ui/styles';
 import Input from 'material-ui/Input';
 import {FormControl} from 'material-ui/Form';
 import Select from 'material-ui/Select';
-import jriver from "../../services/jriver";
-import {getActiveZone, getAuthToken} from "../../store/jriver/reducer";
-import {getConfig, getJRiverURL} from "../../store/config/reducer";
+import jriver from "../../../services/jriver/index";
+import {getActiveZone, getAuthToken} from "../../../store/jriver/reducer";
+import {getConfig, getJRiverURL} from "../../../store/config/reducer";
 import {
     browseChildren as mcwsBrowseChildren,
     browseFiles as mcwsBrowseFiles,
     PLAY_TYPE_BROWSE
-} from '../../services/jriver/mcws';
-import {startPlayback} from "../../store/jriver/actions";
+} from '../../../services/jriver/mcws/index';
+import {startPlayback} from "../../../store/jriver/actions";
 import {connect} from 'react-redux';
 
 const renderInput = (inputProps) => {

@@ -27,7 +27,7 @@ const theme = createMuiTheme({
 
 class App extends Component {
     state = {
-        selected: 'Settings',
+        selected: 'virgin',
         fullscreen: false
     };
 

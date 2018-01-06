@@ -16,7 +16,7 @@ import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
 import ListItemAvatar from "material-ui/List/ListItemAvatar";
 import Avatar from "material-ui/Avatar/Avatar";
-import JRiverSelector from "./JRiverSelector";
+import JRiverSelector from "../control/jriver/JRiverSelector";
 
 const drawerWidth = 60;
 
