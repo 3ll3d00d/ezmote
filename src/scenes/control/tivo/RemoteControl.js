@@ -3,15 +3,12 @@ import Grid from "material-ui/Grid";
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import UpArrow from 'material-ui-icons/ArrowUpward';
-import KeyboardLeftArrow from 'material-ui-icons/KeyboardArrowLeft';
-import KeyboardRightArrow from 'material-ui-icons/KeyboardArrowRight';
-import FirstPage from 'material-ui-icons/FirstPage';
-import LastPage from 'material-ui-icons/LastPage';
 import DownArrow from 'material-ui-icons/ArrowDownward';
 import LeftArrow from 'material-ui-icons/ArrowBack';
 import RightArrow from 'material-ui-icons/ArrowForward';
 import Check from 'material-ui-icons/Check';
 import Send from 'material-ui-icons/Send';
+import Clear from 'material-ui-icons/Clear';
 import ThumbUp from 'material-ui-icons/ThumbUp';
 import ThumbDown from 'material-ui-icons/ThumbDown';
 import LiveTV from 'material-ui-icons/LiveTv';
@@ -20,28 +17,29 @@ import ExitToApp from 'material-ui-icons/ExitToApp';
 import ExpandLess from 'material-ui-icons/ExpandLess';
 import ExpandMore from 'material-ui-icons/ExpandMore';
 import InfoOutline from 'material-ui-icons/InfoOutline';
-import SkipPreviousIcon from 'material-ui-icons/SkipPrevious';
-import PlayArrowIcon from 'material-ui-icons/PlayArrow';
-import PauseIcon from 'material-ui-icons/Pause';
-import StopIcon from 'material-ui-icons/Stop';
-import SkipNextIcon from 'material-ui-icons/SkipNext';
+import SkipPrevious from 'material-ui-icons/SkipPrevious';
+import PlayArrow from 'material-ui-icons/PlayArrow';
+import Pause from 'material-ui-icons/Pause';
+import Stop from 'material-ui-icons/Stop';
+import SkipNext from 'material-ui-icons/SkipNext';
 import FastForward from 'material-ui-icons/FastForward';
 import FastRewind from 'material-ui-icons/FastRewind';
 import SlowMotionVideo from 'material-ui-icons/SlowMotionVideo';
 import VideoLibrary from 'material-ui-icons/VideoLibrary';
 import FeaturedPlaylist from 'material-ui-icons/FeaturedPlayList';
 import FormControl from "material-ui/Form/FormControl";
-import InputLabel from "material-ui/Input/InputLabel";
+import Tooltip from "material-ui/Tooltip/Tooltip";
 import Input from 'material-ui/Input';
 import {connect} from "react-redux";
 import {getConfig} from "../../../store/config/reducer";
 import {withStyles} from "material-ui/styles/index";
-import {sendKeyPresses} from '../../../store/jriver/actions';
+import {sendIRToTivo, sendTextToTivo} from '../../../store/commands/actions';
+import * as codes from './CommandCodes';
 import classNames from 'classnames';
 
 const styles = (theme) => ({
     input: {
-        margin: theme.spacing.unit
+        margin: theme.spacing.unit,
     },
     formControl: {
         margin: theme.spacing.unit,
@@ -106,29 +104,33 @@ class RemoteControl extends Component {
     };
 
     sendText = () => {
-        this.props.sendKeyPresses(this.state.text.split(''));
+        this.props.sendTextToTivo(this.state.text);
         this.setState({text: ''});
     };
 
     makeRCButton = ({key, text = null, CI = null, classes = this.props.classes.rcButton}) => {
         return (
-            <Button key={key} raised dense
-                    onClick={() => this.props.sendKeyPresses(key)}
-                    className={classes}>
-                {text}
-                {CI ? <CI/> : null}
-            </Button>
+            <Tooltip id={key} title={key}>
+                <Button key={key} raised dense
+                        onClick={() => this.props.sendIRToTivo(key)}
+                        className={classes}>
+                    {text}
+                    {CI ? <CI/> : null}
+                </Button>
+            </Tooltip>
         );
     };
 
     makePlayButton = ({key, text = null, CI = null, classes = this.props.classes.rcButton}) => {
         return (
-            <IconButton key={key}
-                        onClick={() => this.props.sendKeyPresses(key)}
-                        className={classes}>
-                {text}
-                {CI ? <CI className={this.props.classes.icon}/> : null}
-            </IconButton>
+            <Tooltip id={key} title={key}>
+                <IconButton key={key}
+                            onClick={() => this.props.sendIRToTivo(key)}
+                            className={classes}>
+                    {text}
+                    {CI ? <CI className={this.props.classes.icon}/> : null}
+                </IconButton>
+            </Tooltip>
         );
     };
 
@@ -156,61 +158,65 @@ class RemoteControl extends Component {
         return (
             <Grid container className={classNames(classes.padded, classes.bordered)}>
                 <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
-                    <Grid item sm={6}>
+                    <Grid item sm={5} md={3}>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
-                                {this.makeRCButton({key: 'TV', CI: LiveTV})}
+                                {this.makeRCButton({key: codes.LIVE_TV, CI: LiveTV})}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'Guide', CI: FeaturedPlaylist})}
+                                {this.makeRCButton({key: codes.GUIDE, CI: FeaturedPlaylist})}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'My Shows', CI: VideoLibrary})}
+                                {this.makeRCButton({key: codes.MY_SHOWS, CI: VideoLibrary})}
                             </Grid>
                         </Grid>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
-                                {this.makeRCButton({key: 'Info', CI: InfoOutline, classes: this.getRoundButtonClasses()})}
+                                {this.makeRCButton({
+                                    key: codes.INFO,
+                                    CI: InfoOutline,
+                                    classes: this.getRoundButtonClasses()
+                                })}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'Home', CI: Home})}
+                                {this.makeRCButton({key: codes.HOME, CI: Home})}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'Exit', CI: ExitToApp})}
+                                {this.makeRCButton({key: codes.BACK, CI: ExitToApp})}
                             </Grid>
                         </Grid>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Rewind',
+                                    key: codes.REWIND,
                                     CI: FastRewind,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Pause',
-                                    CI: PauseIcon,
+                                    key: codes.PAUSE,
+                                    CI: Pause,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Play',
-                                    CI: PlayArrowIcon,
+                                    key: codes.PLAY,
+                                    CI: PlayArrow,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Stop',
-                                    CI: StopIcon,
+                                    key: codes.STOP,
+                                    CI: Stop,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'FF',
+                                    key: codes.FF,
                                     CI: FastForward,
                                     classes: this.getPlayButtonClasses()
                                 })}
@@ -219,43 +225,54 @@ class RemoteControl extends Component {
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Replay',
-                                    CI: SkipPreviousIcon,
+                                    key: codes.REPLAY,
+                                    CI: SkipPrevious,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Slow',
+                                    key: codes.SLOW,
                                     CI: SlowMotionVideo,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                             <Grid item>
                                 {this.makePlayButton({
-                                    key: 'Advance',
-                                    CI: SkipNextIcon,
+                                    key: codes.ADVANCE,
+                                    CI: SkipNext,
                                     classes: this.getPlayButtonClasses()
                                 })}
                             </Grid>
                         </Grid>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
-                                {this.makeRCButton({key: 'Thumbs Down', CI: ThumbDown, classes: this.getThumbsClasses('red')})}
+                                {this.makeRCButton({
+                                    key: codes.THUMBS_DOWN,
+                                    CI: ThumbDown,
+                                    classes: this.getThumbsClasses('red')
+                                })}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'Record', text: 'R', classes: this.getThumbsClasses('red')})}
+                                {this.makeRCButton({
+                                    key: codes.RECORD,
+                                    text: 'R',
+                                    classes: this.getThumbsClasses('red')
+                                })}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'Thumbs Up', CI: ThumbUp, classes: this.getThumbsClasses('green')})}
+                                {this.makeRCButton({
+                                    key: codes.THUMBS_UP,
+                                    CI: ThumbUp,
+                                    classes: this.getThumbsClasses('green')
+                                })}
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item sm>
-                        <Grid container justify={'flex-start'} alignItems={'center'}>
-                            <Grid item sm>
+                    <Grid item sm={5} md={3}>
+                        <Grid container justify={'center'} alignItems={'center'}>
+                            <Grid item xs={6}>
                                 <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="textinput">Text</InputLabel>
                                     <Input value={this.state.text}
                                            id="textinput"
                                            label="Text Input"
@@ -266,33 +283,42 @@ class RemoteControl extends Component {
                                            onChange={this.handleInput}/>
                                 </FormControl>
                             </Grid>
-                            <Grid item sm={6}>
-                                <Button disabled={this.state.text.length === 0} dense>
+                            <Grid item>
+                                <Tooltip id={codes.CLEAR} title={codes.CLEAR}>
+                                    <Button dense className={classes.rcButton}>
+                                        <Clear onClick={() => this.props.sendIRToTivo(codes.CLEAR)}/>
+                                    </Button>
+                                </Tooltip>
+                            </Grid>
+                            <Grid item>
+                                <Button disabled={this.state.text.length === 0} dense className={classes.rcButton}>
                                     <Send onClick={this.sendText}/>
                                 </Button>
                             </Grid>
                         </Grid>
-                        <Grid container justify={'space-around'} alignItems={'center'}>
-                            <Grid item>
-                                <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'center'} alignItems={'center'}>
+                            <Grid item className={classes.smallPadded}>
+                                <Grid container justify={'space-around'} alignItems={'center'}
+                                      className={classes.smallPadded}>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'Up', CI: UpArrow})}
+                                        {this.makeRCButton({key: codes.UP, CI: UpArrow})}
                                     </Grid>
                                 </Grid>
                                 <Grid container justify={'space-around'} alignItems={'center'}>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'Left', CI: LeftArrow})}
+                                        {this.makeRCButton({key: codes.LEFT, CI: LeftArrow})}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'Enter', CI: Check})}
+                                        {this.makeRCButton({key: codes.RETURN, CI: Check})}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'Right', CI: RightArrow})}
+                                        {this.makeRCButton({key: codes.RIGHT, CI: RightArrow})}
                                     </Grid>
                                 </Grid>
-                                <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded}>
+                                <Grid container justify={'space-around'} alignItems={'center'}
+                                      className={classes.smallPadded}>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'Down', CI: DownArrow})}
+                                        {this.makeRCButton({key: codes.DOWN, CI: DownArrow})}
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -300,30 +326,42 @@ class RemoteControl extends Component {
                                 <Grid container direction={'column'} justify={'center'} align-items={'center'}
                                       className={classes.smallPadded}>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'CH+', CI: ExpandLess})}
+                                        {this.makeRCButton({key: codes.CHANNEL_UP, CI: ExpandLess})}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton({key: 'CH-', CI: ExpandMore})}
+                                        {this.makeRCButton({key: codes.CHANNEL_DOWN, CI: ExpandMore})}
                                     </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
-                                {this.makeRCButton({key: 'Red', text: 'R', classes: this.getActionButtonClasses('red')})}
-                            </Grid>
-                            <Grid item>
-                                {this.makeRCButton({key: 'Green', text: 'G', classes: this.getActionButtonClasses('green')})}
+                                {this.makeRCButton({
+                                    key: codes.RED,
+                                    text: 'R',
+                                    classes: this.getActionButtonClasses('red')
+                                })}
                             </Grid>
                             <Grid item>
                                 {this.makeRCButton({
-                                    key: 'Yellow',
+                                    key: codes.GREEN,
+                                    text: 'G',
+                                    classes: this.getActionButtonClasses('green')
+                                })}
+                            </Grid>
+                            <Grid item>
+                                {this.makeRCButton({
+                                    key: codes.YELLOW,
                                     text: 'Y',
                                     classes: this.getActionButtonClasses('yellow')
                                 })}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton({key: 'Blue', text: 'B', classes: this.getActionButtonClasses('blue')})}
+                                {this.makeRCButton({
+                                    key: codes.BLUE,
+                                    text: 'B',
+                                    classes: this.getActionButtonClasses('blue')
+                                })}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -338,4 +376,7 @@ const mapStateToProps = (state) => {
         config: getConfig(state)
     };
 };
-export default connect(mapStateToProps, {sendKeyPresses})(withStyles(styles, {withTheme: true})(RemoteControl));
+export default connect(mapStateToProps, {
+    sendIRToTivo,
+    sendTextToTivo
+})(withStyles(styles, {withTheme: true})(RemoteControl));

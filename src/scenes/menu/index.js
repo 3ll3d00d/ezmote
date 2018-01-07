@@ -16,7 +16,6 @@ import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
 import ListItemAvatar from "material-ui/List/ListItemAvatar";
 import Avatar from "material-ui/Avatar/Avatar";
-import JRiverSelector from "../control/jriver/JRiverSelector";
 
 const drawerWidth = 60;
 
@@ -75,7 +74,8 @@ const styles = rootHeight => theme => ({
     },
     title: {
         flex: 1,
-        paddingLeft: '12px'
+        paddingLeft: '0.5em',
+        paddingRight: '0.5em'
     },
     avatar: {
         font: 'inherit',
@@ -93,7 +93,7 @@ const styles = rootHeight => theme => ({
 
 class Menu extends Component {
     render() {
-        const {commands, searchNodeId, selectedTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
+        const {commands, selector, zoneName, selectedTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
         const drawer = (
             <Drawer type="permanent"
                     classes={{
@@ -118,7 +118,8 @@ class Menu extends Component {
                                           key={c.id}
                                           onClick={() => handler(c.id)}>
                                     <ListItemAvatar>
-                                        <Avatar alt={c.id} src={c.icon} className={classNames(classes.avatar, classes.icon)}/>
+                                        <Avatar alt={c.id} src={c.icon}
+                                                className={classNames(classes.avatar, classes.icon)}/>
                                     </ListItemAvatar>
                                     <ListItemText primary={c.id}/>
                                 </ListItem>
@@ -135,15 +136,13 @@ class Menu extends Component {
                 <div className={classes.appFrame}>
                     <AppBar className={classNames(classes.appBar)}>
                         <Toolbar disableGutters={true}>
-                            <Typography type="title" color="inherit" noWrap className={classes.title}>
-                                {selectedTitle}
+                            <Typography type="title" color="inherit" className={classes.title}>
+                                 {selectedTitle}
                             </Typography>
-                            {
-                                searchNodeId
-                                    ? <JRiverSelector categoryId={searchNodeId}/>
-                                    : null
-                            }
-
+                            <Typography type="subheading" color="inherit" className={classes.title}>
+                                ({zoneName})
+                            </Typography>
+                            {selector}
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup="true"
                                         onClick={toggleFullScreen}
@@ -170,7 +169,8 @@ Menu.propTypes = {
     fullscreen: PropTypes.bool.isRequired,
     toggleFullScreen: PropTypes.func.isRequired,
     commands: PropTypes.array.isRequired,
-    searchNodeId: PropTypes.number
+    selector: PropTypes.any,
+    zoneName: PropTypes.string,
 };
 
 // 100% works in fullscreen, window.innerHeight works otherwise

@@ -9,7 +9,7 @@ export const initialState = Immutable({
     [fields.MC_PORT]: 52199,
     [fields.MC_USERNAME]: '',
     [fields.MC_PASSWORD]: '',
-    [fields.CMDSERVER_PORT]: 53199
+    [fields.TIVO_NAME]: 'CBFB'
 });
 
 /**
@@ -59,6 +59,7 @@ const validatedConfig = config => {
 export const getConfig = state => state.config;
 const jriverURL = config => `http${config[fields.MC_USE_SSL] ? 's' : ''}://${config[fields.MC_HOST]}:${config[fields.MC_PORT]}`;
 export const getJRiverURL = createSelector([getConfig], jriverURL);
+export const getTivoName = createSelector([getConfig], config => config[fields.TIVO_NAME]);
 
 export default reduce;
 

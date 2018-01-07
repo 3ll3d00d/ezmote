@@ -3,6 +3,10 @@ import * as types from "./actionTypes";
 import cmdserver from '../../services/cmdserver';
 import {getConfig} from "../config/reducer";
 
+const TIVO_KEYBOARD_COMMAND = 'keyboard';
+const TIVO_IR_COMMAND = 'ir';
+const TIVO_SETCH_COMMAND = 'setch';
+
 const dispatchError = (dispatch, type, error) => {
     dispatch({type: type, error: true, payload: `${error.name} - ${error.message}`});
 };
@@ -29,6 +33,11 @@ const fetchCommands = () => {
     };
 };
 
+/**
+ * Sends the command.
+ * @param commandId
+ * @returns {function(*=, *)}
+ */
 const sendCommand = (commandId) => {
     return async (dispatch, getState) => {
         const state = getState();
@@ -36,14 +45,49 @@ const sendCommand = (commandId) => {
         if (config.valid) {
             try {
                 const response = await cmdserver.sendCommand(config, commandId);
-                dispatch({type: types.SENT_COMMAND, payload: response});
+                dispatch({type: types.SEND_COMMAND, payload: response});
             } catch (error) {
-                dispatchError(dispatch, types.SENT_COMMAND_FAIL, error);
+                dispatchError(dispatch, types.SEND_COMMAND_FAIL, error);
             }
         } else {
-            dispatch({type: types.SENT_COMMAND_FAIL, error: true, payload: 'Invalid CMDServer Config'})
+            dispatch({type: types.SEND_COMMAND_FAIL, error: true, payload: 'Invalid CMDServer Config'})
         }
     };
 };
 
-export {fetchCommands, sendCommand};
+const sendTivoKey = (type, key) => {
+    return async (dispatch, getState) => {
+        const state = getState();
+        const config = getConfig(state);
+        if (config.valid) {
+            try {
+                const response = await cmdserver.sendTivoCommand(config, type, key);
+                dispatch({type: types.SEND_TIVO_KEY, payload: response});
+            } catch (error) {
+                dispatchError(dispatch, types.SEND_TIVO_KEY_FAIL, error);
+            }
+        } else {
+            dispatch({type: types.SEND_TIVO_KEY_FAIL, error: true, payload: 'Invalid CMDServer Config'})
+        }
+    };
+};
+
+/**
+ * Sends a text string to the tivo.
+ * @param text the text.
+ */
+const sendTextToTivo = (text) => sendTivoKey(TIVO_KEYBOARD_COMMAND, text);
+
+/**
+ * Sends an IR command to the tivo.
+ * @param command the ir command.
+ */
+const sendIRToTivo = (command) => sendTivoKey(TIVO_IR_COMMAND, command);
+
+/**
+ * Sets the TiVo channel.
+ * @param channelNumber the channel number.
+ */
+const setTivoChannel = (channelNumber) => sendTivoKey(TIVO_SETCH_COMMAND, channelNumber);
+
+export {fetchCommands, sendCommand, sendTextToTivo, sendIRToTivo, setTivoChannel};

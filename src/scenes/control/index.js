@@ -16,6 +16,8 @@ const Control = ({activeZone, selectedCommand}) => {
             case 'jriver':
                 Controller = JRiver;
                 break;
+            default:
+                Controller = null;
         }
     }
     return (

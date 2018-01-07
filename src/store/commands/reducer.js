@@ -20,10 +20,13 @@ const reduce = (state = initialState, action = {}) => {
                 const removedOld = Immutable.without(state, (value, key) => incomingKeys.indexOf(key) === -1);
                 return Immutable.merge(removedOld, action.payload, {deep: true});
             }
-        case types.SENT_COMMAND:
+        case types.SEND_COMMAND:
+            return state;
+        case types.SEND_TIVO_KEY:
             return state;
         case types.COMMANDS_FETCHED_FAIL:
-        case types.SENT_COMMAND_FAIL:
+        case types.SEND_COMMAND_FAIL:
+        case types.SEND_TIVO_KEY_FAIL:
             console.error(action.payload);
             return state;
         default:

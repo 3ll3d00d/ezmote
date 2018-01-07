@@ -5,13 +5,14 @@ import Paper from "material-ui/Paper";
 import Button from "material-ui/Button";
 import IconButton from "material-ui/IconButton";
 import Grid from "material-ui/Grid";
-import Chip from 'material-ui/Chip';
 import ChevronLeft from 'material-ui-icons/ChevronLeft';
 import ChevronRight from 'material-ui-icons/ChevronRight';
-import {FontIcon, Slider} from 'react-md';
+import VolumeOff from 'material-ui-icons/VolumeOff';
+import VolumeUp from 'material-ui-icons/VolumeUp';
+import {Slider} from 'react-md';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
-import {fetchZones, setVolume, muteVolume, unmuteVolume} from "../../store/jriver/actions";
+import {fetchZones, muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";
 import {getConfig} from "../../store/config/reducer";
 
 const styles = theme => ({
@@ -54,9 +55,9 @@ class Volume extends Component {
     makeMuteButton = (zoneId) => {
         const {zone} = this.props;
         if (!zone.muted) {
-            return <FontIcon onClick={this.muteVolume(zoneId)}>volume_up</FontIcon>;
+            return <IconButton onClick={this.muteVolume(zoneId)}><VolumeOff/></IconButton>;
         } else {
-            return <FontIcon onClick={this.unmuteVolume(zoneId)}>volume_off</FontIcon>;
+            return <IconButton onClick={this.unmuteVolume(zoneId)}><VolumeUp/></IconButton>;
         }
     };
 
@@ -65,25 +66,24 @@ class Volume extends Component {
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
-                <Grid className={classes.padded} container justify={'space-around'} alignItems={'center'}>
+                <Grid className={classes.padded} container justify={'space-around'} alignItems={'center'} spacing={8}>
                     <Grid item xs={2}>
-                        <Chip label={zone.name}/>
+                        {this.makeMuteButton(zone.id)}
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={2}>
                         <IconButton disabled={zone.volumeRatio === 0}
                                     onClick={() => this.tweakVolume(zone.id, zone.volumeRatio - 0.01)}>
                             <ChevronLeft/>
                         </IconButton>
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={6}>
                         <Slider id="volume-slider"
-                                leftIcon={this.makeMuteButton(zone.id)}
                                 discrete
                                 discreteTicks={20}
                                 onChange={this.slowSetVolume(zone.id)}
                                 value={currentVolume}/>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={2}>
                         <IconButton disabled={zone.volumeRatio === 1}
                                     onClick={() => this.tweakVolume(zone.id, zone.volumeRatio + 0.01)}>
                             <ChevronRight/>

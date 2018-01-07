@@ -42,5 +42,6 @@
     "redux-devtools": "^3.4.1",
     "redux-devtools-extension": "^2.13.2",
     "redux-testkit": "^1.0.6"
-  }
+  },
+  "proxy": "http://localhost:53199"
 }

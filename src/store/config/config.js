@@ -3,4 +3,4 @@ export const MC_HOST = 'mchost';
 export const MC_PORT = 'mcport';
 export const MC_USERNAME = 'mcusername';
 export const MC_PASSWORD = 'mcpassword';
-export const CMDSERVER_PORT = 'cmdport';
+export const TIVO_NAME = 'tivoname';

@@ -11,10 +11,11 @@ import Fullscreen from "react-full-screen";
 import {connect} from 'react-redux';
 import {isAlive, stopServerPoller} from "./store/jriver/actions";
 import {getConfig} from "./store/config/reducer";
-import {getServerName} from "./store/jriver/reducer";
+import {getActiveZone, getServerName} from "./store/jriver/reducer";
 import {getOrderedCommands} from "./store/commands/reducer";
 import {fetchCommands, sendCommand} from "./store/commands/actions";
-import {CMDSERVER_PORT} from "./store/config/config";
+import TivoChannelSelector from "./scenes/control/tivo/TivoChannelSelector";
+import JRiverSelector from "./scenes/control/jriver/JRiverSelector";
 
 const theme = createMuiTheme({
     palette: {
@@ -31,18 +32,12 @@ class App extends Component {
         fullscreen: false
     };
 
-    // TODO cmdserver will be the webserver for this app so this isn't really required
     componentDidMount = () => {
         this.props.isAlive();
-        if (this.props.config.valid && this.props.config[CMDSERVER_PORT]) {
-            this.props.fetchCommands();
-        }
+        this.props.fetchCommands();
     };
 
     componentWillReceiveProps = (nextProps) => {
-        if (nextProps.config.valid && nextProps.config[CMDSERVER_PORT] && Object.keys(nextProps.commands).length === 0) {
-            this.props.fetchCommands();
-        }
         if (!nextProps.config.valid) {
             this.setState({selected: 'Settings'});
         }
@@ -69,10 +64,20 @@ class App extends Component {
         });
     };
 
+    getSelector = (selectedCommand) => {
+        if (selectedCommand && selectedCommand.hasOwnProperty('control')) {
+            if (selectedCommand.control === 'jriver') {
+                return <JRiverSelector categoryId={selectedCommand.nodeId}/>;
+            } else if (selectedCommand.control === 'tivo') {
+                return <TivoChannelSelector/>;
+            }
+        }
+        return null;
+    };
+
     render() {
-        const {commands} = this.props;
+        const {zone, commands} = this.props;
         const selectedCommand = commands.find(c => c.id === this.state.selected);
-        const searchNodeId = selectedCommand && selectedCommand.hasOwnProperty('nodeId') ? selectedCommand.nodeId : null;
         const {selected, fullscreen} = this.state;
         const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
         return (
@@ -80,7 +85,8 @@ class App extends Component {
                 <MuiThemeProvider theme={theme}>
                     <MenuComponent handler={this.handleMenuSelect}
                                    selectedTitle={selectedCommand ? selectedCommand.title : selected}
-                                   searchNodeId={searchNodeId}
+                                   selector={this.getSelector(selectedCommand)}
+                                   zoneName={zone.name}
                                    commands={commands}
                                    fullscreen={fullscreen}
                                    toggleFullScreen={this.toggleFullScreen}>
@@ -103,7 +109,8 @@ const mapStateToProps = (state) => {
     return {
         config: getConfig(state),
         serverName: getServerName(state),
-        commands: getOrderedCommands(state)
+        commands: getOrderedCommands(state),
+        zone: getActiveZone(state),
     };
 };
 export default connect(mapStateToProps, {isAlive, fetchCommands, sendCommand})(App);

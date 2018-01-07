@@ -119,16 +119,15 @@ class Config extends Component {
                            }/>
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="cmdport">Port (cmdserver)</InputLabel>
-                    <Input value={config[configFields.CMDSERVER_PORT]}
-                           id="cmdport"
-                           label="CMD Server Port"
-                           type="number"
+                    <InputLabel htmlFor="tivoname">Tivo Name</InputLabel>
+                    <Input value={config[configFields.TIVO_NAME]}
+                           id="tivoname"
+                           label="TiVo Network Name"
                            className={classes.input}
                            inputProps={{
                                'aria-label': 'Description',
                            }}
-                           onChange={this.handleInput(configFields.CMDSERVER_PORT)}/>
+                           onChange={this.handleInput(configFields.TIVO_NAME)}/>
                 </FormControl>
             </div>
         );
