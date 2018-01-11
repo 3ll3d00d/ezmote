@@ -39,8 +39,10 @@ class JRiverService {
         return false;
     };
 
+    getServerURL = config => `http${config[fields.MC_USE_SSL] ? 's' : ''}://${config[fields.MC_HOST]}:${config[fields.MC_PORT]}`;
+
     _getUrl = (config, token, path, requiredParams, suppliedParams) => {
-        const root = `http${config[fields.MC_USE_SSL] ? 's' : ''}://${config[fields.MC_HOST]}:${config[fields.MC_PORT]}/${path}`;
+        const root = `${this.getServerURL(config)}/${path}`;
         if (Object.keys(suppliedParams).length > 0) {
             if (this._validateParams(suppliedParams, requiredParams)) {
                 return this._withToken(token, `${root}?${this._getParams(suppliedParams)}`, true);

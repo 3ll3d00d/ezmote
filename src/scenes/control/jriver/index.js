@@ -2,8 +2,14 @@ import React, {Component} from 'react';
 import Tabs, {Tab} from 'material-ui/Tabs';
 import PlayingNow from "./PlayingNow";
 import RemoteControl from "./RemoteControl";
+import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
+import {
+    playNext, playPause, playPrevious, sendKeyPresses, setPosition,
+    stopPlaying
+} from "../../../store/jriver/actions";
+import {connect} from "react-redux";
 
-export default class JRiver extends Component {
+class JRiver extends Component {
     state = {
         value: 0
     };
@@ -13,6 +19,7 @@ export default class JRiver extends Component {
     };
 
     render() {
+        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition} = this.props;
         return (
             <div>
                 <Tabs fullWidth
@@ -23,9 +30,31 @@ export default class JRiver extends Component {
                     <Tab label="Playing Now"/>
                     <Tab label="Remote Control"/>
                 </Tabs>
-                {this.state.value === 0 && <PlayingNow/>}
-                {this.state.value === 1 && <RemoteControl/>}
+                {
+                    this.state.value === 0
+                    && <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
+                                   playingNow={playingNow}
+                                   authToken={authToken}
+                                   zoneId={activeZone.id}/>
+                }
+                {this.state.value === 1 && <RemoteControl controls={{sendKeyPresses}}/>}
             </div>
         );
     }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        playingNow: getPlayingNow(state),
+        authToken: getAuthToken(state),
+        activeZone: getActiveZone(state)
+    };
 };
+export default connect(mapStateToProps, {
+    playPause,
+    stopPlaying,
+    playNext,
+    playPrevious,
+    setPosition,
+    sendKeyPresses
+})(JRiver);

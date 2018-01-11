@@ -87,7 +87,7 @@ const styles = theme => ({
         listStyleType: 'none',
     },
     textField: {
-        width: '50%'
+        width: '100%'
     },
     formControl: {
         flexGrow: 1,

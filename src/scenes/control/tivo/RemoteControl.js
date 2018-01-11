@@ -8,7 +8,7 @@ import LeftArrow from 'material-ui-icons/ArrowBack';
 import RightArrow from 'material-ui-icons/ArrowForward';
 import Check from 'material-ui-icons/Check';
 import Send from 'material-ui-icons/Send';
-import Clear from 'material-ui-icons/Clear';
+import Delete from 'material-ui-icons/Delete';
 import ThumbUp from 'material-ui-icons/ThumbUp';
 import ThumbDown from 'material-ui-icons/ThumbDown';
 import LiveTV from 'material-ui-icons/LiveTv';
@@ -286,7 +286,7 @@ class RemoteControl extends Component {
                             <Grid item>
                                 <Tooltip id={codes.CLEAR} title={codes.CLEAR}>
                                     <Button dense className={classes.rcButton}>
-                                        <Clear onClick={() => this.props.sendIRToTivo(codes.CLEAR)}/>
+                                        <Delete onClick={() => this.props.sendIRToTivo(codes.CLEAR)}/>
                                     </Button>
                                 </Tooltip>
                             </Grid>

@@ -11,10 +11,7 @@ import PlayArrowIcon from 'material-ui-icons/PlayArrow';
 import PauseIcon from 'material-ui-icons/Pause';
 import StopIcon from 'material-ui-icons/Stop';
 import SkipNextIcon from 'material-ui-icons/SkipNext';
-import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
-import {connect} from "react-redux";
 import {Slider} from 'react-md';
-import {playPause, stopPlaying, playNext, playPrevious, setPosition} from '../../../store/jriver/actions';
 
 const styles = theme => ({
     card: {
@@ -58,8 +55,8 @@ const hhmmss = (millis) => {
     return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
 };
 
-const PlayingNow = (props) => {
-    const {classes, authToken, playingNow, playPause, stopPlaying, playNext, playPrevious, setPosition, zoneId} = props;
+const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
+    const {playPause, stopPlaying, playNext, playPrevious, setPosition} = controls;
     return (
         <Card className={classes.card} elevation={0}>
             <Grid container className={classes.tabAware}>
@@ -131,19 +128,9 @@ const PlayingNow = (props) => {
 PlayingNow.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
+    controls: PropTypes.object.isRequired,
+    playingNow: PropTypes.object.isRequired,
+    zoneId: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = (state) => {
-    return {
-        playingNow: getPlayingNow(state),
-        authToken: getAuthToken(state),
-        zoneId: getActiveZone(state).id
-    };
-};
-export default connect(mapStateToProps, {
-    playPause,
-    stopPlaying,
-    playNext,
-    playPrevious,
-    setPosition
-})(withStyles(styles, {withTheme: true})(PlayingNow));
+export default withStyles(styles, {withTheme: true})(PlayingNow);

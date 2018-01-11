@@ -1,12 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import RemoteControl from "./RemoteControl";
 
-export default class Tivo extends Component {
-    render() {
-        return (
-            <div>
-                <RemoteControl/>
-            </div>
-        );
-    }
-};
+const Tivo = () => <RemoteControl/>;
+
+export default Tivo;

@@ -3,7 +3,7 @@ import Immutable from 'seamless-immutable';
 import {createSelector} from "reselect";
 import {getJRiverURL} from "../config/reducer";
 
-export const initialState = Immutable({zones: Immutable({})});
+export const initialState = Immutable({zones: Immutable({}), errors: Immutable({})});
 
 const flipPlayingState = (status) => status === 'Playing' ? 'Paused' : 'Playing';
 
@@ -19,11 +19,12 @@ const reduce = (state = initialState, action = {}) => {
         case types.FETCH_ZONES:
             const incomingKeys = Object.keys(action.payload);
             if (incomingKeys.length === 0) {
-                return Immutable.setIn(state, {zones: Immutable({})});
+                state = Immutable.setIn(state, {zones: Immutable({})});
             } else {
                 const removedOld = Immutable.update(state, 'zones', z => Immutable.without(z, (value, key) => incomingKeys.indexOf(key) === -1));
-                return Immutable.merge(removedOld, {zones: action.payload}, {deep: true});
+                state = Immutable.merge(removedOld, {zones: action.payload}, {deep: true});
             }
+            break;
         case types.FETCH_ZONE_INFO:
             // this is basically just removing artist/album if it's not present on the inbound payload
             const zoneInfoProperties = Object.keys(action.payload);
@@ -31,39 +32,51 @@ const reduce = (state = initialState, action = {}) => {
             if (zoneInfoProperties.length > 0) {
                 toMerge = Immutable.updateIn(state, ['zones', action.payload.id], z => Immutable.without(z, (value, key) => zoneInfoProperties.indexOf(key) === -1));
             }
-            return Immutable.merge(toMerge, {zones: {[action.payload.id]: action.payload}}, {deep: true});
+            state = Immutable.merge(toMerge, {zones: {[action.payload.id]: action.payload}}, {deep: true});
+            break;
         // volume
         case types.SET_VOLUME:
-            return Immutable.setIn(state, ['zones', action.payload.zoneId, 'volumeRatio'], action.payload.volumeRatio);
+            state = Immutable.setIn(state, ['zones', action.payload.zoneId, 'volumeRatio'], action.payload.volumeRatio);
+            break;
         case types.MUTE_VOLUME:
-            return Immutable.setIn(state, ['zones', action.payload.zoneId, 'muted'], action.payload.muted);
+            state = Immutable.setIn(state, ['zones', action.payload.zoneId, 'muted'], action.payload.muted);
+            break;
         case types.UNMUTE_VOLUME:
-            return Immutable.setIn(state, ['zones', action.payload.zoneId, 'muted'], action.payload.muted);
+            state = Immutable.setIn(state, ['zones', action.payload.zoneId, 'muted'], action.payload.muted);
+            break;
         // health
         case types.IS_ALIVE:
-            return Immutable.merge(state, action.payload, {deep: true});
+            state = Immutable.set(Immutable.merge(state, action.payload, {deep: true}), 'errors', Immutable({}));
+            break;
         case types.AUTHENTICATE:
-            return Immutable.merge(state, action.payload, {deep: true});
+            state = Immutable.merge(state, action.payload, {deep: true});
+            break;
         // playback
         case types.PLAY_PAUSE:
-            return Immutable.updateIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], flipPlayingState);
+            state = Immutable.updateIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], flipPlayingState);
+            break;
         case types.STOP:
-            return Immutable.setIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], 'Stopped');
+            state = Immutable.setIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], 'Stopped');
+            break;
         case types.NEXT:
-            return state;
+            break;
         case types.PREVIOUS:
-            return state;
+            break;
         case types.SET_POSITION:
-            return Immutable.setIn(state, ['zones', 'playingNow', 'positionMillis'], action.payload);
+            state = Immutable.setIn(state, ['zones', 'playingNow', 'positionMillis'], action.payload);
+            break;
         case types.START_PLAYBACK:
-            return state;
+            break;
         // errors
+        case types.IS_ALIVE_FAIL:
+            // remove playing now so we don't show anything as actually playing but leave other information in place
+            state = storeError(action, stripToken(Immutable.set(state, 'zones', stripPlayingNow(state))));
+            break;
         case types.FETCH_ZONES_FAIL:
         case types.FETCH_ZONE_INFO_FAIL:
         case types.SET_VOLUME_FAIL:
         case types.MUTE_VOLUME_FAIL:
         case types.UNMUTE_VOLUME_FAIL:
-        case types.IS_ALIVE_FAIL:
         case types.AUTHENTICATE_FAIL:
         case types.PLAY_PAUSE_FAIL:
         case types.STOP_FAIL:
@@ -71,14 +84,34 @@ const reduce = (state = initialState, action = {}) => {
         case types.PREVIOUS_FAIL:
         case types.SET_POSITION_FAIL:
         case types.START_PLAYBACK_FAIL:
-            console.error(action.payload);
-            return state;
+            state = storeError(action, state);
+            break;
         default:
-            return state;
+            break;
     }
+    return discardOldErrors(state);
 };
 
+const stripToken = state => Immutable.without(state, 'token');
+const stripPlayingNow = ({zones}) => {
+    const retVal = Object.keys(zones).map(z => Immutable.without(zones[z], 'playingNow'));
+    return retVal;
+};
+
+const storeError = (action, state) => Immutable.merge(state, {errors: makeError(action)}, {deep: true});
+const makeError = ({payload, type}) => {
+    return {
+        [new Date().getTime()]: {
+            error: payload.message,
+            type
+        }
+    };
+};
+const isOldError = (time) => (value, key) => (time - key) > 15000;
+const discardOldErrors = (state) => Immutable.update(state, 'errors', e => Immutable.without(e, isOldError(new Date().getTime())));
+
 // selector functions
+const errors = state => state.jriver.errors;
 const zones = state => state.jriver.zones;
 const authToken = state => state.jriver.token;
 const serverName = state => state.jriver.serverName;
@@ -101,7 +134,11 @@ const playingNow = (zone, rootURL) => {
     }
     return null;
 };
+const findIsAliveError = errors => Object.keys(errors).map(e => errors[e].type).some(t => t === types.IS_ALIVE_FAIL);
+
 // selectors
+export const getErrors = errors;
+export const isJRiverDead = createSelector([errors], findIsAliveError);
 export const getAllZones = zones;
 export const getActiveZone = createSelector([zones], activeZone);
 export const getServerName = serverName;

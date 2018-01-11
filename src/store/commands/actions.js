@@ -2,6 +2,7 @@ import _ from 'lodash';
 import * as types from "./actionTypes";
 import cmdserver from '../../services/cmdserver';
 import {getConfig} from "../config/reducer";
+import * as fields from "../config/config";
 
 const TIVO_KEYBOARD_COMMAND = 'keyboard';
 const TIVO_IR_COMMAND = 'ir';
@@ -17,18 +18,12 @@ const dispatchError = (dispatch, type, error) => {
  */
 const fetchCommands = () => {
     return async (dispatch, getState) => {
-        const state = getState();
-        const config = getConfig(state);
-        if (config.valid) {
-            try {
-                const commands = await cmdserver.getCommands(config);
-                const byId = _.keyBy(commands, 'id');
-                dispatch({type: types.COMMANDS_FETCHED, payload: byId});
-            } catch (error) {
-                dispatchError(dispatch, types.COMMANDS_FETCHED_FAIL, error);
-            }
-        } else {
-            dispatch({type: types.COMMANDS_FETCHED, error: true, payload: 'Invalid CMDServer Config'})
+        try {
+            const commands = await cmdserver.getCommands();
+            const byId = _.keyBy(commands, 'id');
+            dispatch({type: types.COMMANDS_FETCHED, payload: byId});
+        } catch (error) {
+            dispatchError(dispatch, types.COMMANDS_FETCHED_FAIL, error);
         }
     };
 };
@@ -40,17 +35,11 @@ const fetchCommands = () => {
  */
 const sendCommand = (commandId) => {
     return async (dispatch, getState) => {
-        const state = getState();
-        const config = getConfig(state);
-        if (config.valid) {
-            try {
-                const response = await cmdserver.sendCommand(config, commandId);
-                dispatch({type: types.SEND_COMMAND, payload: response});
-            } catch (error) {
-                dispatchError(dispatch, types.SEND_COMMAND_FAIL, error);
-            }
-        } else {
-            dispatch({type: types.SEND_COMMAND_FAIL, error: true, payload: 'Invalid CMDServer Config'})
+        try {
+            const response = await cmdserver.sendCommand(commandId);
+            dispatch({type: types.SEND_COMMAND, payload: response});
+        } catch (error) {
+            dispatchError(dispatch, types.SEND_COMMAND_FAIL, error);
         }
     };
 };
@@ -59,9 +48,9 @@ const sendTivoKey = (type, key) => {
     return async (dispatch, getState) => {
         const state = getState();
         const config = getConfig(state);
-        if (config.valid) {
+        if (config[fields.TIVO_NAME]) {
             try {
-                const response = await cmdserver.sendTivoCommand(config, type, key);
+                const response = await cmdserver.sendTivoCommand(config[fields.TIVO_NAME], type, key);
                 dispatch({type: types.SEND_TIVO_KEY, payload: response});
             } catch (error) {
                 dispatchError(dispatch, types.SEND_TIVO_KEY_FAIL, error);

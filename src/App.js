@@ -11,11 +11,12 @@ import Fullscreen from "react-full-screen";
 import {connect} from 'react-redux';
 import {isAlive, stopServerPoller} from "./store/jriver/actions";
 import {getConfig} from "./store/config/reducer";
-import {getActiveZone, getServerName} from "./store/jriver/reducer";
+import {getActiveZone, getErrors, getServerName, isJRiverDead} from "./store/jriver/reducer";
 import {getOrderedCommands} from "./store/commands/reducer";
 import {fetchCommands, sendCommand} from "./store/commands/actions";
 import TivoChannelSelector from "./scenes/control/tivo/TivoChannelSelector";
 import JRiverSelector from "./scenes/control/jriver/JRiverSelector";
+import Errors from "./scenes/errors";
 
 const theme = createMuiTheme({
     palette: {
@@ -76,7 +77,7 @@ class App extends Component {
     };
 
     render() {
-        const {zone, commands} = this.props;
+        const {commands, errors, jriverIsDead} = this.props;
         const selectedCommand = commands.find(c => c.id === this.state.selected);
         const {selected, fullscreen} = this.state;
         const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
@@ -86,7 +87,6 @@ class App extends Component {
                     <MenuComponent handler={this.handleMenuSelect}
                                    selectedTitle={selectedCommand ? selectedCommand.title : selected}
                                    selector={this.getSelector(selectedCommand)}
-                                   zoneName={zone.name}
                                    commands={commands}
                                    fullscreen={fullscreen}
                                    toggleFullScreen={this.toggleFullScreen}>
@@ -94,8 +94,13 @@ class App extends Component {
                             <Grid item xs={12}>
                                 {'Settings' === selected
                                     ? <Config/>
-                                    : <Control selectedCommand={selectedCommand}/>
+                                    : <Control selectedCommand={selectedCommand} jriverIsDead={jriverIsDead}/>
                                 }
+                            </Grid>
+                        </Grid>
+                        <Grid container>
+                            <Grid item>
+                                <Errors errors={errors}/>
                             </Grid>
                         </Grid>
                     </MenuComponent>
@@ -111,6 +116,8 @@ const mapStateToProps = (state) => {
         serverName: getServerName(state),
         commands: getOrderedCommands(state),
         zone: getActiveZone(state),
+        errors: getErrors(state),
+        jriverIsDead: isJRiverDead(state)
     };
 };
 export default connect(mapStateToProps, {isAlive, fetchCommands, sendCommand})(App);

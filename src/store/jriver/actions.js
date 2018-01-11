@@ -79,8 +79,25 @@ const playPrevious = (zoneId) => {
 const isAlive = () => {
     return _invoke(types.IS_ALIVE, types.IS_ALIVE_FAIL, (config) => mcws.alive(config), (successAction, response, state, dispatch) => {
         _dispatchResponseDirectly(successAction, response, state, dispatch);
+        const serverURL = jriver.getServerURL(getConfig(state));
+        let wasFailed = false;
+        if (poller.isPolling(p => p.id === serverURL)) {
+            console.info(`Stop polling for ${serverURL} after recovery`);
+            poller.stopPolling(p => p.id === serverURL);
+            wasFailed = true;
+        }
         if (_startServerPollerIfNecessary(response.serverName, dispatch)) {
             dispatch(authenticate());
+        }
+        if (wasFailed) {
+            dispatch(fetchZones())
+        }
+    }, (dispatch, config, type, error) => {
+        _dispatchError(dispatch, config, type, error);
+        const serverURL = jriver.getServerURL(config);
+        if (!poller.isPolling(p => p.id === serverURL)) {
+            console.info(`Start polling for ${serverURL}`);
+            poller.startPolling(serverURL, () => dispatch(isAlive()), 2000);
         }
     });
 };
@@ -182,9 +199,7 @@ const _ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
     }
 };
 
-const _dispatchError = (dispatch, type, error) => {
-    dispatch({type: type, error: true, payload: error});
-};
+const _dispatchError = (dispatch, config, type, error) => dispatch({type: type, error: true, payload: error});
 
 const _matchById = (targetZone) => z => z.id === targetZone.id;
 
@@ -219,7 +234,7 @@ const _dispatchResponseDirectly = (successAction, response, state, dispatch) => 
     dispatch(Object.assign({type: successAction}, {payload: response}));
 };
 
-const _invoke = (successAction, failureAction, getPayload, dispatcher = _dispatchResponseDirectly) => {
+const _invoke = (successAction, failureAction, getPayload, dispatcher = _dispatchResponseDirectly, errorDispatcher = _dispatchError) => {
     return async (dispatch, getState) => {
         const state = getState();
         const config = getConfig(state);
@@ -229,7 +244,7 @@ const _invoke = (successAction, failureAction, getPayload, dispatcher = _dispatc
             try {
                 dispatcher(successAction, await jriver.invoke({token, ...payload}), state, dispatch)
             } catch (error) {
-                _dispatchError(dispatch, failureAction, error);
+                errorDispatcher(dispatch, config, failureAction, error);
             }
         } else {
             dispatch({type: failureAction, error: true, payload: new InvalidConfigError(config)})

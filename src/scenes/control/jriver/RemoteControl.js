@@ -14,11 +14,9 @@ import Send from 'material-ui-icons/Send';
 import FormControl from "material-ui/Form/FormControl";
 import InputLabel from "material-ui/Input/InputLabel";
 import Input from 'material-ui/Input';
-import {connect} from "react-redux";
-import {getConfig} from "../../../store/config/reducer";
 import {withStyles} from "material-ui/styles/index";
-import {sendKeyPresses} from '../../../store/jriver/actions';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
 
 const styles = (theme) => ({
     input: {
@@ -43,6 +41,10 @@ const styles = (theme) => ({
 });
 
 class RemoteControl extends Component {
+    static propTypes = {
+        controls: PropTypes.object.isRequired
+    };
+
     state = {
         text: ''
     };
@@ -52,14 +54,14 @@ class RemoteControl extends Component {
     };
 
     sendText = () => {
-        this.props.sendKeyPresses(this.state.text.split(''));
+        this.props.controls.sendKeyPresses(this.state.text.split(''));
         this.setState({text: ''});
     };
 
     makeRCButton = (key, CI) => {
         return (
             <Button key={key} raised dense
-                    onClick={() => this.props.sendKeyPresses(key)}
+                    onClick={() => this.props.controls.sendKeyPresses(key)}
                     className={this.props.classes.rcButton}>
                 <CI/>
             </Button>
@@ -68,6 +70,7 @@ class RemoteControl extends Component {
 
     render() {
         const {classes} = this.props;
+
         return (
             <Grid container className={classNames(classes.padded, classes.bordered)}>
                 <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
@@ -134,9 +137,4 @@ class RemoteControl extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        config: getConfig(state)
-    };
-};
-export default connect(mapStateToProps, {sendKeyPresses})(withStyles(styles, {withTheme: true})(RemoteControl));
+export default withStyles(styles, {withTheme: true})(RemoteControl);

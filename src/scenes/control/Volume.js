@@ -54,10 +54,10 @@ class Volume extends Component {
 
     makeMuteButton = (zoneId) => {
         const {zone} = this.props;
-        if (!zone.muted) {
-            return <IconButton onClick={this.muteVolume(zoneId)}><VolumeOff/></IconButton>;
-        } else {
+        if (zone.muted) {
             return <IconButton onClick={this.unmuteVolume(zoneId)}><VolumeUp/></IconButton>;
+        } else {
+            return <IconButton onClick={this.muteVolume(zoneId)}><VolumeOff/></IconButton>;
         }
     };
 

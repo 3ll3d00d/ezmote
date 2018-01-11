@@ -93,7 +93,7 @@ const styles = rootHeight => theme => ({
 
 class Menu extends Component {
     render() {
-        const {commands, selector, zoneName, selectedTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
+        const {commands, selector, selectedTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
         const drawer = (
             <Drawer type="permanent"
                     classes={{
@@ -139,9 +139,6 @@ class Menu extends Component {
                             <Typography type="title" color="inherit" className={classes.title}>
                                  {selectedTitle}
                             </Typography>
-                            <Typography type="subheading" color="inherit" className={classes.title}>
-                                ({zoneName})
-                            </Typography>
                             {selector}
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup="true"
@@ -170,7 +167,6 @@ Menu.propTypes = {
     toggleFullScreen: PropTypes.func.isRequired,
     commands: PropTypes.array.isRequired,
     selector: PropTypes.any,
-    zoneName: PropTypes.string,
 };
 
 // 100% works in fullscreen, window.innerHeight works otherwise
