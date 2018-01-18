@@ -8,7 +8,7 @@ import Paper from 'material-ui/Paper';
 import {MenuItem} from 'material-ui/Menu';
 import {withStyles} from 'material-ui/styles';
 import {getConfig} from "../../../store/config/reducer";
-import {setTivoChannel} from "../../../store/commands/actions";
+import {setTivoChannel} from "../../../store/tivos/actions";
 import channels from "./ChannelList";
 import {connect} from 'react-redux';
 

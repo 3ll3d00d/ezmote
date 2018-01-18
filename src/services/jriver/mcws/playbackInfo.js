@@ -1,8 +1,12 @@
 import {safeGetNumber, safeGetText} from "./functions";
 
+export const STOPPED = 'Stopped';
+export const PLAYING = 'Playing';
+
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
         let val = {active: true, playingNow: {}};
+        let hasName = false;
         json.Response.Item.forEach(item => {
             switch (item._attributes.Name) {
                 case 'ZoneID':
@@ -23,13 +27,13 @@ const converter = (json) => {
                     const state = safeGetNumber(item);
                     switch (state) {
                         case 0:
-                            val.playingNow.status = 'Stopped';
+                            val.playingNow.status = STOPPED;
                             break;
                         case 1:
                             val.playingNow.status = 'Paused';
                             break;
                         case 2:
-                            val.playingNow.status = 'Playing';
+                            val.playingNow.status = PLAYING;
                             break;
                         default:
                             val.playingNow.status = 'Unknown';
@@ -58,11 +62,16 @@ const converter = (json) => {
                     break;
                 case 'Name':
                     val.playingNow.name = safeGetText(item);
+                    val.playingNow.externalSource = val.playingNow.name && val.playingNow.name === 'Ipc';
+                    hasName = true;
                     break;
                 default:
                     // ignore
             }
         });
+        if (!hasName) {
+            val.playingNow.externalSource = false;
+        }
         return val;
     } else {
         throw new Error(`Bad response ${JSON.stringify(json)}`)
@@ -77,6 +86,8 @@ const extractVolumedB = (text) => {
     if (text) {
         if (text === 'Muted') {
             return -100;
+        } else if (text === '100%') {
+            return 0;
         } else {
             const pattern = /.*\(([-+][0-9]+\.[0-9]) dB\)/;
             const match = pattern.exec(text);

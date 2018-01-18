@@ -33,9 +33,11 @@ import Input from 'material-ui/Input';
 import {connect} from "react-redux";
 import {getConfig} from "../../../store/config/reducer";
 import {withStyles} from "material-ui/styles/index";
-import {sendIRToTivo, sendTextToTivo} from '../../../store/commands/actions';
+import {sendIRToTivo, sendTextToTivo} from '../../../store/tivos/actions';
 import * as codes from './CommandCodes';
 import classNames from 'classnames';
+import {getCurrentChannel} from "../../../store/tivos/reducer";
+import {FormHelperText} from "material-ui/Form";
 
 const styles = (theme) => ({
     input: {
@@ -154,9 +156,20 @@ class RemoteControl extends Component {
     };
 
     render() {
-        const {classes} = this.props;
+        const {classes, currentChannel} = this.props;
         return (
             <Grid container className={classNames(classes.padded, classes.bordered)}>
+                {currentChannel
+                    ?
+                    <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid item>
+                            <FormControl className={classes.formControl} disabled>
+                                <Input id="current-channel" value={currentChannel}/>
+                                <FormHelperText>Now Playing</FormHelperText>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    : null}
                 <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                     <Grid item sm={5} md={3}>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
@@ -373,7 +386,8 @@ class RemoteControl extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        config: getConfig(state)
+        config: getConfig(state),
+        currentChannel: getCurrentChannel(state)
     };
 };
 export default connect(mapStateToProps, {

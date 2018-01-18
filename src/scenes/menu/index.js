@@ -16,8 +16,9 @@ import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
 import ListItemAvatar from "material-ui/List/ListItemAvatar";
 import Avatar from "material-ui/Avatar/Avatar";
+import {SETTINGS} from "../../App";
 
-const drawerWidth = 60;
+const drawerWidth = 64;
 
 const styles = rootHeight => theme => ({
     root: {
@@ -43,10 +44,15 @@ const styles = rootHeight => theme => ({
         marginLeft: 12,
         marginRight: 20,
     },
-    drawerPaperClose: {
+    selected: {
+        borderLeft: '3px solid',
+        borderRadius: '20px',
+        color: theme.palette.secondary.light
+    },
+    drawerPaper: {
         position: 'relative',
         height: '100%',
-        width: 60,
+        width: drawerWidth,
         overflowX: 'hidden',
     },
     drawerInner: {
@@ -92,39 +98,45 @@ const styles = rootHeight => theme => ({
 });
 
 class Menu extends Component {
+    renderCommandButton = (c, selectedCommand, classes, handler) => {
+        const isSelected = selectedCommand && selectedCommand.id === c.id;
+        const listItemClass = isSelected ? classNames(classes.selected, classes.listItem) : classes.listItem;
+        return (
+            <ListItem button
+                      className={listItemClass}
+                      key={c.id}
+                      onClick={() => handler(c)}>
+                <ListItemAvatar>
+                    <Avatar alt={c.id}
+                            src={c.icon}
+                            className={classNames(classes.avatar, classes.icon)}/>
+                </ListItemAvatar>
+                <ListItemText primary={c.id}/>
+            </ListItem>
+        );
+    };
+
     render() {
-        const {commands, selector, selectedTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
+        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
         const drawer = (
             <Drawer type="permanent"
                     classes={{
-                        paper: classNames(classes.drawerPaperClose),
+                        paper: classes.drawerPaper,
                     }}
                     open={false}>
                 <div className={classes.drawerInner}>
                     <div className={classes.drawerHeader}/>
                     <List className={classes.list}>
                         <ListItem button
-                                  onClick={() => handler('Settings')}
+                                  key={SETTINGS}
+                                  onClick={() => handler(SETTINGS)}
                                   className={classes.listItem}>
                             <ListItemIcon>
                                 <SettingsIcon className={classes.icon}/>
                             </ListItemIcon>
-                            <ListItemText primary="Settings"/>
+                            <ListItemText primary={SETTINGS}/>
                         </ListItem>
-                        {
-                            commands.map(c =>
-                                <ListItem button
-                                          className={classes.listItem}
-                                          key={c.id}
-                                          onClick={() => handler(c.id)}>
-                                    <ListItemAvatar>
-                                        <Avatar alt={c.id} src={c.icon}
-                                                className={classNames(classes.avatar, classes.icon)}/>
-                                    </ListItemAvatar>
-                                    <ListItemText primary={c.id}/>
-                                </ListItem>
-                            )
-                        }
+                        {commands.map(c => this.renderCommandButton(c, selectedCommand, classes, handler))}
                     </List>
                 </div>
             </Drawer>
@@ -137,7 +149,7 @@ class Menu extends Component {
                     <AppBar className={classNames(classes.appBar)}>
                         <Toolbar disableGutters={true}>
                             <Typography type="title" color="inherit" className={classes.title}>
-                                 {selectedTitle}
+                                {selectorTitle}
                             </Typography>
                             {selector}
                             <IconButton aria-owns={'menu-appbar'}
@@ -162,10 +174,11 @@ Menu.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
     handler: PropTypes.func.isRequired,
-    selectedTitle: PropTypes.string.isRequired,
+    selectorTitle: PropTypes.string.isRequired,
     fullscreen: PropTypes.bool.isRequired,
     toggleFullScreen: PropTypes.func.isRequired,
     commands: PropTypes.array.isRequired,
+    selectedCommand: PropTypes.object,
     selector: PropTypes.any,
 };
 

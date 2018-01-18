@@ -32,6 +32,7 @@ class JRiver extends Component {
                 </Tabs>
                 {
                     this.state.value === 0
+                    && playingNow
                     && <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
                                    playingNow={playingNow}
                                    authToken={authToken}

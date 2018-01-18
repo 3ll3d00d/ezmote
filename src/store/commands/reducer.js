@@ -1,6 +1,7 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 import {createSelector} from "reselect";
+import {makeError} from "../store";
 
 export const initialState = Immutable({});
 
@@ -18,17 +19,14 @@ const reduce = (state = initialState, action = {}) => {
                 return Immutable.setIn(state, Immutable({}));
             } else {
                 const removedOld = Immutable.without(state, (value, key) => incomingKeys.indexOf(key) === -1);
-                return Immutable.merge(removedOld, action.payload, {deep: true});
+                return Immutable.without(Immutable.merge(removedOld, action.payload, {deep: true}), 'fetchError');
             }
         case types.SEND_COMMAND:
-            return state;
-        case types.SEND_TIVO_KEY:
-            return state;
+            return Immutable.without(state, 'sendError');
         case types.COMMANDS_FETCHED_FAIL:
+            return Immutable.set(state, {fetchError: makeError(action)});
         case types.SEND_COMMAND_FAIL:
-        case types.SEND_TIVO_KEY_FAIL:
-            console.error(action.payload);
-            return state;
+            return Immutable.set(state, {sendError: makeError(action)});
         default:
             return state;
     }
@@ -36,6 +34,13 @@ const reduce = (state = initialState, action = {}) => {
 
 // selector functions
 const commands = state => state.commands;
+const errors = state => {
+    return {
+        fetch: state.fetchError,
+        send: state.sendError,
+    };
+};
+export const getErrors = errors;
 export const getCommands = commands;
 const getCommandArray = createSelector([getCommands], (commands) => Object.keys(commands).map(c => commands[c]));
 export const getOrderedCommands = createSelector([getCommandArray], (commands) => commands.sort((a, b) => a.idx - b.idx));

@@ -24,6 +24,8 @@ export const PREVIOUS = 'jriver.PREVIOUS';
 export const PREVIOUS_FAIL = 'jriver.PREVIOUS_FAIL';
 export const STOP = 'jriver.STOP';
 export const STOP_FAIL = 'jriver.STOP_FAIL';
+export const STOP_ALL = 'jriver.STOP_ALL';
+export const STOP_ALL_FAIL = 'jriver.STOP_ALL_FAIL';
 export const SET_POSITION = 'jriver.SET_POSITION';
 export const SET_POSITION_FAIL = 'jriver.SET_POSITION_FAIL';
 export const START_PLAYBACK = 'jriver.START_PLAYBACK';
@@ -31,3 +33,5 @@ export const START_PLAYBACK_FAIL = 'jriver.START_PLAYBACK_FAIL';
 // control
 export const SEND_KEYPRESS = 'jriver.SEND_KEYPRESS';
 export const SEND_KEYPRESS_FAIL = 'jriver.SEND_KEYPRESS_FAIL';
+export const SET_ZONE = 'jriver.SET_ZONE';
+export const SET_ZONE_FAIL = 'jriver.SET_ZONE_FAIL';

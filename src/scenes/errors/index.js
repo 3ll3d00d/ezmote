@@ -6,7 +6,7 @@ const hasErrors = errors => errors && Object.keys(errors).length > 0;
 
 const Error = ({errors}) => {
     if (hasErrors(errors)) {
-        const mostRecentErrorTime = Object.keys(errors).reduce((a, b) => Math.max(a, b));
+        const mostRecentErrorTime = Object.keys(errors).map(Number).reduce((a, b) => Math.max(a, b));
         if (mostRecentErrorTime) {
             const error = errors[mostRecentErrorTime];
             return (

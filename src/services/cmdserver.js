@@ -19,6 +19,17 @@ class CmdServerService {
                      .map(c => Object.assign(commands[c], {id: c, icon: `/icons/${commands[c].icon}`}));
     };
 
+    /** Gets whatever is playing now */
+    getPlayingNow = async () => {
+        const response = await fetch(`${API_PREFIX}/playingnow`, {
+            method: 'GET'
+        });
+        if (!response.ok) {
+            throw new Error(`CmdServer.getPlayingNow failed, HTTP status ${response.status}`);
+        }
+        return await response.text();
+    };
+
     /**
      * Sends the command to the service.
      * @param commandId

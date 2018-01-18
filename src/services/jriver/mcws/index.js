@@ -1,3 +1,5 @@
+import alive from './alive';
+import authenticate from './authenticate';
 import browseChildren from './browseChildren';
 import {browseFiles, playBrowse} from './browseFiles';
 import controlKey from './controlKey';
@@ -6,13 +8,13 @@ import playbackInfo from './playbackInfo';
 import playbackMute from './playbackMute';
 import playbackPlayPause from './playbackPlayPause';
 import playbackStop from './playbackStop';
+import playbackStopAll from './playbackStopAll';
 import playbackNext from './playbackNext';
 import playbackPosition from './playbackPosition';
 import playbackPrevious from './playbackPrevious';
+import playbackSetZone from './playbackSetZone';
 import playbackVolume from './playbackVolume';
 import playbackZones from './playbackZones';
-import alive from './alive';
-import authenticate from './authenticate';
 
 export {
     alive,
@@ -30,7 +32,9 @@ export {
     playbackVolume,
     playbackZones,
     playbackPlayPause,
-    playbackStop
+    playbackSetZone,
+    playbackStop,
+    playbackStopAll,
 };
 
 export const PLAY_TYPE_FILE = 'file';

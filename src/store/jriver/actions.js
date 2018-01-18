@@ -5,8 +5,9 @@ import poller from '../../services/timer';
 import {getConfig, InvalidConfigError} from "../config/reducer";
 import {getActiveZone, getAuthToken} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
-import {PLAY_TYPE_BROWSE} from "../../services/jriver/mcws";
-import {PLAY_TYPE_FILE} from "../../services/jriver/mcws";
+import {PLAY_TYPE_BROWSE, PLAY_TYPE_FILE} from '../../services/jriver/mcws';
+import {STOPPED} from "../../services/jriver/mcws/playbackInfo";
+import {fetchPlayingNow} from "../playingnow/actions";
 
 /**
  * Sends the given key press(es).
@@ -59,6 +60,13 @@ const stopPlaying = (zoneId) => {
 };
 
 /**
+ * sends stop for all zones.
+ */
+const stopAllPlaying = () => {
+    return _invoke(types.STOP_ALL, types.STOP_ALL_FAIL, (config) => mcws.playbackStopAll(config));
+};
+
+/**
  * sends next for the currently active zone.
  */
 const playNext = (zoneId) => {
@@ -73,56 +81,58 @@ const playPrevious = (zoneId) => {
 };
 
 /**
+ * sets the active zone.
+ */
+const activateZone = (zoneId) => {
+    return _invoke(types.SET_ZONE, types.SET_ZONE_FAIL, (config) => mcws.playbackSetZone(config, zoneId));
+};
+
+const _handleServerIsAlive = (successAction, response, state, dispatch) => {
+    _dispatchResponseDirectly(successAction, response, state, dispatch);
+    _stopPollerIfNecessary('jriverIsDead');
+    if (_startPollerIfNecessary('jriverIsAlive', () => dispatch(isAlive()), 10000)) {
+        dispatch(authenticate());
+    }
+    _startPollerIfNecessary('jriverFetchZones', () => dispatch(fetchZones()), 2000);
+};
+
+const _handleServerIsDead = (dispatch, config, type, error) => {
+    _dispatchError(dispatch, config, type, error);
+    _stopPollerIfNecessary('jriverIsAlive');
+    _stopPollerIfNecessary('jriverFetchZones');
+    _startPollerIfNecessary('jriverIsDead', () => dispatch(isAlive()), 2000);
+};
+
+/**
  * tests if the server is alive.
  * @returns {*}
  */
 const isAlive = () => {
-    return _invoke(types.IS_ALIVE, types.IS_ALIVE_FAIL, (config) => mcws.alive(config), (successAction, response, state, dispatch) => {
-        _dispatchResponseDirectly(successAction, response, state, dispatch);
-        const serverURL = jriver.getServerURL(getConfig(state));
-        let wasFailed = false;
-        if (poller.isPolling(p => p.id === serverURL)) {
-            console.info(`Stop polling for ${serverURL} after recovery`);
-            poller.stopPolling(p => p.id === serverURL);
-            wasFailed = true;
-        }
-        if (_startServerPollerIfNecessary(response.serverName, dispatch)) {
-            dispatch(authenticate());
-        }
-        if (wasFailed) {
-            dispatch(fetchZones())
-        }
-    }, (dispatch, config, type, error) => {
-        _dispatchError(dispatch, config, type, error);
-        const serverURL = jriver.getServerURL(config);
-        if (!poller.isPolling(p => p.id === serverURL)) {
-            console.info(`Start polling for ${serverURL}`);
-            poller.startPolling(serverURL, () => dispatch(isAlive()), 2000);
-        }
-    });
+    return _invoke(types.IS_ALIVE, types.IS_ALIVE_FAIL, (config) => mcws.alive(config), _handleServerIsAlive, _handleServerIsDead);
 };
 
-/**
- * Polls for ALIVE.
- * @param serverName the server name.
- * @param dispatch the redux dispatcher.
- */
-const _startServerPollerIfNecessary = (serverName, dispatch) => {
-    if (!poller.isPolling(p => p.id === serverName)) {
-        console.info(`Start polling for ${serverName}`);
-        poller.startPolling(serverName, () => dispatch(isAlive()), 10000);
+const _startPollerIfNecessary = (eventId, action, delay) => {
+    if (!poller.isPolling(p => p.id === eventId)) {
+        console.info(`Starting ${eventId} poller`);
+        poller.startPolling(eventId, action, delay);
+        return true;
+    }
+    return false;
+};
+const _stopPollerIfNecessary = (eventId) => {
+    const matcher = p => p.id === eventId;
+    if (poller.isPolling(matcher)) {
+        console.info(`Stopping ${eventId} poller`);
+        poller.stopPolling(matcher);
         return true;
     }
     return false;
 };
 
 /**
- * Stops polling for ALIVE.
- * @param serverName
+ * Stops all pollers.
  */
-const stopServerPoller = (serverName) => {
-    poller.stopPolling(p => p.id === serverName);
-};
+const stopAllPollers = () => poller.stopAll();
 
 /**
  * Gets the auth token from the server.
@@ -205,14 +215,14 @@ const _matchById = (targetZone) => z => z.id === targetZone.id;
 
 const _doStop = (existingActiveZone) => {
     if (poller.stopPolling(_matchById(existingActiveZone))) {
-        console.info(`Cleared interval for zone ${existingActiveZone.id}/${existingActiveZone.name}`);
+        console.info(`Stopped zoneInfo poller for ${existingActiveZone.id}/${existingActiveZone.name}`);
     } else {
-        console.error(`Unable to clear interval for zone ${existingActiveZone.id}/${existingActiveZone.name}`)
+        console.error(`Unable to stop zoneInfo poller for ${existingActiveZone.id}/${existingActiveZone.name}`)
     }
 };
 
 const _doStart = (newActiveZone, dispatch) => {
-    console.info(`Starting interval for zone ${newActiveZone.id}/${newActiveZone.name}`);
+    console.info(`Starting zoneInfo poller for ${newActiveZone.id}/${newActiveZone.name}`);
     poller.startPolling(newActiveZone.id, () => dispatch(fetchZoneInfo(newActiveZone.id)), 5000);
 };
 
@@ -222,12 +232,19 @@ const _doStart = (newActiveZone, dispatch) => {
  */
 const fetchZoneInfo = (zoneId) => {
     return _invoke(types.FETCH_ZONE_INFO, types.FETCH_ZONE_INFO_FAIL, (config) => mcws.playbackInfo(config, zoneId), (successAction, response, state, dispatch) => {
+        _fetchZonesIfPlaybackStopped(response, state, dispatch);
         dispatch({type: successAction, payload: response});
-        if (response.status === 'Stopped') {
-            // TODO only do this if the last known state was running
+        dispatch(fetchPlayingNow());
+    });
+};
+
+const _fetchZonesIfPlaybackStopped = (response, state, dispatch) => {
+    if (response.status === STOPPED) {
+        const existingActiveZone = getActiveZone(state);
+        if (existingActiveZone && existingActiveZone.status !== response.status) {
             dispatch(fetchZones())
         }
-    });
+    }
 };
 
 const _dispatchResponseDirectly = (successAction, response, state, dispatch) => {
@@ -260,12 +277,14 @@ export {
     unmuteVolume,
     isAlive,
     authenticate,
-    stopServerPoller,
+    stopAllPollers,
     playPause,
     stopPlaying,
+    stopAllPlaying,
     playNext,
     playPrevious,
     sendKeyPresses,
     setPosition,
-    startPlayback
+    startPlayback,
+    activateZone
 };

@@ -2,6 +2,7 @@ import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 import {createSelector} from "reselect";
 import {getJRiverURL} from "../config/reducer";
+import {makeKeyedError} from "../store";
 
 export const initialState = Immutable({zones: Immutable({}), errors: Immutable({})});
 
@@ -58,6 +59,8 @@ const reduce = (state = initialState, action = {}) => {
         case types.STOP:
             state = Immutable.setIn(state, ['zones', action.payload.zoneId, 'playingNow', 'status'], 'Stopped');
             break;
+        case types.STOP_ALL:
+            break;
         case types.NEXT:
             break;
         case types.PREVIOUS:
@@ -66,6 +69,8 @@ const reduce = (state = initialState, action = {}) => {
             state = Immutable.setIn(state, ['zones', 'playingNow', 'positionMillis'], action.payload);
             break;
         case types.START_PLAYBACK:
+            break;
+        case types.SET_ZONE:
             break;
         // errors
         case types.IS_ALIVE_FAIL:
@@ -80,10 +85,12 @@ const reduce = (state = initialState, action = {}) => {
         case types.AUTHENTICATE_FAIL:
         case types.PLAY_PAUSE_FAIL:
         case types.STOP_FAIL:
+        case types.STOP_ALL_FAIL:
         case types.NEXT_FAIL:
         case types.PREVIOUS_FAIL:
         case types.SET_POSITION_FAIL:
         case types.START_PLAYBACK_FAIL:
+        case types.SET_ZONE_FAIL:
             state = storeError(action, state);
             break;
         default:
@@ -93,20 +100,8 @@ const reduce = (state = initialState, action = {}) => {
 };
 
 const stripToken = state => Immutable.without(state, 'token');
-const stripPlayingNow = ({zones}) => {
-    const retVal = Object.keys(zones).map(z => Immutable.without(zones[z], 'playingNow'));
-    return retVal;
-};
-
-const storeError = (action, state) => Immutable.merge(state, {errors: makeError(action)}, {deep: true});
-const makeError = ({payload, type}) => {
-    return {
-        [new Date().getTime()]: {
-            error: payload.message,
-            type
-        }
-    };
-};
+const stripPlayingNow = ({zones}) => Object.keys(zones).map(z => Immutable.without(zones[z], 'playingNow'));
+const storeError = (action, state) => Immutable.merge(state, {errors: makeKeyedError(action)}, {deep: true});
 const isOldError = (time) => (value, key) => (time - key) > 15000;
 const discardOldErrors = (state) => Immutable.update(state, 'errors', e => Immutable.without(e, isOldError(new Date().getTime())));
 

@@ -22,6 +22,10 @@ class TimerService {
         }
         return false;
     };
+
+    stopAll = () => {
+        this.pollers.forEach(p => clearInterval(p.intervalId));
+    };
 }
 
 export const provideTimerService = () => new TimerService();
