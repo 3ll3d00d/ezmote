@@ -32,7 +32,7 @@ export const SETTINGS = 'Settings';
 
 class App extends Component {
     state = {
-        selectedSettings: false,
+        selected: SETTINGS,
         fullscreen: false
     };
 
@@ -43,7 +43,7 @@ class App extends Component {
 
     componentWillReceiveProps = (nextProps) => {
         if (!nextProps.config.valid) {
-            this.setState({selectedSettings: true});
+            this.setState({selected: SETTINGS});
         }
     };
 
@@ -54,10 +54,10 @@ class App extends Component {
     handleMenuSelect = (selected) => {
         const {sendCommand} = this.props;
         if (typeof selected === 'string') {
-            this.setState({selectedSettings: true});
+            this.setState({selected: selected});
         } else {
             sendCommand(selected);
-            this.setState({selectedSettings: false});
+            this.setState({selected: selected.id});
         }
     };
 
@@ -80,14 +80,16 @@ class App extends Component {
 
     render() {
         const {commands, errors, jriverIsDead, playingNow} = this.props;
-        const selectedCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
-        const {selectedSettings, fullscreen} = this.state;
+        const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
+        const {selected, fullscreen} = this.state;
+        const selectedCommand = selected !== SETTINGS ? commands.find(c => c.id === selected) : null;
+        const selectorTitle = selected === SETTINGS ? SETTINGS : selectedCommand ? selectedCommand.title : null;
         const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
         return (
             <Fullscreen enabled={fullscreen}>
                 <MuiThemeProvider theme={theme}>
                     <MenuComponent handler={this.handleMenuSelect}
-                                   selectorTitle={selectedCommand ? selectedCommand.title : SETTINGS}
+                                   selectorTitle={selectorTitle}
                                    selectedCommand={selectedCommand}
                                    selector={this.getSelector(selectedCommand)}
                                    commands={commands}
@@ -95,9 +97,9 @@ class App extends Component {
                                    toggleFullScreen={this.toggleFullScreen}>
                         <Grid container>
                             <Grid item xs={12}>
-                                {selectedSettings || !selectedCommand
+                                {selected === SETTINGS || !playingNowCommand
                                     ? <Config/>
-                                    : <Control selectedCommand={selectedCommand} jriverIsDead={jriverIsDead}/>
+                                    : <Control playingNowCommand={playingNowCommand} jriverIsDead={jriverIsDead}/>
                                 }
                             </Grid>
                         </Grid>

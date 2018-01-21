@@ -71,6 +71,9 @@ const reduce = (state = initialState, action = {}) => {
         case types.START_PLAYBACK:
             break;
         case types.SET_ZONE:
+            Object.keys(state.zones).forEach(z => {
+                state = Immutable.setIn(state, ['zones', z, 'active'], z === action.payload.zoneId);
+            });
             break;
         // errors
         case types.IS_ALIVE_FAIL:
@@ -92,6 +95,7 @@ const reduce = (state = initialState, action = {}) => {
         case types.START_PLAYBACK_FAIL:
         case types.SET_ZONE_FAIL:
             state = storeError(action, state);
+            console.error(action.payload);
             break;
         default:
             break;

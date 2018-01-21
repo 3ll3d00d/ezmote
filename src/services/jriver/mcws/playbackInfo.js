@@ -94,6 +94,7 @@ const extractVolumedB = (text) => {
             if (match) {
                 return Number(match[1]);
             } else {
+                // TODO handle % values
                 console.warn(`Unknown value received from VolumeDisplay ${text}`);
                 return -100;
             }

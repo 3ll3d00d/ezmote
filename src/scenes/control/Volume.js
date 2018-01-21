@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import _ from "lodash";
 import {withStyles} from 'material-ui/styles';
-import Paper from "material-ui/Paper";
-import Button from "material-ui/Button";
 import IconButton from "material-ui/IconButton";
 import Grid from "material-ui/Grid";
 import ChevronLeft from 'material-ui-icons/ChevronLeft';
@@ -12,7 +10,7 @@ import VolumeUp from 'material-ui-icons/VolumeUp';
 import {Slider} from 'react-md';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
-import {fetchZones, muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";
+import {muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";
 import {getConfig} from "../../store/config/reducer";
 
 const styles = theme => ({
@@ -51,7 +49,7 @@ class Volume extends Component {
     };
 
     render() {
-        const {zone, fetchZones, classes} = this.props;
+        const {zone, classes} = this.props;
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
@@ -81,11 +79,7 @@ class Volume extends Component {
                 </Grid>
             );
         } else {
-            return (
-                <Paper>
-                    <Button raised onClick={fetchZones}>Load Zones</Button>
-                </Paper>
-            );
+            return null;
         }
     };
 }
@@ -99,6 +93,5 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
     setVolume,
     muteVolume,
-    unmuteVolume,
-    fetchZones
+    unmuteVolume
 })(withStyles(styles, {withTheme: true})(Volume));

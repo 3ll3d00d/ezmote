@@ -10,10 +10,10 @@ import {connect} from "react-redux";
 import {MC_HOST} from "../../store/config/config";
 import Disconnected from "./Disconnected";
 
-const Control = ({jriverIsDead, config, activeZone, selectedCommand}) => {
+const Control = ({jriverIsDead, config, activeZone, playingNowCommand}) => {
     let Controller = null;
-    if (activeZone && selectedCommand && selectedCommand.hasOwnProperty('control')) {
-        switch (selectedCommand.control) {
+    if (activeZone && playingNowCommand && playingNowCommand.hasOwnProperty('control')) {
+        switch (playingNowCommand.control) {
             case 'tivo':
                 Controller = Tivo;
                 break;
@@ -38,7 +38,7 @@ const Control = ({jriverIsDead, config, activeZone, selectedCommand}) => {
 };
 
 Control.propTypes = {
-    selectedCommand: PropTypes.object.isRequired,
+    playingNowCommand: PropTypes.object.isRequired,
     jriverIsDead: PropTypes.bool.isRequired
 };
 

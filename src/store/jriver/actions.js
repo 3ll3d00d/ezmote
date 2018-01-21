@@ -100,6 +100,7 @@ const _handleServerIsDead = (dispatch, config, type, error) => {
     _dispatchError(dispatch, config, type, error);
     _stopPollerIfNecessary('jriverIsAlive');
     _stopPollerIfNecessary('jriverFetchZones');
+    poller.stopAllMatching('jriverZoneInfo_');
     _startPollerIfNecessary('jriverIsDead', () => dispatch(isAlive()), 2000);
 };
 
@@ -202,7 +203,7 @@ const _ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
     if (newActiveZone) {
         if (!existingActiveZone || existingActiveZone.id !== newActiveZone.id) {
             _doStart(newActiveZone, dispatch);
-        } else if (!poller.isPolling(_matchById(newActiveZone))) {
+        } else if (!poller.isPolling(_matchPollerByZoneId(newActiveZone))) {
             console.info(`Poller for zone ${newActiveZone.id}/${newActiveZone.name} should be running but isn't, starting`);
             _doStart(newActiveZone, dispatch);
         }
@@ -211,19 +212,16 @@ const _ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
 
 const _dispatchError = (dispatch, config, type, error) => dispatch({type: type, error: true, payload: error});
 
-const _matchById = (targetZone) => z => z.id === targetZone.id;
+const _matchPollerByZoneId = (targetZone) => z => z.id === `jriverZoneInfo_${targetZone.id}`;
 
 const _doStop = (existingActiveZone) => {
-    if (poller.stopPolling(_matchById(existingActiveZone))) {
-        console.info(`Stopped zoneInfo poller for ${existingActiveZone.id}/${existingActiveZone.name}`);
-    } else {
+    if (!_stopPollerIfNecessary(`jriverZoneInfo_${existingActiveZone.id}`)) {
         console.error(`Unable to stop zoneInfo poller for ${existingActiveZone.id}/${existingActiveZone.name}`)
     }
 };
 
 const _doStart = (newActiveZone, dispatch) => {
-    console.info(`Starting zoneInfo poller for ${newActiveZone.id}/${newActiveZone.name}`);
-    poller.startPolling(newActiveZone.id, () => dispatch(fetchZoneInfo(newActiveZone.id)), 5000);
+    _startPollerIfNecessary(`jriverZoneInfo_${newActiveZone.id}`, () => dispatch(fetchZoneInfo(newActiveZone.id)), 2000);
 };
 
 /**

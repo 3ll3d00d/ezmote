@@ -11,8 +11,11 @@ import FormControlLabel from "material-ui/Form/FormControlLabel";
 import IconButton from "material-ui/IconButton";
 import InputAdornment from "material-ui/Input/InputAdornment";
 import InputLabel from "material-ui/Input/InputLabel";
+import List, {ListItem, ListItemText} from 'material-ui/List';
 import Switch from "material-ui/Switch";
 import {Visibility, VisibilityOff} from "material-ui-icons";
+import timer from "../../services/timer";
+import Grid from "material-ui/Grid";
 
 const styles = (theme) => ({
     container: {
@@ -36,7 +39,14 @@ class Config extends Component {
     };
 
     state = {
-        showPassword: false
+        showPassword: false,
+        showTimers: true
+    };
+
+    changeDebug = () => {
+        this.setState((prevState, prevProps) => {
+            return {showTimers: !prevState.showTimers};
+        });
     };
 
     handleInput = (field) => (event) => {
@@ -55,6 +65,24 @@ class Config extends Component {
         this.setState((prevState, prevProps) => {
             return {showPassword: !prevState.showPassword}
         });
+    };
+
+    timerAsListItem = (p) => {
+        return (
+            <Grid key={p.id} item>
+                <List>
+                    <ListItem>
+                        <ListItemText primary={p.id}/>
+                    </ListItem>
+                    {p.times.map(t =>
+                        <ListItem key={t.toString()}>
+                            <ListItemText
+                                secondary={`${t.getHours()}:${t.getMinutes()}:${t.getSeconds() < 10 ? '0' : ''}${t.getSeconds()}.${t.getMilliseconds() < 10 ? '0' : ''}${t.getMilliseconds() < 100 ? '0' : ''}${t.getMilliseconds()}`}/>
+                        </ListItem>
+                    )}
+                </List>
+            </Grid>
+        );
     };
 
     render() {
@@ -129,6 +157,20 @@ class Config extends Component {
                            }}
                            onChange={this.handleInput(configFields.TIVO_NAME)}/>
                 </FormControl>
+                <FormControlLabel
+                    control={
+                        <Switch checked={this.state.showTimers}
+                                onChange={this.changeDebug}/>
+                    }
+                    label="Show Debug Timer Info?"/>
+                {
+                    this.state.showTimers
+                        ?
+                        <Grid container>
+                            {timer.getPollerData().map(p => this.timerAsListItem(p))}
+                        </Grid>
+                        : null
+                }
             </div>
         );
     };
