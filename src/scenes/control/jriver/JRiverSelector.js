@@ -16,10 +16,12 @@ import {getConfig, getJRiverURL} from "../../../store/config/reducer";
 import {
     browseChildren as mcwsBrowseChildren,
     browseFiles as mcwsBrowseFiles,
-    PLAY_TYPE_BROWSE
-} from '../../../services/jriver/mcws/index';
+    playChildren as mcwsPlayChildren
+} from '../../../services/jriver/mcws';
+import {PLAY_TYPE_BROWSE} from '../../../services/jriver/mcws/browseChildren'
 import {startPlayback} from "../../../store/jriver/actions";
 import {connect} from 'react-redux';
+import {sendCommand} from "../../../store/commands/actions";
 
 const renderInput = (inputProps) => {
     const {classes, disabled, autoFocus, value, ref, ...other} = inputProps;
@@ -123,18 +125,18 @@ class JRiverSelector extends Component {
     };
 
     componentDidMount = async () => {
-        await this.loadCategories(this.props.categoryId);
+        await this.loadCategories(this.props.command.nodeId);
     };
 
     componentWillReceiveProps = async (nextProps) => {
-        if (nextProps.categoryId !== this.props.categoryId) {
-            await this.loadCategories(nextProps.categoryId);
+        if (nextProps.command.nodeId !== this.props.command.nodeId) {
+            await this.loadCategories(nextProps.command.nodeId);
         }
     };
 
     loadCategories = async (categoryId) => {
-        const categories = await this.getChildren(categoryId);
-        const childCategories = await Promise.all(categories.children.map(c => this.getChildren(c.id)));
+        const categories = await this.getChildren(categoryId, false);
+        const childCategories = await Promise.all(categories.children.map(c => this.getChildren(c.id, true)));
         const selectedCategoryId = categories.children.length > 0 ? categories.children[0].id : '';
         const suggestions = categories.children.length > 0 ? childCategories[0].children : [];
         this.setState({
@@ -145,11 +147,12 @@ class JRiverSelector extends Component {
         });
     };
 
-    getChildren = async (nodeId) => {
+    getChildren = async (nodeId, playable) => {
         const {config, authToken} = this.props;
         if (config.valid === true) {
             // TODO try-catch
-            let response = await jriver.invoke({authToken, ...mcwsBrowseChildren(config, nodeId)});
+            const args = playable ? mcwsBrowseChildren(config, nodeId) : mcwsPlayChildren(config, nodeId);
+            let response = await jriver.invoke({authToken, ...args});
             if (response.length === 0) {
                 response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId)});
             }
@@ -208,7 +211,9 @@ class JRiverSelector extends Component {
     };
 
     handleSuggestionSelected = (event, { suggestion }) => {
-        this.props.startPlayback(suggestion.type, suggestion.id);
+        const {sendCommand, command, startPlayback} = this.props;
+        sendCommand(command);
+        startPlayback(suggestion.type, suggestion.id);
     };
 
     render() {
@@ -258,7 +263,7 @@ class JRiverSelector extends Component {
 
 JRiverSelector.propTypes = {
     classes: PropTypes.object.isRequired,
-    categoryId: PropTypes.number.isRequired
+    command: PropTypes.object.isRequired
 };
 
 const mapStateToProps = (state) => {
@@ -269,4 +274,4 @@ const mapStateToProps = (state) => {
         jriverURL: getJRiverURL(state)
     };
 };
-export default connect(mapStateToProps, {startPlayback})(withStyles(styles)(JRiverSelector));
+export default connect(mapStateToProps, {startPlayback, sendCommand})(withStyles(styles)(JRiverSelector));

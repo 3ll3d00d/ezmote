@@ -4,10 +4,22 @@ import PlayingNow from "./PlayingNow";
 import RemoteControl from "./RemoteControl";
 import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
 import {
-    playNext, playPause, playPrevious, sendKeyPresses, setPosition,
+    playNext,
+    playPause,
+    playPrevious,
+    sendKeyPresses,
+    setPosition,
     stopPlaying
 } from "../../../store/jriver/actions";
 import {connect} from "react-redux";
+import {withStyles} from 'material-ui/styles';
+
+const styles = theme => ({
+    root: {
+        flexGrow: 1,
+        marginTop: theme.spacing.unit * 3,
+    },
+});
 
 class JRiver extends Component {
     state = {
@@ -19,10 +31,11 @@ class JRiver extends Component {
     };
 
     render() {
-        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition} = this.props;
+        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, classes} = this.props;
         return (
-            <div>
+            <div className={classes.root}>
                 <Tabs fullWidth
+                      centered
                       indicatorColor="accent"
                       textColor="accent"
                       value={this.state.value}
@@ -58,4 +71,4 @@ export default connect(mapStateToProps, {
     playPrevious,
     setPosition,
     sendKeyPresses
-})(JRiver);
+})(withStyles(styles)(JRiver));

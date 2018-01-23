@@ -9,6 +9,7 @@ import List from 'material-ui/List';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import SettingsIcon from 'material-ui-icons/Settings';
+import PowerIcon from 'material-ui-icons/PowerSettingsNew';
 import FullScreenIcon from 'material-ui-icons/Fullscreen';
 import ExitFullScreenIcon from 'material-ui-icons/FullscreenExit';
 import ListItem from "material-ui/List/ListItem";
@@ -16,7 +17,7 @@ import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
 import ListItemAvatar from "material-ui/List/ListItemAvatar";
 import Avatar from "material-ui/Avatar/Avatar";
-import {SETTINGS} from "../../App";
+import {POWER_OFF, SETTINGS} from "../../App";
 
 const drawerWidth = 64;
 
@@ -117,7 +118,7 @@ class Menu extends Component {
     };
 
     render() {
-        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
+        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, powerOff, children} = this.props;
         const drawer = (
             <Drawer type="permanent"
                     classes={{
@@ -127,6 +128,19 @@ class Menu extends Component {
                 <div className={classes.drawerInner}>
                     <div className={classes.drawerHeader}/>
                     <List className={classes.list}>
+                        {powerOff
+                            ?
+                            <ListItem button
+                                      key={POWER_OFF}
+                                      onClick={powerOff}
+                                      className={classes.listItem}>
+                                <ListItemIcon>
+                                    <PowerIcon className={classes.icon}/>
+                                </ListItemIcon>
+                                <ListItemText primary={POWER_OFF}/>
+                            </ListItem>
+                            : null
+                        }
                         <ListItem button
                                   key={SETTINGS}
                                   onClick={() => handler(SETTINGS)}
@@ -180,6 +194,7 @@ Menu.propTypes = {
     commands: PropTypes.array.isRequired,
     selectedCommand: PropTypes.object,
     selector: PropTypes.any,
+    powerOff: PropTypes.func
 };
 
 // 100% works in fullscreen, window.innerHeight works otherwise

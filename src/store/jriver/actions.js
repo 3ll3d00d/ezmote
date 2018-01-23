@@ -5,7 +5,7 @@ import poller from '../../services/timer';
 import {getConfig, InvalidConfigError} from "../config/reducer";
 import {getActiveZone, getAuthToken} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
-import {PLAY_TYPE_BROWSE, PLAY_TYPE_FILE} from '../../services/jriver/mcws';
+import {PLAY_TYPE_BROWSE, PLAY_TYPE_FILE} from '../../services/jriver/mcws/browseChildren';
 import {STOPPED} from "../../services/jriver/mcws/playbackInfo";
 import {fetchPlayingNow} from "../playingnow/actions";
 
@@ -27,7 +27,7 @@ const sendKeyPresses = (keys) => {
  */
 const startPlayback = (type, id) => {
     if (type === PLAY_TYPE_BROWSE) {
-        return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.browseFiles(config, id));
+        return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.playBrowse(config, id));
     } else if (type === PLAY_TYPE_FILE) {
         return _invoke(types.START_PLAYBACK, types.START_PLAYBACK_FAIL, (config) => mcws.fileGetInfo(config, id));
     } else {

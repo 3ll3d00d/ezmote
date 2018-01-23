@@ -1,5 +1,5 @@
 import {findItemByName, safeGetText} from "./functions";
-import {PLAY_TYPE_FILE} from "./index";
+import {PLAY_TYPE_FILE} from "./browseChildren";
 
 const playConverter = (json) => {
     if (json.hasOwnProperty('Response')) {

@@ -1,6 +1,6 @@
 import alive from './alive';
 import authenticate from './authenticate';
-import browseChildren from './browseChildren';
+import {playable as playChildren, browseable as browseChildren} from "./browseChildren";
 import {browseFiles, playBrowse} from './browseFiles';
 import controlKey from './controlKey';
 import fileGetInfo from './fileGetInfo';
@@ -20,6 +20,7 @@ export {
     alive,
     authenticate,
     browseChildren,
+    playChildren,
     browseFiles,
     controlKey,
     fileGetInfo,
@@ -34,8 +35,6 @@ export {
     playbackPlayPause,
     playbackSetZone,
     playbackStop,
-    playbackStopAll,
+    playbackStopAll
 };
 
-export const PLAY_TYPE_FILE = 'file';
-export const PLAY_TYPE_BROWSE = 'browse';

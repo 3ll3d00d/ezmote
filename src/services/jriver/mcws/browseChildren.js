@@ -1,11 +1,11 @@
-import {PLAY_TYPE_BROWSE} from "./index";
+const PLAY_TYPE_FILE = 'file';
+const PLAY_TYPE_BROWSE = 'browse';
 
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
         if (json.Response.hasOwnProperty('Item')) {
             return json.Response.Item.map(item => {
                 return {
-                    type: PLAY_TYPE_BROWSE,
                     id: item._text,
                     name: item._attributes.Name
                 };
@@ -18,11 +18,29 @@ const converter = (json) => {
     }
 };
 
+console.error(PLAY_TYPE_FILE);
+const withType = (type) => {
+    return (json) => converter(json).map(c => {
+        return Object.assign({type}, c);
+    });
+};
+
+const playableChildren = withType(PLAY_TYPE_FILE);
+const browseableChildren = withType(PLAY_TYPE_BROWSE);
+
 const endpoint = {
     name: 'BROWSE_CHILDREN',
     path: 'MCWS/v1/Browse/Children',
-    requiredParams: ['ID'],
-    converter
+    requiredParams: ['ID']
 };
 
-export default (config, nodeId) => Object.assign({}, {suppliedParams: {ID: nodeId}}, {config}, endpoint);
+const make = (converter) => (config, nodeId) => Object.assign({}, {suppliedParams: {ID: nodeId}}, {config}, Object.assign({converter}, endpoint));
+const playable = make(playableChildren);
+const browseable = make(browseableChildren);
+
+export {
+    playable,
+    browseable,
+    PLAY_TYPE_BROWSE,
+    PLAY_TYPE_FILE
+}

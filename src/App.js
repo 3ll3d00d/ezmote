@@ -9,7 +9,7 @@ import blueGrey from 'material-ui/colors/blueGrey';
 import red from 'material-ui/colors/red';
 import Fullscreen from "react-full-screen";
 import {connect} from 'react-redux';
-import {isAlive, stopAllPollers} from "./store/jriver/actions";
+import {isAlive, stopAllPlaying, stopAllPollers} from "./store/jriver/actions";
 import {getConfig} from "./store/config/reducer";
 import {getErrors, getServerName, isJRiverDead} from "./store/jriver/reducer";
 import {getOrderedCommands} from "./store/commands/reducer";
@@ -29,6 +29,7 @@ const theme = createMuiTheme({
 });
 
 export const SETTINGS = 'Settings';
+export const POWER_OFF = 'PowerOff';
 
 class App extends Component {
     state = {
@@ -56,7 +57,11 @@ class App extends Component {
         if (typeof selected === 'string') {
             this.setState({selected: selected});
         } else {
-            sendCommand(selected);
+            if (selected.hasOwnProperty('control') && selected.control === 'jriver') {
+                // only send the command when we select something to play
+            } else {
+                sendCommand(selected);
+            }
             this.setState({selected: selected.id});
         }
     };
@@ -70,12 +75,16 @@ class App extends Component {
     getSelector = (selectedCommand) => {
         if (selectedCommand && selectedCommand.hasOwnProperty('control')) {
             if (selectedCommand.control === 'jriver') {
-                return <JRiverSelector categoryId={selectedCommand.nodeId}/>;
+                return <JRiverSelector command={selectedCommand}/>;
             } else if (selectedCommand.control === 'tivo') {
                 return <TivoChannelSelector/>;
             }
         }
         return null;
+    };
+
+    powerOff = () => {
+        this.props.stopAllPlaying();
     };
 
     render() {
@@ -94,7 +103,8 @@ class App extends Component {
                                    selector={this.getSelector(selectedCommand)}
                                    commands={commands}
                                    fullscreen={fullscreen}
-                                   toggleFullScreen={this.toggleFullScreen}>
+                                   toggleFullScreen={this.toggleFullScreen}
+                                   powerOff={this.powerOff}>
                         <Grid container>
                             <Grid item xs={12}>
                                 {selected === SETTINGS || !playingNowCommand
@@ -125,4 +135,4 @@ const mapStateToProps = (state) => {
         playingNow: getPlayingNow(state)
     };
 };
-export default connect(mapStateToProps, {isAlive, fetchCommands, sendCommand})(App);
+export default connect(mapStateToProps, {isAlive, fetchCommands, sendCommand, stopAllPlaying})(App);
