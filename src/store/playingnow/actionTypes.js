@@ -1,0 +1,2 @@
+export const GET_PLAYING_NOW = 'pn.GET_PLAYING_NOW';
+export const GET_PLAYING_NOW_FAIL = 'pn.GET_PLAYING_NOW_FAIL';
