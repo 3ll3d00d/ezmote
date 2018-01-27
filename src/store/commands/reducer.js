@@ -42,7 +42,14 @@ const errors = state => {
 };
 export const getErrors = errors;
 export const getCommands = commands;
-const getCommandArray = createSelector([getCommands], (commands) => Object.keys(commands).map(c => commands[c]));
+const getCommandArray = createSelector([getCommands], (commands) => {
+    const keys = Object.keys(commands);
+    if (keys.length === 0) {
+        return [];
+    } else {
+        return keys.map(c => commands[c])
+    }
+});
 export const getOrderedCommands = createSelector([getCommandArray], (commands) => commands.sort((a, b) => a.idx - b.idx));
 
 export default reduce;

@@ -12,6 +12,11 @@ import SettingsIcon from 'material-ui-icons/Settings';
 import PowerIcon from 'material-ui-icons/PowerSettingsNew';
 import FullScreenIcon from 'material-ui-icons/Fullscreen';
 import ExitFullScreenIcon from 'material-ui-icons/FullscreenExit';
+import RadioIcon from 'material-ui-icons/Radio';
+import PlaylistIcon from 'material-ui-icons/PlaylistPlay';
+import MovieIcon from 'material-ui-icons/Movie';
+import MusicIcon from 'material-ui-icons/LibraryMusic';
+import BugIcon from 'material-ui-icons/BugReport';
 import ListItem from "material-ui/List/ListItem";
 import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
@@ -19,7 +24,7 @@ import ListItemAvatar from "material-ui/List/ListItemAvatar";
 import Avatar from "material-ui/Avatar/Avatar";
 import {POWER_OFF, SETTINGS} from "../../App";
 
-const drawerWidth = 64;
+const drawerWidth = 56;
 
 const styles = rootHeight => theme => ({
     root: {
@@ -90,8 +95,8 @@ const styles = rootHeight => theme => ({
         borderRadius: '33%'
     },
     icon: {
-        width: '48px',
-        height: '48px',
+        width: '40px',
+        height: '40px',
     },
     listItem: {
         paddingLeft: '8px'
@@ -99,6 +104,40 @@ const styles = rootHeight => theme => ({
 });
 
 class Menu extends Component {
+    makeAvatarItem = (c, classes) => {
+        return (
+            <ListItemAvatar>
+                <Avatar alt={c.id}
+                        src={c.icon}
+                        className={classes}/>
+            </ListItemAvatar>
+        );
+    };
+
+    makeIconItem = (c, classes) => {
+        const Icon = this.findIcon(c);
+        return (
+            <ListItemIcon>
+                <Icon className={classes}/>
+            </ListItemIcon>
+        );
+    };
+
+    findIcon = (c) => {
+        switch (c.icon) {
+            case '/icons/mi/radio':
+                return RadioIcon;
+            case '/icons/mi/playlist play':
+                return PlaylistIcon;
+            case '/icons/mi/library_music':
+                return MusicIcon;
+            case '/icons/mi/movie':
+                return MovieIcon;
+            default:
+                return BugIcon;
+        }
+    };
+
     renderCommandButton = (c, selectedCommand, classes, handler) => {
         const isSelected = selectedCommand && selectedCommand.id === c.id;
         const listItemClass = isSelected ? classNames(classes.selected, classes.listItem) : classes.listItem;
@@ -107,11 +146,9 @@ class Menu extends Component {
                       className={listItemClass}
                       key={c.id}
                       onClick={() => handler(c)}>
-                <ListItemAvatar>
-                    <Avatar alt={c.id}
-                            src={c.icon}
-                            className={classNames(classes.avatar, classes.icon)}/>
-                </ListItemAvatar>
+                {c.icon.startsWith('/icons/mi')
+                    ? this.makeIconItem(c, classes.icon)
+                    : this.makeAvatarItem(c, classNames(classes.avatar, classes.icon))}
                 <ListItemText primary={c.id}/>
             </ListItem>
         );

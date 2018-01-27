@@ -14,15 +14,24 @@ const fetchPlayingNow = () => {
     return async (dispatch, getState) => {
         try {
             const activeZone = getActiveZone(getState());
-            let playingNow = null;
             if (activeZone) {
-                if (activeZone.externalSource) {
-                    playingNow = await cmdserver.getPlayingNow();
+                if (activeZone.playingNow && activeZone.playingNow.externalSource) {
+                    const values = await cmdserver.getPlayingNow();
+                    if (values) {
+                        if (values.hasOwnProperty('title')) {
+                            dispatch({type: types.GET_PLAYING_NOW, payload: values.title});
+                        } else if (values.hasOwnProperty('id')) {
+                            dispatchError(dispatch, types.GET_PLAYING_NOW_FAIL,
+                                new Error(`Unknown playingNow window found with id ${values.id}`));
+                        } else {
+                            dispatchError(dispatch, types.GET_PLAYING_NOW_FAIL,
+                                new Error(`Unknown playingNow response ${JSON.stringify(values.id)}`));
+                        }
+                    }
                 } else {
-                    playingNow = activeZone.name;
+                    dispatch({type: types.GET_PLAYING_NOW, payload: activeZone.name});
                 }
             }
-            dispatch({type: types.GET_PLAYING_NOW, payload: playingNow});
         } catch (error) {
             dispatchError(dispatch, types.GET_PLAYING_NOW_FAIL, error);
         }

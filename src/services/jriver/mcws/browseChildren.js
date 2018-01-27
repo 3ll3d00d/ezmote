@@ -18,7 +18,6 @@ const converter = (json) => {
     }
 };
 
-console.error(PLAY_TYPE_FILE);
 const withType = (type) => {
     return (json) => converter(json).map(c => {
         return Object.assign({type}, c);

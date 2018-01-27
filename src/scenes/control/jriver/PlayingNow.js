@@ -73,14 +73,13 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 </Grid>
                 <Grid container justify={'center'} className={classes.paddedContainer}>
                     <Grid item xs={10}>
-                        {/*TODO fix the disabled style */}
                         <Slider id="position-slider"
                                 discrete
                                 min={0}
                                 disabled={playingNow.status === 'Stopped'}
                                 max={Math.round(playingNow.durationMillis / 1000)}
                                 value={Math.round(playingNow.positionMillis / 1000)}
-                                onChange={(value, event) => setPosition(zoneId, value * 1000)}/>
+                                onChange={(value, event) => playingNow.status !== 'Stopped' && setPosition(zoneId, value * 1000)}/>
                     </Grid>
                 </Grid>
             </Grid>

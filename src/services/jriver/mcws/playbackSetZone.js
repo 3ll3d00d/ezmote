@@ -1,7 +1,7 @@
 const converter = (zoneId) => (json) => {
     if (json.Response._attributes.Status === 'OK') {
         return {
-            zoneId,
+            zoneId: zoneId,
             status: true
         };
     }
