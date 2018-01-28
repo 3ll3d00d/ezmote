@@ -13,6 +13,9 @@ import StopIcon from 'material-ui-icons/Stop';
 import SkipNextIcon from 'material-ui-icons/SkipNext';
 import {Slider} from 'react-md';
 
+const MEDIA_Y = 280;
+const MEDIA_X = 300;
+
 const styles = theme => ({
     card: {
         display: 'flex',
@@ -25,8 +28,8 @@ const styles = theme => ({
         padding: theme.spacing.unit
     },
     cover: {
-        height: 280,
-        width: 300
+        height: MEDIA_Y,
+        width: MEDIA_X
     },
     controls: {
         flex: 'auto'
@@ -95,7 +98,8 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 authToken
                     ?
                     <CardMedia className={classes.cover}
-                               image={`${playingNow.imageURL}&Token=${authToken}&Format=png&Width=300&Height=300`}
+                               component={'img'}
+                               src={`${playingNow.imageURL}&Token=${authToken}&Format=png&Width=${MEDIA_X}&Height=${MEDIA_Y}&Pad=1`}
                                title={playingNow.artist ? `${playingNow.artist}/${playingNow.album}` : playingNow.name}/>
                     : null
             }
