@@ -56,9 +56,9 @@ const hhmmss = (millis) => {
 
 const AlbumArtist = ({playingNow}) => {
     const text = `${playingNow.artist} / ${playingNow.album}`;
-    const format = text.length > 48 ? 'Body 2' : 'subheading';
+    const format = text.length > 48 ? 'body2' : 'subheading';
     return (
-        <Typography type={format} color="secondary">
+        <Typography type={format} color="textSecondary">
             {text}
         </Typography>
     );

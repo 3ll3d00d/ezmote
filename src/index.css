@@ -115,10 +115,10 @@ h5, .md-subheading-1 {
   line-height: 24px; }
 
 p, .md-body-1 {
-  line-height: 1.42857; }
+  line-height: 20px; }
 
 h6, .md-body-2 {
-  line-height: 1.42857; }
+  line-height: 24px; }
 
 caption, .md-caption {
   font-size: 12px; }
@@ -1378,7 +1378,7 @@ tbody .md-table-row {
     line-height: inherit; }
 
 .md-table-checkbox .md-selection-control-label {
-  display: block; }
+  display: flex; }
 
 .md-table-checkbox .md-selection-control-container {
   margin-left: 12px;

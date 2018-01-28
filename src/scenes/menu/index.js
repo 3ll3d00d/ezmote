@@ -22,7 +22,7 @@ import ListItemIcon from "material-ui/List/ListItemIcon";
 import ListItemText from "material-ui/List/ListItemText";
 import ListItemAvatar from "material-ui/List/ListItemAvatar";
 import Avatar from "material-ui/Avatar/Avatar";
-import {POWER_OFF, SETTINGS} from "../../App";
+import {SETTINGS} from "../../App";
 
 const drawerWidth = 56;
 
@@ -62,7 +62,6 @@ const styles = rootHeight => theme => ({
         overflowX: 'hidden',
     },
     drawerInner: {
-        // Make the items inside not wrap when transitioning:
         width: drawerWidth,
     },
     drawerHeader: {
@@ -70,7 +69,6 @@ const styles = rootHeight => theme => ({
         alignItems: 'center',
         justifyContent: 'flex-end',
         padding: '0 8px',
-        ...theme.mixins.toolbar,
     },
     content: {
         width: '100%',
@@ -133,6 +131,8 @@ class Menu extends Component {
                 return MusicIcon;
             case '/icons/mi/movie':
                 return MovieIcon;
+            case '/icons/mi/close':
+                return PowerIcon;
             default:
                 return BugIcon;
         }
@@ -155,7 +155,7 @@ class Menu extends Component {
     };
 
     render() {
-        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, powerOff, children} = this.props;
+        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
         const drawer = (
             <Drawer type="permanent"
                     classes={{
@@ -165,19 +165,6 @@ class Menu extends Component {
                 <div className={classes.drawerInner}>
                     <div className={classes.drawerHeader}/>
                     <List className={classes.list}>
-                        {powerOff
-                            ?
-                            <ListItem button
-                                      key={POWER_OFF}
-                                      onClick={powerOff}
-                                      className={classes.listItem}>
-                                <ListItemIcon>
-                                    <PowerIcon className={classes.icon}/>
-                                </ListItemIcon>
-                                <ListItemText primary={POWER_OFF}/>
-                            </ListItem>
-                            : null
-                        }
                         <ListItem button
                                   key={SETTINGS}
                                   onClick={() => handler(SETTINGS)}
@@ -199,14 +186,14 @@ class Menu extends Component {
                 <div className={classes.appFrame}>
                     <AppBar className={classNames(classes.appBar)}>
                         <Toolbar disableGutters={true}>
-                            <Typography type="title" color="inherit" className={classes.title}>
+                            <Typography type="subheading" color="inherit" className={classes.title}>
                                 {selectorTitle}
                             </Typography>
                             {selector}
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup="true"
                                         onClick={toggleFullScreen}
-                                        color="contrast">
+                                        color="inherit">
                                 {fsIcon}
                             </IconButton>
                         </Toolbar>
@@ -231,7 +218,6 @@ Menu.propTypes = {
     commands: PropTypes.array.isRequired,
     selectedCommand: PropTypes.object,
     selector: PropTypes.any,
-    powerOff: PropTypes.func
 };
 
 // 100% works in fullscreen, window.innerHeight works otherwise

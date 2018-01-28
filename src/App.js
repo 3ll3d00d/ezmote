@@ -29,7 +29,6 @@ const theme = createMuiTheme({
 });
 
 export const SETTINGS = 'Settings';
-export const POWER_OFF = 'PowerOff';
 
 class App extends Component {
     state = {
@@ -90,10 +89,6 @@ class App extends Component {
         return null;
     };
 
-    powerOff = () => {
-        this.props.stopAllPlaying();
-    };
-
     render() {
         const {commands, errors, jriverIsDead, playingNow} = this.props;
         const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
@@ -110,8 +105,7 @@ class App extends Component {
                                    selector={this.getSelector(selectedCommand)}
                                    commands={commands}
                                    fullscreen={fullscreen}
-                                   toggleFullScreen={this.toggleFullScreen}
-                                   powerOff={this.powerOff}>
+                                   toggleFullScreen={this.toggleFullScreen}>
                         <Grid container>
                             <Grid item xs={12}>
                                 {selected === SETTINGS || !playingNowCommand

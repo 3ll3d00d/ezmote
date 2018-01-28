@@ -42,7 +42,7 @@ class Config extends Component {
 
     state = {
         showPassword: false,
-        showDebug: true
+        showDebug: false
     };
 
     changeDebug = () => {
@@ -164,7 +164,7 @@ class Config extends Component {
                         <Switch checked={this.state.showDebug}
                                 onChange={this.changeDebug}/>
                     }
-                    label="Show Debug Timer Info?"/>
+                    label="Show Debug Info?"/>
                 {
                     this.state.showDebug
                         ?

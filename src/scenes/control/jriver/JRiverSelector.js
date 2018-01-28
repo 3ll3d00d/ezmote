@@ -82,7 +82,7 @@ const getSuggestionValue = suggestion => suggestion.name;
 const styles = theme => ({
     searchBox: {
         display: 'flex',
-        flex: 3,
+        flex: 6,
         flexDirection: 'row'
     },
     container: {

@@ -39,8 +39,8 @@ class JRiver extends Component {
             <div className={classes.root}>
                 <Tabs fullWidth
                       centered
-                      indicatorColor="accent"
-                      textColor="accent"
+                      indicatorColor="secondary"
+                      textColor="secondary"
                       value={this.state.value}
                       onChange={this.handleChange}>
                     <Tab label="Playing Now" className={classes.smallTab}/>
