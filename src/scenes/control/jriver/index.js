@@ -17,7 +17,10 @@ import {withStyles} from 'material-ui/styles';
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        marginTop: theme.spacing.unit * 3,
+        marginTop: 0,
+    },
+    smallTab: {
+        height: '36px'
     },
 });
 
@@ -36,12 +39,12 @@ class JRiver extends Component {
             <div className={classes.root}>
                 <Tabs fullWidth
                       centered
-                      indicatorColor="accent"
-                      textColor="accent"
+                      indicatorColor="secondary"
+                      textColor="secondary"
                       value={this.state.value}
                       onChange={this.handleChange}>
-                    <Tab label="Playing Now"/>
-                    <Tab label="Remote Control"/>
+                    <Tab label="Playing Now" className={classes.smallTab}/>
+                    <Tab label="Remote Control" className={classes.smallTab}/>
                 </Tabs>
                 {
                     this.state.value === 0

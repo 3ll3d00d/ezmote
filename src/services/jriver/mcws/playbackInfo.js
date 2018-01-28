@@ -5,7 +5,7 @@ export const PLAYING = 'Playing';
 
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
-        let val = {active: true, playingNow: {}};
+        let val = {active: true, playingNow: {artist:null, album: null}};
         let hasName = false;
         json.Response.Item.forEach(item => {
             switch (item._attributes.Name) {

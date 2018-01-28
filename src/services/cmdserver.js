@@ -27,7 +27,7 @@ class CmdServerService {
         if (!response.ok) {
             throw new Error(`CmdServer.getPlayingNow failed, HTTP status ${response.status}`);
         }
-        return await response.text();
+        return await response.json();
     };
 
     /**

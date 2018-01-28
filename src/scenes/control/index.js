@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Volume from "./Volume";
 import JRiver from "./jriver";
 import Tivo from "./tivo";
-import Info from "./Info";
 import {getActiveZone} from "../../store/jriver/reducer";
 import {getConfig} from "../../store/config/reducer";
 import {connect} from "react-redux";
@@ -31,7 +30,6 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand}) => {
             <div>
                 <Volume/>
                 {Controller ? <Controller/> : null}
-                <Info activeZone={activeZone}/>
             </div>
         );
     }

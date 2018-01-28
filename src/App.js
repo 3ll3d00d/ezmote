@@ -29,10 +29,10 @@ const theme = createMuiTheme({
 });
 
 export const SETTINGS = 'Settings';
-export const POWER_OFF = 'PowerOff';
 
 class App extends Component {
     state = {
+        hasSelected: false,
         selected: SETTINGS,
         fullscreen: false
     };
@@ -44,7 +44,13 @@ class App extends Component {
 
     componentWillReceiveProps = (nextProps) => {
         if (!nextProps.config.valid) {
-            this.setState({selected: SETTINGS});
+            this.setState({selected: SETTINGS, hasSelected: false});
+        } else if (!this.state.hasSelected) {
+            const {commands, playingNow} = nextProps;
+            const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
+            if (playingNowCommand) {
+                this.setState({selected: playingNowCommand.id, hasSelected: false});
+            }
         }
     };
 
@@ -55,14 +61,14 @@ class App extends Component {
     handleMenuSelect = (selected) => {
         const {sendCommand} = this.props;
         if (typeof selected === 'string') {
-            this.setState({selected: selected});
+            this.setState({selected: selected, hasSelected: true});
         } else {
             if (selected.hasOwnProperty('control') && selected.control === 'jriver') {
                 // only send the command when we select something to play
             } else {
                 sendCommand(selected);
             }
-            this.setState({selected: selected.id});
+            this.setState({selected: selected.id, hasSelected: true});
         }
     };
 
@@ -83,10 +89,6 @@ class App extends Component {
         return null;
     };
 
-    powerOff = () => {
-        this.props.stopAllPlaying();
-    };
-
     render() {
         const {commands, errors, jriverIsDead, playingNow} = this.props;
         const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
@@ -103,8 +105,7 @@ class App extends Component {
                                    selector={this.getSelector(selectedCommand)}
                                    commands={commands}
                                    fullscreen={fullscreen}
-                                   toggleFullScreen={this.toggleFullScreen}
-                                   powerOff={this.powerOff}>
+                                   toggleFullScreen={this.toggleFullScreen}>
                         <Grid container>
                             <Grid item xs={12}>
                                 {selected === SETTINGS || !playingNowCommand

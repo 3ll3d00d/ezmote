@@ -72,7 +72,7 @@ const reduce = (state = initialState, action = {}) => {
             break;
         case types.SET_ZONE:
             Object.keys(state.zones).forEach(z => {
-                state = Immutable.setIn(state, ['zones', z, 'active'], z === action.payload.zoneId);
+                state = Immutable.setIn(state, ['zones', z, 'active'], z.toString() === action.payload.zoneId.toString());
             });
             break;
         // errors

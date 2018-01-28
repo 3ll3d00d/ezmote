@@ -27,7 +27,7 @@ const Disconnected = ({classes, server}) => {
             </Grid>
             <Grid container alignItems={'center'} justify={'center'}>
                 <Grid item xs>
-                    <Typography color={'accent'} type={'display1'}>
+                    <Typography color={'secondary'} type={'display1'}>
                         Unable to connect to {server}
                     </Typography>
                 </Grid>

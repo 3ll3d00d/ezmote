@@ -16,6 +16,8 @@ import Switch from "material-ui/Switch";
 import {Visibility, VisibilityOff} from "material-ui-icons";
 import timer from "../../services/timer";
 import Grid from "material-ui/Grid";
+import {getActiveZone} from "../../store/jriver/reducer";
+import Info from "./Info";
 
 const styles = (theme) => ({
     container: {
@@ -40,12 +42,12 @@ class Config extends Component {
 
     state = {
         showPassword: false,
-        showTimers: true
+        showDebug: false
     };
 
     changeDebug = () => {
         this.setState((prevState, prevProps) => {
-            return {showTimers: !prevState.showTimers};
+            return {showDebug: !prevState.showDebug};
         });
     };
 
@@ -86,7 +88,7 @@ class Config extends Component {
     };
 
     render() {
-        const {classes, config} = this.props;
+        const {classes, config, activeZone} = this.props;
 
         return (
             <div className={classes.container}>
@@ -159,16 +161,22 @@ class Config extends Component {
                 </FormControl>
                 <FormControlLabel
                     control={
-                        <Switch checked={this.state.showTimers}
+                        <Switch checked={this.state.showDebug}
                                 onChange={this.changeDebug}/>
                     }
-                    label="Show Debug Timer Info?"/>
+                    label="Show Debug Info?"/>
                 {
-                    this.state.showTimers
+                    this.state.showDebug
                         ?
                         <Grid container>
                             {timer.getPollerData().map(p => this.timerAsListItem(p))}
                         </Grid>
+                        : null
+                }
+                {
+                    this.state.showDebug
+                        ?
+                        <Info activeZone={activeZone}/>
                         : null
                 }
             </div>
@@ -177,7 +185,10 @@ class Config extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {config: getConfig(state)};
+    return {
+        config: getConfig(state),
+        activeZone: getActiveZone(state),
+    };
 };
 
 export default connect(mapStateToProps, {updateValue})(withStyles(styles)(Config));

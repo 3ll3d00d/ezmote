@@ -14,9 +14,9 @@ import {muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";
 import {getConfig} from "../../store/config/reducer";
 
 const styles = theme => ({
-    padded: {
-        marginBottom: '8px'
-    },
+    smallButton: {
+        height: theme.spacing.unit * 3
+    }
 });
 
 class Volume extends Component {
@@ -40,11 +40,13 @@ class Volume extends Component {
     };
 
     makeMuteButton = (zoneId) => {
-        const {zone} = this.props;
+        const {zone, classes} = this.props;
         if (zone.muted) {
-            return <IconButton onClick={this.unmuteVolume(zoneId)}><VolumeUp/></IconButton>;
+            return <IconButton className={classes.smallButton}
+                               onClick={this.unmuteVolume(zoneId)}><VolumeUp/></IconButton>;
         } else {
-            return <IconButton onClick={this.muteVolume(zoneId)}><VolumeOff/></IconButton>;
+            return <IconButton className={classes.smallButton}
+                               onClick={this.muteVolume(zoneId)}><VolumeOff/></IconButton>;
         }
     };
 
@@ -53,12 +55,13 @@ class Volume extends Component {
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
-                <Grid className={classes.padded} container justify={'space-around'} alignItems={'center'} spacing={8}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={8}>
                     <Grid item xs={2}>
                         {this.makeMuteButton(zone.id)}
                     </Grid>
                     <Grid item xs={2}>
-                        <IconButton disabled={zone.volumeRatio === 0}
+                        <IconButton className={classes.smallButton}
+                                    disabled={zone.volumeRatio === 0}
                                     onClick={() => this.tweakVolume(zone.id, zone.volumeRatio - 0.01)}>
                             <ChevronLeft/>
                         </IconButton>
@@ -71,7 +74,8 @@ class Volume extends Component {
                                 value={currentVolume}/>
                     </Grid>
                     <Grid item xs={2}>
-                        <IconButton disabled={zone.volumeRatio === 1}
+                        <IconButton className={classes.smallButton}
+                                    disabled={zone.volumeRatio === 1}
                                     onClick={() => this.tweakVolume(zone.id, zone.volumeRatio + 0.01)}>
                             <ChevronRight/>
                         </IconButton>
