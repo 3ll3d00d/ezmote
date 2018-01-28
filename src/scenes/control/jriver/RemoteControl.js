@@ -26,14 +26,15 @@ const styles = (theme) => ({
         margin: theme.spacing.unit,
     },
     padded: {
-        marginTop: '1em'
+        marginTop: '1em',
     },
     smallPadded: {
         marginTop: '0.25em',
         marginBottom: '0.25em'
     },
     bordered: {
-        border: '2px solid black'
+        borderTop: '2px solid black',
+        borderBottom: '2px solid black'
     },
     rcButton: {
         minWidth: '32px'

@@ -18,6 +18,7 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand}) => {
                 break;
             case 'jriver':
                 Controller = JRiver;
+                Controller = Tivo;
                 break;
             default:
                 Controller = null;

@@ -46,25 +46,24 @@ const styles = (theme) => ({
     formControl: {
         margin: theme.spacing.unit,
     },
-    padded: {
-        marginTop: '1em'
-    },
     smallPadded: {
         marginTop: '0.25em',
         marginBottom: '0.25em'
     },
     bordered: {
-        border: '2px solid black'
+        borderTop: '2px solid black',
+        borderBottom: '2px solid black'
     },
     rcButton: {
-        minWidth: '32px'
+        minWidth: '32px',
     },
     roundButton: {
         borderRadius: '100%'
     },
     playButton: {
-        minWidth: '16px',
-        width: '16px',
+        minWidth: '24px',
+        width: '24px',
+        height: theme.spacing.unit * 3
     },
     blue: {
         color: 'blue',
@@ -158,7 +157,7 @@ class RemoteControl extends Component {
     render() {
         const {classes, currentChannel} = this.props;
         return (
-            <Grid container className={classNames(classes.padded, classes.bordered)}>
+            <Grid container className={classes.bordered}>
                 {currentChannel
                     ?
                     <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
@@ -170,7 +169,7 @@ class RemoteControl extends Component {
                         </Grid>
                     </Grid>
                     : null}
-                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={0}>
                     <Grid item sm={5} md={3}>
                         <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
@@ -198,7 +197,7 @@ class RemoteControl extends Component {
                                 {this.makeRCButton({key: codes.BACK, CI: ExitToApp})}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={8}>
                             <Grid item>
                                 {this.makePlayButton({
                                     key: codes.REWIND,
@@ -235,7 +234,7 @@ class RemoteControl extends Component {
                                 })}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={8}>
                             <Grid item>
                                 {this.makePlayButton({
                                     key: codes.REPLAY,
@@ -283,9 +282,9 @@ class RemoteControl extends Component {
                         </Grid>
                     </Grid>
                     <Grid item sm={5} md={3}>
-                        <Grid container justify={'center'} alignItems={'center'}>
+                        <Grid container justify={'center'} alignItems={'center'} spacing={8}>
                             <Grid item xs={6}>
-                                <FormControl className={classes.formControl}>
+                                <FormControl className={classes.formControl} margin="dense">
                                     <Input value={this.state.text}
                                            id="textinput"
                                            label="Text Input"

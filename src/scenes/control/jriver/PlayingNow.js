@@ -21,27 +21,26 @@ const styles = theme => ({
         background: theme.palette.background.default
     },
     content: {
-        flex: '1 100%'
+        flex: '1 100%',
+        padding: theme.spacing.unit
     },
     cover: {
-        height: 300,
+        height: 280,
         width: 300
     },
     controls: {
-        flex: 'auto',
-        paddingLeft: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
+        flex: 'auto'
     },
     icon: {
         height: 38,
         width: 38,
     },
     tabAware: {
-        marginTop: '1em'
+        marginTop: '0.25em'
     },
     paddedContainer: {
         marginTop: '0em',
-        marginBottom: '0.5em'
+        marginBottom: '0em'
     }
 });
 
@@ -55,12 +54,22 @@ const hhmmss = (millis) => {
     return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
 };
 
+const AlbumArtist = ({playingNow}) => {
+    const text = `${playingNow.artist} / ${playingNow.album}`;
+    const format = text.length > 48 ? 'Body 2' : 'subheading';
+    return (
+        <Typography type={format} color="secondary">
+            {text}
+        </Typography>
+    );
+};
+
 const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
     const {playPause, stopPlaying, playNext, playPrevious, setPosition} = controls;
     return (
         <Card className={classes.card} elevation={0}>
             <Grid container className={classes.tabAware}>
-                <Grid container justify={'space-around'} alignItems={'center'} className={classes.paddedContainer}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={0}>
                     <Grid item>
                         <Chip label={hhmmss(playingNow.positionMillis)}/>
                     </Grid>
@@ -76,7 +85,6 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                         <Slider id="position-slider"
                                 discrete
                                 min={0}
-                                disabled={playingNow.status === 'Stopped'}
                                 max={Math.round(playingNow.durationMillis / 1000)}
                                 value={Math.round(playingNow.positionMillis / 1000)}
                                 onChange={(value, event) => playingNow.status !== 'Stopped' && setPosition(zoneId, value * 1000)}/>
@@ -87,7 +95,7 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 authToken
                     ?
                     <CardMedia className={classes.cover}
-                               image={`${playingNow.imageURL}&Token=${authToken}`}
+                               image={`${playingNow.imageURL}&Token=${authToken}&Format=png&Width=300&Height=300`}
                                title={playingNow.artist ? `${playingNow.artist}/${playingNow.album}` : playingNow.name}/>
                     : null
             }
@@ -96,9 +104,7 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 {
                     playingNow.artist
                         ?
-                        <Typography type="subheading" color="secondary">
-                            {playingNow.artist} / {playingNow.album}
-                        </Typography>
+                        <AlbumArtist playingNow={playingNow}/>
                         : null
                 }
             </CardContent>

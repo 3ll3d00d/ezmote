@@ -76,7 +76,7 @@ const styles = rootHeight => theme => ({
         width: '100%',
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
-        padding: 24,
+        padding: '8px',
         height: 'calc(100% - 56px)',
         marginTop: 56,
         [theme.breakpoints.up('sm')]: {
