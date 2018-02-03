@@ -38,16 +38,22 @@ class App extends Component {
     };
 
     componentDidMount = () => {
-        this.props.isAlive();
+        if (this.props.config.valid) {
+            this.props.isAlive();
+        }
         this.props.fetchCommands();
     };
 
     componentWillReceiveProps = (nextProps) => {
         if (!nextProps.config.valid) {
             this.setState({selected: SETTINGS, hasSelected: false});
-        } else if (!this.state.hasSelected) {
+        } else if (nextProps.config.valid && !this.props.config.valid) {
+            console.log("Initialising alive calls on config validation")
+            this.props.isAlive();
+        } 
+        if (!this.state.hasSelected && nextProps.config.valid) {
             const {commands, playingNow} = nextProps;
-            const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
+            const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c.title === playingNow) : null;
             if (playingNowCommand) {
                 this.setState({selected: playingNowCommand.id, hasSelected: false});
             }

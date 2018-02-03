@@ -28,7 +28,7 @@ const reduce = (state = initialState, action = {}) => {
 };
 
 const isValidValue = (config, key) => {
-    return config.hasOwnProperty(key) && config[key];
+    return config.hasOwnProperty(key) && config[key] && config[key] !== "";
 };
 
 const collectInvalid = (config, invalids, field) => {
