@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
+import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
 import {FullScreenMenu, NotFullScreenMenu} from "./scenes/menu";
-import Grid from "material-ui/Grid";
-import grey from 'material-ui/colors/grey';
-import blueGrey from 'material-ui/colors/blueGrey';
-import red from 'material-ui/colors/red';
+import Grid from '@material-ui/core/Grid';
+import grey from '@material-ui/core/colors/grey';
+import blueGrey from '@material-ui/core/colors/blueGrey';
+import red from '@material-ui/core/colors/red';
 import Fullscreen from "react-full-screen";
 import {connect} from 'react-redux';
 import {isAlive, stopAllPlaying, stopAllPollers} from "./store/jriver/actions";

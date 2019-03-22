@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Tabs, {Tab} from 'material-ui/Tabs';
+import Tabs, {Tab} from '@material-ui/core/Tabs';
 import PlayingNow from "./PlayingNow";
 import RemoteControl from "./RemoteControl";
 import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
@@ -12,7 +12,7 @@ import {
     stopPlaying
 } from "../../../store/jriver/actions";
 import {connect} from "react-redux";
-import {withStyles} from 'material-ui/styles';
+import {withStyles} from '@material-ui/core/styles';
 
 const styles = theme => ({
     root: {

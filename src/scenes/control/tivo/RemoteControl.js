@@ -1,43 +1,43 @@
 import React, {Component} from 'react';
-import Grid from "material-ui/Grid";
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import UpArrow from 'material-ui-icons/ArrowUpward';
-import DownArrow from 'material-ui-icons/ArrowDownward';
-import LeftArrow from 'material-ui-icons/ArrowBack';
-import RightArrow from 'material-ui-icons/ArrowForward';
-import Check from 'material-ui-icons/Check';
-import Send from 'material-ui-icons/Send';
-import Delete from 'material-ui-icons/Delete';
-import ThumbUp from 'material-ui-icons/ThumbUp';
-import ThumbDown from 'material-ui-icons/ThumbDown';
-import LiveTV from 'material-ui-icons/LiveTv';
-import Home from 'material-ui-icons/Home';
-import ExitToApp from 'material-ui-icons/ExitToApp';
-import ExpandLess from 'material-ui-icons/ExpandLess';
-import ExpandMore from 'material-ui-icons/ExpandMore';
-import InfoOutline from 'material-ui-icons/InfoOutline';
-import SkipPrevious from 'material-ui-icons/SkipPrevious';
-import PlayArrow from 'material-ui-icons/PlayArrow';
-import Pause from 'material-ui-icons/Pause';
-import Stop from 'material-ui-icons/Stop';
-import SkipNext from 'material-ui-icons/SkipNext';
-import FastForward from 'material-ui-icons/FastForward';
-import FastRewind from 'material-ui-icons/FastRewind';
-import SlowMotionVideo from 'material-ui-icons/SlowMotionVideo';
-import VideoLibrary from 'material-ui-icons/VideoLibrary';
-import FeaturedPlaylist from 'material-ui-icons/FeaturedPlayList';
-import FormControl from "material-ui/Form/FormControl";
-import Tooltip from "material-ui/Tooltip/Tooltip";
-import Input from 'material-ui/Input';
+import Grid from "@material-ui/core/Grid";
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import UpArrow from '@material-ui/icons/ArrowUpward';
+import DownArrow from '@material-ui/icons/ArrowDownward';
+import LeftArrow from '@material-ui/icons/ArrowBack';
+import RightArrow from '@material-ui/icons/ArrowForward';
+import Check from '@material-ui/icons/Check';
+import Send from '@material-ui/icons/Send';
+import Delete from '@material-ui/icons/Delete';
+import ThumbUp from '@material-ui/icons/ThumbUp';
+import ThumbDown from '@material-ui/icons/ThumbDown';
+import LiveTV from '@material-ui/icons/LiveTv';
+import Home from '@material-ui/icons/Home';
+import ExitToApp from '@material-ui/icons/ExitToApp';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import InfoOutlined from '@material-ui/icons/InfoOutlined';
+import SkipPrevious from '@material-ui/icons/SkipPrevious';
+import PlayArrow from '@material-ui/icons/PlayArrow';
+import Pause from '@material-ui/icons/Pause';
+import Stop from '@material-ui/icons/Stop';
+import SkipNext from '@material-ui/icons/SkipNext';
+import FastForward from '@material-ui/icons/FastForward';
+import FastRewind from '@material-ui/icons/FastRewind';
+import SlowMotionVideo from '@material-ui/icons/SlowMotionVideo';
+import VideoLibrary from '@material-ui/icons/VideoLibrary';
+import FeaturedPlaylist from '@material-ui/icons/FeaturedPlayList';
+import FormControl from "@material-ui/core/FormControl";
+import Tooltip from "@material-ui/core/Tooltip/Tooltip";
+import Input from '@material-ui/core/Input';
 import {connect} from "react-redux";
 import {getConfig} from "../../../store/config/reducer";
-import {withStyles} from "material-ui/styles/index";
+import {withStyles} from "@material-ui/core/styles/index";
 import {sendIRToTivo, sendTextToTivo} from '../../../store/tivos/actions';
 import * as codes from './CommandCodes';
 import classNames from 'classnames';
 import {getCurrentChannel} from "../../../store/tivos/reducer";
-import {FormHelperText} from "material-ui/Form";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const styles = (theme) => ({
     input: {
@@ -186,7 +186,7 @@ class RemoteControl extends Component {
                             <Grid item>
                                 {this.makeRCButton({
                                     key: codes.INFO,
-                                    CI: InfoOutline,
+                                    CI: InfoOutlined,
                                     classes: this.getRoundButtonClasses()
                                 })}
                             </Grid>
