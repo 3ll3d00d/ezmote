@@ -28,7 +28,7 @@ const Errors = ({errors}) => {
                 horizontal: 'center',
             }}
             open={hasErrors(errors)}
-            SnackbarContentProps={{
+            ContentProps={{
                 'aria-describedby': 'message-id',
             }}
             message={<Error errors={errors}/>}

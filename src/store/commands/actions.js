@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import keyBy from 'lodash.keyby';
 import * as types from "./actionTypes";
 import cmdserver from '../../services/cmdserver';
 import {activateZone, setVolume, stopAllPlaying} from "../jriver/actions";
@@ -15,7 +15,7 @@ const fetchCommands = () => {
     return async (dispatch, getState) => {
         try {
             const commands = await cmdserver.getCommands();
-            const byId = _.keyBy(commands, 'id');
+            const byId = keyBy(commands, 'id');
             dispatch({type: types.COMMANDS_FETCHED, payload: byId});
         } catch (error) {
             dispatchError(dispatch, types.COMMANDS_FETCHED_FAIL, error);

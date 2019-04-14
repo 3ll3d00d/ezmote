@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import keyBy from 'lodash.keyby';
 import * as types from "./actionTypes";
 import jriver from '../../services/jriver';
 import poller from '../../services/timer';
@@ -151,7 +151,7 @@ const muteVolume = (zoneId) => {
     return _invoke(types.MUTE_VOLUME, types.MUTE_VOLUME_FAIL, (config) => mcws.playbackMute(config, zoneId, true), _dispatchMute(zoneId));
 };
 
-/**
+/*
  * unmutes the volume in the specified zone.
  * @param zoneId the zoneId.
  */
@@ -180,7 +180,7 @@ const setVolume = (zoneId, volume) => {
  */
 const fetchZones = () => {
     return _invoke(types.FETCH_ZONES, types.FETCH_ZONES_FAIL, (config) => mcws.playbackZones(config), (successAction, response, state, dispatch) => {
-        const zonesById = _.keyBy(response, 'id');
+        const zonesById = keyBy(response, 'id');
         _ensureZoneInfoPollerIsRunning(response, state, dispatch);
         dispatch({type: successAction, payload: zonesById});
     });

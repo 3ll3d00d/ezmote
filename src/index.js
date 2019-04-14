@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import 'typeface-roboto'
 import {Provider} from 'react-redux';
 import App from './App';
-import {PersistGate} from "redux-persist/es/integration/react";
+import {PersistGate} from "redux-persist/lib/integration/react";
 import {configureStore} from "./store/store";
 const {persistor, store} = configureStore();
 

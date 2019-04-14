@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import _ from "lodash";
+import debounce from "lodash.debounce";
 import {withStyles} from '@material-ui/core/styles';
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
@@ -16,6 +16,12 @@ import {getConfig} from "../../store/config/reducer";
 const styles = theme => ({
     smallButton: {
         height: theme.spacing.unit * 3
+    },
+    volumeSlider: {
+        paddingTop: theme.spacing.unit * 3
+    },
+    volumeContainer: {
+        paddingBottom: theme.spacing.unit * 3
     }
 });
 
@@ -25,11 +31,11 @@ class Volume extends Component {
         this.props.setVolume(zoneId, newVolume);
     };
 
-    setVolume = zoneId => (value, event) => {
+    setVolume = zoneId => (event, value) => {
         this.props.setVolume(zoneId, value / 100);
     };
 
-    slowSetVolume = zoneId => _.debounce(this.setVolume(zoneId), 50);
+    slowSetVolume = zoneId => debounce(this.setVolume(zoneId), 50);
 
     muteVolume = zoneId => () => {
         this.props.muteVolume(zoneId);
@@ -55,7 +61,7 @@ class Volume extends Component {
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
-                <Grid container justify={'space-around'} alignItems={'center'} spacing={8}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={8} className={classes.volumeContainer}>
                     <Grid item xs={2}>
                         {this.makeMuteButton(zone.id)}
                     </Grid>
@@ -68,10 +74,12 @@ class Volume extends Component {
                     </Grid>
                     <Grid item xs={6}>
                         <Slider id="volume-slider"
-                                discrete
-                                discreteTicks={20}
+                                min={0}
+                                max={100}
+                                step={1}
                                 onChange={this.slowSetVolume(zone.id)}
-                                value={currentVolume}/>
+                                value={currentVolume}
+                                className={classes.volumeSlider}/>
                     </Grid>
                     <Grid item xs={2}>
                         <IconButton className={classes.smallButton}

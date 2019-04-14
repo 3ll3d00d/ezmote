@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import Tabs, {Tab} from '@material-ui/core/Tabs';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import PlayingNow from "./PlayingNow";
 import RemoteControl from "./RemoteControl";
 import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
@@ -16,8 +17,7 @@ import {withStyles} from '@material-ui/core/styles';
 
 const styles = theme => ({
     root: {
-        flexGrow: 1,
-        marginTop: 0,
+        flexGrow: 1
     },
     smallTab: {
         height: '36px'
@@ -37,8 +37,8 @@ class JRiver extends Component {
         const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, classes} = this.props;
         return (
             <div className={classes.root}>
-                <Tabs fullWidth
-                      centered
+                <Tabs variant={'fullWidth'}
+                      centered={true}
                       indicatorColor="secondary"
                       textColor="secondary"
                       value={this.state.value}

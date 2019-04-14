@@ -41,11 +41,17 @@ const styles = theme => ({
         width: 38,
     },
     tabAware: {
-        marginTop: '0.25em'
+        marginTop: '1em'
     },
     paddedContainer: {
         marginTop: '0em',
         marginBottom: '0em'
+    },
+    volumeSlider: {
+        paddingTop: theme.spacing.unit * 3
+    },
+    volumeContainer: {
+        paddingBottom: theme.spacing.unit * 3
     }
 });
 
@@ -61,7 +67,7 @@ const hhmmss = (millis) => {
 
 const AlbumArtist = ({playingNow}) => {
     const text = `${playingNow.artist} / ${playingNow.album}`;
-    const format = text.length > 48 ? 'body2' : 'subheading';
+    const format = text.length > 48 ? 'body2' : 'h6';
     return (
         <Typography type={format} color="textSecondary">
             {text}
@@ -73,8 +79,8 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
     const {playPause, stopPlaying, playNext, playPrevious, setPosition} = controls;
     return (
         <Card className={classes.card} elevation={0}>
-            <Grid container className={classes.tabAware}>
-                <Grid container justify={'space-around'} alignItems={'center'} spacing={0}>
+            <Grid container className={classes.tabAware} spacing={8}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={8}>
                     <Grid item>
                         <Chip label={hhmmss(playingNow.positionMillis)}/>
                     </Grid>
@@ -85,14 +91,14 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                         <Chip label={hhmmss(playingNow.durationMillis - playingNow.positionMillis)}/>
                     </Grid>
                 </Grid>
-                <Grid container justify={'center'} className={classes.paddedContainer}>
+                <Grid container justify={'center'} className={classes.volumeContainer}>
                     <Grid item xs={10}>
                         <Slider id="position-slider"
-                                discrete
                                 min={0}
                                 max={Math.round(playingNow.durationMillis / 1000)}
                                 value={Math.round(playingNow.positionMillis / 1000)}
-                                onChange={(value, event) => playingNow.status !== 'Stopped' && setPosition(zoneId, value * 1000)}/>
+                                onChange={(value, event) => playingNow.status !== 'Stopped' && setPosition(zoneId, value * 1000)}
+                                className={classes.volumeSlider}/>
                     </Grid>
                 </Grid>
             </Grid>
@@ -106,7 +112,7 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                     : null
             }
             <CardContent className={classes.content}>
-                <Typography type="headline">{playingNow.name}</Typography>
+                <Typography type="h5">{playingNow.name}</Typography>
                 {
                     playingNow.artist
                         ?
@@ -115,21 +121,21 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 }
             </CardContent>
             <div className={classes.controls}>
-                <IconButton aria-label="Previous">
-                    <SkipPreviousIcon onClick={() => playPrevious(zoneId)} className={classes.icon}/>
+                <IconButton aria-label="Previous" onClick={() => playPrevious(zoneId)}>
+                    <SkipPreviousIcon className={classes.icon}/>
                 </IconButton>
-                <IconButton aria-label="Play/pause">
+                <IconButton aria-label="Play/pause" onClick={() => playPause(zoneId)}>
                     {
                         (playingNow.status === 'Stopped' || playingNow.status === 'Paused')
-                            ? <PlayArrowIcon onClick={() => playPause(zoneId)} className={classes.icon}/>
-                            : <PauseIcon onClick={() => playPause(zoneId)} className={classes.icon}/>
+                            ? <PlayArrowIcon className={classes.icon}/>
+                            : <PauseIcon className={classes.icon}/>
                     }
                 </IconButton>
-                <IconButton aria-label="Stop">
-                    <StopIcon onClick={() => stopPlaying(zoneId)} className={classes.icon}/>
+                <IconButton aria-label="Stop" onClick={() => stopPlaying(zoneId)}>
+                    <StopIcon className={classes.icon}/>
                 </IconButton>
-                <IconButton aria-label="Next">
-                    <SkipNextIcon onClick={() => playNext(zoneId)} className={classes.icon}/>
+                <IconButton aria-label="Next" onClick={() => playNext(zoneId)}>
+                    <SkipNextIcon className={classes.icon}/>
                 </IconButton>
             </div>
         </Card>

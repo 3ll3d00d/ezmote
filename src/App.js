@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import grey from '@material-ui/core/colors/grey';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 import red from '@material-ui/core/colors/red';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Fullscreen from "react-full-screen";
 import {connect} from 'react-redux';
 import {isAlive, stopAllPlaying, stopAllPollers} from "./store/jriver/actions";
@@ -18,13 +19,17 @@ import TivoChannelSelector from "./scenes/control/tivo/TivoChannelSelector";
 import JRiverSelector from "./scenes/control/jriver/JRiverSelector";
 import Errors from "./scenes/errors";
 import {getPlayingNow} from "./store/playingnow/reducer";
+import debounce from 'lodash.debounce';
 
 const theme = createMuiTheme({
     palette: {
         type: 'dark',
         primary: grey,
         secondary: blueGrey,
-        error: red
+        error: red,
+    },
+    typography: {
+        useNextVariants: true
     }
 });
 
@@ -44,14 +49,19 @@ class App extends Component {
         this.props.fetchCommands();
     };
 
+    doIsAlive = () => {
+        console.log("Initialising alive calls on config validation");
+        this.props.isAlive();
+    };
+
+    debounceIsAlive = debounce(this.doIsAlive, 1000, {leading:false, trailing:true});
+
     componentWillReceiveProps = (nextProps) => {
         if (!nextProps.config.valid) {
             this.setState({selected: SETTINGS, hasSelected: false});
         } else if (nextProps.config.valid && !this.props.config.valid) {
-            console.log("Initialising alive calls on config validation")
-            this.props.isAlive();
-        } 
-        if (!this.state.hasSelected && nextProps.config.valid) {
+            this.debounceIsAlive();
+        } else if (!this.state.hasSelected && nextProps.config.valid) {
             const {commands, playingNow} = nextProps;
             const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c.title === playingNow) : null;
             if (playingNowCommand) {
@@ -97,14 +107,15 @@ class App extends Component {
 
     render() {
         const {commands, errors, jriverIsDead, playingNow} = this.props;
-        const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
+        const playingNowCommand = playingNow ? commands.find(c => c && c.title === playingNow) : null;
         const {selected, fullscreen} = this.state;
-        const selectedCommand = selected !== SETTINGS ? commands.find(c => c.id === selected) : null;
+        const selectedCommand = selected !== SETTINGS ? commands.find(c => c && c.id === selected) : null;
         const selectorTitle = selected === SETTINGS ? SETTINGS : selectedCommand ? selectedCommand.title : null;
         const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
         return (
             <Fullscreen enabled={fullscreen}>
                 <MuiThemeProvider theme={theme}>
+                    <CssBaseline />
                     <MenuComponent handler={this.handleMenuSelect}
                                    selectorTitle={selectorTitle}
                                    selectedCommand={selectedCommand}

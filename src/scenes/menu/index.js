@@ -19,7 +19,6 @@ import MusicIcon from '@material-ui/icons/LibraryMusic';
 import BugIcon from '@material-ui/icons/BugReport';
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar/Avatar";
 import {SETTINGS} from "../../App";
@@ -41,9 +40,6 @@ const styles = rootHeight => theme => ({
         height: '100%',
     },
     appBar: {
-        position: 'absolute',
-        left: `${drawerWidth}px`,
-        paddingRight: `${drawerWidth}px`,
         zIndex: theme.zIndex.drawer + 1,
     },
     menuButton: {
@@ -55,32 +51,19 @@ const styles = rootHeight => theme => ({
         borderRadius: '20px',
         color: theme.palette.secondary.light
     },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
     drawerPaper: {
-        position: 'relative',
-        height: '100%',
-        width: drawerWidth,
-        overflowX: 'hidden',
-    },
-    drawerInner: {
         width: drawerWidth,
     },
-    drawerHeader: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: '0 8px',
-    },
+    toolbar: theme.mixins.toolbar,
     content: {
         width: '100%',
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
-        padding: '8px',
-        height: 'calc(100% - 56px)',
-        marginTop: 56,
-        [theme.breakpoints.up('sm')]: {
-            height: 'calc(100% - 64px)',
-            marginTop: 64,
-        },
+        padding: '8px'
     },
     title: {
         flex: 1,
@@ -139,17 +122,15 @@ class Menu extends Component {
     };
 
     renderCommandButton = (c, selectedCommand, classes, handler) => {
-        const isSelected = selectedCommand && selectedCommand.id === c.id;
-        const listItemClass = isSelected ? classNames(classes.selected, classes.listItem) : classes.listItem;
         return (
             <ListItem button
-                      className={listItemClass}
+                      className={classes.listItem}
                       key={c.id}
-                      onClick={() => handler(c)}>
+                      onClick={() => handler(c)}
+                      selected={selectedCommand && selectedCommand.id === c.id}>
                 {c.icon.startsWith('/icons/mi')
                     ? this.makeIconItem(c, classes.icon)
                     : this.makeAvatarItem(c, classNames(classes.avatar, classes.icon))}
-                <ListItemText primary={c.id}/>
             </ListItem>
         );
     };
@@ -157,26 +138,23 @@ class Menu extends Component {
     render() {
         const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
         const drawer = (
-            <Drawer type="permanent"
+            <Drawer variant="permanent"
                     classes={{
                         paper: classes.drawerPaper,
                     }}
-                    open={false}>
-                <div className={classes.drawerInner}>
-                    <div className={classes.drawerHeader}/>
-                    <List className={classes.list}>
-                        <ListItem button
-                                  key={SETTINGS}
-                                  onClick={() => handler(SETTINGS)}
-                                  className={classes.listItem}>
-                            <ListItemIcon>
-                                <SettingsIcon className={classes.icon}/>
-                            </ListItemIcon>
-                            <ListItemText primary={SETTINGS}/>
-                        </ListItem>
-                        {commands.map(c => this.renderCommandButton(c, selectedCommand, classes, handler))}
-                    </List>
-                </div>
+                    className={classes.drawer}>
+                <div className={classes.toolbar} />
+                <List className={classes.list}>
+                    <ListItem button
+                              key={SETTINGS}
+                              onClick={() => handler(SETTINGS)}
+                              className={classes.listItem}>
+                        <ListItemIcon>
+                            <SettingsIcon className={classes.icon}/>
+                        </ListItemIcon>
+                    </ListItem>
+                    {commands.filter(c => c).map(c => this.renderCommandButton(c, selectedCommand, classes, handler))}
+                </List>
             </Drawer>
         );
         const fsIcon = fullscreen ? <ExitFullScreenIcon/> : <FullScreenIcon/>;
@@ -184,9 +162,9 @@ class Menu extends Component {
         return (
             <div className={fsRoot}>
                 <div className={classes.appFrame}>
-                    <AppBar className={classNames(classes.appBar)}>
-                        <Toolbar disableGutters={true}>
-                            <Typography type="subheading" color="inherit" className={classes.title}>
+                    <AppBar position="fixed" className={classes.appBar}>
+                        <Toolbar>
+                            <Typography type="h6" color="inherit" noWrap className={classes.title}>
                                 {selectorTitle}
                             </Typography>
                             {selector}
@@ -200,6 +178,7 @@ class Menu extends Component {
                     </AppBar>
                     {drawer}
                     <main className={classes.content}>
+                        <div className={classes.toolbar} />
                         {children}
                     </main>
                 </div>

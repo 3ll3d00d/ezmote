@@ -61,7 +61,9 @@ class RemoteControl extends Component {
 
     makeRCButton = (key, CI) => {
         return (
-            <Button key={key} raised dense
+            <Button key={key}
+                    variant={'contained'}
+                    size={'small'}
                     onClick={() => this.props.controls.sendKeyPresses(key)}
                     className={this.props.classes.rcButton}>
                 <CI/>
@@ -73,8 +75,8 @@ class RemoteControl extends Component {
         const {classes} = this.props;
 
         return (
-            <Grid container className={classNames(classes.padded, classes.bordered)}>
-                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+            <Grid container className={classNames(classes.padded, classes.bordered)} spacing={8}>
+                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={8}>
                     <Grid item>
                         {this.makeRCButton('Home', FirstPage)}
                     </Grid>
@@ -88,14 +90,14 @@ class RemoteControl extends Component {
                         {this.makeRCButton('End', LastPage)}
                     </Grid>
                 </Grid>
-                <Grid container justify={'space-around'} alignItems={'center'}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={8}>
                     <Grid item>
-                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={8}>
                             <Grid item>
                                 {this.makeRCButton('Up', UpArrow)}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'space-around'} alignItems={'center'}>
+                        <Grid container justify={'space-around'} alignItems={'center'} spacing={8}>
                             <Grid item>
                                 {this.makeRCButton('Left', LeftArrow)}
                             </Grid>
@@ -106,14 +108,14 @@ class RemoteControl extends Component {
                                 {this.makeRCButton('Right', RightArrow)}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={8}>
                             <Grid item>
                                 {this.makeRCButton('Down', DownArrow)}
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid container justify={'flex-start'} alignItems={'center'}>
+                <Grid container justify={'flex-start'} alignItems={'center'} spacing={8}>
                     <Grid item sm>
                         <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="textinput">Text</InputLabel>
@@ -128,7 +130,8 @@ class RemoteControl extends Component {
                         </FormControl>
                     </Grid>
                     <Grid item sm={6}>
-                        <Button disabled={this.state.text.length === 0} dense>
+                        <Button disabled={this.state.text.length === 0}
+                                size={'small'}>
                             <Send onClick={this.sendText}/>
                         </Button>
                     </Grid>
