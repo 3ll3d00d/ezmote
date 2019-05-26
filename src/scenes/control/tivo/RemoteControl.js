@@ -1,50 +1,51 @@
 import React, {Component} from 'react';
-import Grid from "material-ui/Grid";
-import Button from 'material-ui/Button';
-import IconButton from 'material-ui/IconButton';
-import UpArrow from 'material-ui-icons/ArrowUpward';
-import DownArrow from 'material-ui-icons/ArrowDownward';
-import LeftArrow from 'material-ui-icons/ArrowBack';
-import RightArrow from 'material-ui-icons/ArrowForward';
-import Check from 'material-ui-icons/Check';
-import Send from 'material-ui-icons/Send';
-import Delete from 'material-ui-icons/Delete';
-import ThumbUp from 'material-ui-icons/ThumbUp';
-import ThumbDown from 'material-ui-icons/ThumbDown';
-import LiveTV from 'material-ui-icons/LiveTv';
-import Home from 'material-ui-icons/Home';
-import ExitToApp from 'material-ui-icons/ExitToApp';
-import ExpandLess from 'material-ui-icons/ExpandLess';
-import ExpandMore from 'material-ui-icons/ExpandMore';
-import InfoOutline from 'material-ui-icons/InfoOutline';
-import SkipPrevious from 'material-ui-icons/SkipPrevious';
-import PlayArrow from 'material-ui-icons/PlayArrow';
-import Pause from 'material-ui-icons/Pause';
-import Stop from 'material-ui-icons/Stop';
-import SkipNext from 'material-ui-icons/SkipNext';
-import FastForward from 'material-ui-icons/FastForward';
-import FastRewind from 'material-ui-icons/FastRewind';
-import SlowMotionVideo from 'material-ui-icons/SlowMotionVideo';
-import VideoLibrary from 'material-ui-icons/VideoLibrary';
-import FeaturedPlaylist from 'material-ui-icons/FeaturedPlayList';
-import FormControl from "material-ui/Form/FormControl";
-import Tooltip from "material-ui/Tooltip/Tooltip";
-import Input from 'material-ui/Input';
+import Grid from "@material-ui/core/Grid";
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import UpArrow from '@material-ui/icons/ArrowUpward';
+import DownArrow from '@material-ui/icons/ArrowDownward';
+import LeftArrow from '@material-ui/icons/ArrowBack';
+import RightArrow from '@material-ui/icons/ArrowForward';
+import Check from '@material-ui/icons/Check';
+import Send from '@material-ui/icons/Send';
+import Record from '@material-ui/icons/FiberSmartRecord'
+import Delete from '@material-ui/icons/Delete';
+import ThumbUp from '@material-ui/icons/ThumbUp';
+import ThumbDown from '@material-ui/icons/ThumbDown';
+import LiveTV from '@material-ui/icons/LiveTv';
+import Home from '@material-ui/icons/Home';
+import ExitToApp from '@material-ui/icons/ExitToApp';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import InfoOutlined from '@material-ui/icons/InfoOutlined';
+import SkipPrevious from '@material-ui/icons/SkipPrevious';
+import PlayArrow from '@material-ui/icons/PlayArrow';
+import Pause from '@material-ui/icons/Pause';
+import Stop from '@material-ui/icons/Stop';
+import SkipNext from '@material-ui/icons/SkipNext';
+import FastForward from '@material-ui/icons/FastForward';
+import FastRewind from '@material-ui/icons/FastRewind';
+import SlowMotionVideo from '@material-ui/icons/SlowMotionVideo';
+import VideoLibrary from '@material-ui/icons/VideoLibrary';
+import FeaturedPlaylist from '@material-ui/icons/FeaturedPlayList';
+import FormControl from "@material-ui/core/FormControl";
+import Tooltip from "@material-ui/core/Tooltip/Tooltip";
+import Input from '@material-ui/core/Input';
 import {connect} from "react-redux";
 import {getConfig} from "../../../store/config/reducer";
-import {withStyles} from "material-ui/styles/index";
+import {withStyles} from "@material-ui/core/styles/index";
 import {sendIRToTivo, sendTextToTivo} from '../../../store/tivos/actions';
 import * as codes from './CommandCodes';
 import classNames from 'classnames';
 import {getCurrentChannel} from "../../../store/tivos/reducer";
-import {FormHelperText} from "material-ui/Form";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const styles = (theme) => ({
     input: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     formControl: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     smallPadded: {
         marginTop: '0.25em',
@@ -58,12 +59,12 @@ const styles = (theme) => ({
         minWidth: '32px',
     },
     roundButton: {
-        borderRadius: '100%'
+        borderRadius: '45%'
     },
     playButton: {
         minWidth: '24px',
         width: '24px',
-        height: theme.spacing.unit * 3
+        height: theme.spacing(3)
     },
     blue: {
         color: 'blue',
@@ -112,7 +113,8 @@ class RemoteControl extends Component {
     makeRCButton = ({key, text = null, CI = null, classes = this.props.classes.rcButton}) => {
         return (
             <Tooltip id={key} title={key}>
-                <Button key={key} raised dense
+                <Button key={key}
+                        variant={'contained'}
                         onClick={() => this.props.sendIRToTivo(key)}
                         className={classes}>
                     {text}
@@ -157,10 +159,10 @@ class RemoteControl extends Component {
     render() {
         const {classes, currentChannel} = this.props;
         return (
-            <Grid container className={classes.bordered}>
+            <Grid spacing={1} container className={classes.bordered}>
                 {currentChannel
                     ?
-                    <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                    <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                         <Grid item>
                             <FormControl className={classes.formControl} disabled>
                                 <Input id="current-channel" value={currentChannel}/>
@@ -169,9 +171,9 @@ class RemoteControl extends Component {
                         </Grid>
                     </Grid>
                     : null}
-                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={0}>
+                <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                     <Grid item sm={5} md={3}>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makeRCButton({key: codes.LIVE_TV, CI: LiveTV})}
                             </Grid>
@@ -182,11 +184,11 @@ class RemoteControl extends Component {
                                 {this.makeRCButton({key: codes.MY_SHOWS, CI: VideoLibrary})}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makeRCButton({
                                     key: codes.INFO,
-                                    CI: InfoOutline,
+                                    CI: InfoOutlined,
                                     classes: this.getRoundButtonClasses()
                                 })}
                             </Grid>
@@ -197,7 +199,7 @@ class RemoteControl extends Component {
                                 {this.makeRCButton({key: codes.BACK, CI: ExitToApp})}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={8}>
+                        <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makePlayButton({
                                     key: codes.REWIND,
@@ -234,7 +236,11 @@ class RemoteControl extends Component {
                                 })}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={8}>
+                        <Grid container
+                              justify={'center'}
+                              align-items={'center'}
+                              className={classes.smallPadded}
+                              spacing={2}>
                             <Grid item>
                                 {this.makePlayButton({
                                     key: codes.REPLAY,
@@ -257,7 +263,7 @@ class RemoteControl extends Component {
                                 })}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid container spacing={3} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makeRCButton({
                                     key: codes.THUMBS_DOWN,
@@ -268,7 +274,7 @@ class RemoteControl extends Component {
                             <Grid item>
                                 {this.makeRCButton({
                                     key: codes.RECORD,
-                                    text: 'R',
+                                    CI: Record,
                                     classes: this.getThumbsClasses('red')
                                 })}
                             </Grid>
@@ -282,9 +288,9 @@ class RemoteControl extends Component {
                         </Grid>
                     </Grid>
                     <Grid item sm={5} md={3}>
-                        <Grid container justify={'center'} alignItems={'center'} spacing={8}>
+                        <Grid container justify={'center'} alignItems={'center'} spacing={1}>
                             <Grid item xs={6}>
-                                <FormControl className={classes.formControl} margin="dense">
+                                <FormControl className={classes.formControl}>
                                     <Input value={this.state.text}
                                            id="textinput"
                                            label="Text Input"
@@ -297,26 +303,30 @@ class RemoteControl extends Component {
                             </Grid>
                             <Grid item>
                                 <Tooltip id={codes.CLEAR} title={codes.CLEAR}>
-                                    <Button dense className={classes.rcButton}>
+                                    <Button size={'small'}
+                                            className={classes.rcButton}>
                                         <Delete onClick={() => this.props.sendIRToTivo(codes.CLEAR)}/>
                                     </Button>
                                 </Tooltip>
                             </Grid>
                             <Grid item>
-                                <Button disabled={this.state.text.length === 0} dense className={classes.rcButton}>
+                                <Button disabled={this.state.text.length === 0}
+                                        size={'small'}
+                                        className={classes.rcButton}>
                                     <Send onClick={this.sendText}/>
                                 </Button>
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} alignItems={'center'}>
+                        <Grid container justify={'center'} alignItems={'center'} spacing={1}>
                             <Grid item className={classes.smallPadded}>
                                 <Grid container justify={'space-around'} alignItems={'center'}
-                                      className={classes.smallPadded}>
+                                      className={classes.smallPadded}
+                                      spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton({key: codes.UP, CI: UpArrow})}
                                     </Grid>
                                 </Grid>
-                                <Grid container justify={'space-around'} alignItems={'center'}>
+                                <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton({key: codes.LEFT, CI: LeftArrow})}
                                     </Grid>
@@ -328,15 +338,20 @@ class RemoteControl extends Component {
                                     </Grid>
                                 </Grid>
                                 <Grid container justify={'space-around'} alignItems={'center'}
-                                      className={classes.smallPadded}>
+                                      className={classes.smallPadded}
+                                      spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton({key: codes.DOWN, CI: DownArrow})}
                                     </Grid>
                                 </Grid>
                             </Grid>
                             <Grid item>
-                                <Grid container direction={'column'} justify={'center'} align-items={'center'}
-                                      className={classes.smallPadded}>
+                                <Grid container
+                                      direction={'column'}
+                                      justify={'center'}
+                                      align-items={'center'}
+                                      className={classes.smallPadded}
+                                      spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton({key: codes.CHANNEL_UP, CI: ExpandLess})}
                                     </Grid>
@@ -346,7 +361,8 @@ class RemoteControl extends Component {
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}
+                              spacing={1}>
                             <Grid item>
                                 {this.makeRCButton({
                                     key: codes.RED,

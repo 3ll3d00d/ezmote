@@ -1,21 +1,23 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from 'material-ui/styles';
-import Input from 'material-ui/Input';
+import {withStyles} from '@material-ui/core/styles';
+import Input from '@material-ui/core/Input';
 import {connect} from "react-redux";
 import {updateValue} from "../../store/config/actions";
 import {getConfig} from "../../store/config/reducer";
 import * as configFields from "../../store/config/config";
-import FormControl from "material-ui/Form/FormControl";
-import FormControlLabel from "material-ui/Form/FormControlLabel";
-import IconButton from "material-ui/IconButton";
-import InputAdornment from "material-ui/Input/InputAdornment";
-import InputLabel from "material-ui/Input/InputLabel";
-import List, {ListItem, ListItemText} from 'material-ui/List';
-import Switch from "material-ui/Switch";
-import {Visibility, VisibilityOff} from "material-ui-icons";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import IconButton from "@material-ui/core/IconButton";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import InputLabel from "@material-ui/core/InputLabel";
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Switch from "@material-ui/core/Switch";
+import {Visibility, VisibilityOff} from "@material-ui/icons";
 import timer from "../../services/timer";
-import Grid from "material-ui/Grid";
+import Grid from "@material-ui/core/Grid";
 import {getActiveZone} from "../../store/jriver/reducer";
 import Info from "./Info";
 
@@ -25,13 +27,13 @@ const styles = (theme) => ({
         flexWrap: 'wrap',
     },
     input: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     formControl: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     withoutLabel: {
-        marginTop: theme.spacing.unit * 3,
+        marginTop: theme.spacing(3),
     }
 });
 

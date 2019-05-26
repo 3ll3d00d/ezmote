@@ -1,15 +1,21 @@
 const PLAY_TYPE_FILE = 'file';
 const PLAY_TYPE_BROWSE = 'browse';
 
+const convert = (item) => {
+    return {
+        id: item._text,
+        name: item._attributes.Name
+    };
+};
+
 const converter = (json) => {
     if (json.Response._attributes.Status === 'OK') {
         if (json.Response.hasOwnProperty('Item')) {
-            return json.Response.Item.map(item => {
-                return {
-                    id: item._text,
-                    name: item._attributes.Name
-                };
-            });
+            if (Array.isArray(json.Response.Item)) {
+                return json.Response.Item.map(item => convert(item));
+            } else {
+                return [convert(json.Response.Item)];
+            }
         } else {
             return [];
         }

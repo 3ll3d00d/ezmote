@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import keyBy from 'lodash.keyby';
 
 const zone = (id, name) => {
     return {id, name};
@@ -14,7 +14,7 @@ const enriched = (enriched, zone) => {
 
 const zones = (...zones) => {
     return {
-        zones: _.keyBy(zones, 'id')
+        zones: keyBy(zones, 'id')
     }
 };
 

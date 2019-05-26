@@ -2,7 +2,7 @@ import {applyMiddleware, createStore, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
 import * as reducers from './reducers';
 import {composeWithDevTools} from 'redux-devtools-extension';
-import {persistStore, persistReducer} from 'redux-persist';
+import {persistStore, persistReducer} from 'redux-persist/lib';
 import storage from 'redux-persist/es/storage';
 import Immutable from 'seamless-immutable';
 

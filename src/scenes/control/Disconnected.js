@@ -1,9 +1,9 @@
 import React from 'react';
-import {withStyles} from "material-ui/styles/index";
+import {withStyles} from "@material-ui/core/styles/index";
 import PropTypes from 'prop-types';
-import Typography from "material-ui/Typography";
-import Error from 'material-ui-icons/Error';
-import Grid from 'material-ui/Grid';
+import Typography from "@material-ui/core/Typography";
+import Error from '@material-ui/icons/Error';
+import Grid from '@material-ui/core/Grid';
 
 const styles = theme => ({
     root: {
@@ -11,7 +11,7 @@ const styles = theme => ({
         justifyContent: 'space-around'
     },
     icon: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
         height: '6em',
         width: '6em'
     },

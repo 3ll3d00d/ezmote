@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Snackbar from 'material-ui/Snackbar';
+import Snackbar from '@material-ui/core/Snackbar';
 
 const hasErrors = errors => errors && Object.keys(errors).length > 0;
 
@@ -28,7 +28,7 @@ const Errors = ({errors}) => {
                 horizontal: 'center',
             }}
             open={hasErrors(errors)}
-            SnackbarContentProps={{
+            ContentProps={{
                 'aria-describedby': 'message-id',
             }}
             message={<Error errors={errors}/>}

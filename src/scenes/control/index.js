@@ -9,7 +9,7 @@ import {connect} from "react-redux";
 import {MC_HOST} from "../../store/config/config";
 import Disconnected from "./Disconnected";
 
-const Control = ({jriverIsDead, config, activeZone, playingNowCommand}) => {
+const Control = ({jriverIsDead, config, activeZone, playingNowCommand, selectedCommand}) => {
     let Controller = null;
     if (activeZone && playingNowCommand && playingNowCommand.hasOwnProperty('control')) {
         switch (playingNowCommand.control) {
@@ -23,13 +23,16 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand}) => {
                 Controller = null;
         }
     }
+    if (selectedCommand && selectedCommand.hasOwnProperty('control') && selectedCommand.control === 'jriver') {
+        Controller = JRiver;
+    }
     if (jriverIsDead) {
         return <Disconnected server={`jriver at ${config[MC_HOST]}`}/>;
     } else {
         return (
             <div>
                 <Volume/>
-                {Controller ? <Controller/> : null}
+                {Controller ? <Controller selectedCommand={selectedCommand}/> : null}
             </div>
         );
     }
@@ -37,6 +40,7 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand}) => {
 
 Control.propTypes = {
     playingNowCommand: PropTypes.object.isRequired,
+    selectedCommand: PropTypes.object,
     jriverIsDead: PropTypes.bool.isRequired
 };
 

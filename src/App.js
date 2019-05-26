@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
-import {createMuiTheme, MuiThemeProvider} from 'material-ui/styles';
+import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
 import {FullScreenMenu, NotFullScreenMenu} from "./scenes/menu";
-import Grid from "material-ui/Grid";
-import grey from 'material-ui/colors/grey';
-import blueGrey from 'material-ui/colors/blueGrey';
-import red from 'material-ui/colors/red';
+import Grid from '@material-ui/core/Grid';
+import grey from '@material-ui/core/colors/grey';
+import blueGrey from '@material-ui/core/colors/blueGrey';
+import red from '@material-ui/core/colors/red';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import Fullscreen from "react-full-screen";
 import {connect} from 'react-redux';
 import {isAlive, stopAllPlaying, stopAllPollers} from "./store/jriver/actions";
@@ -15,22 +16,23 @@ import {getErrors, getServerName, isJRiverDead} from "./store/jriver/reducer";
 import {getOrderedCommands} from "./store/commands/reducer";
 import {fetchCommands, sendCommand} from "./store/commands/actions";
 import TivoChannelSelector from "./scenes/control/tivo/TivoChannelSelector";
-import JRiverSelector from "./scenes/control/jriver/JRiverSelector";
 import Errors from "./scenes/errors";
 import {getPlayingNow} from "./store/playingnow/reducer";
+import debounce from 'lodash.debounce';
 
 const theme = createMuiTheme({
     palette: {
         type: 'dark',
         primary: grey,
         secondary: blueGrey,
-        error: red
+        error: red,
     }
 });
 
 export const SETTINGS = 'Settings';
 
 class App extends Component {
+    // TODO move into the store
     state = {
         hasSelected: false,
         selected: SETTINGS,
@@ -44,16 +46,21 @@ class App extends Component {
         this.props.fetchCommands();
     };
 
+    doIsAlive = () => {
+        console.log("Initialising alive calls on config validation");
+        this.props.isAlive();
+    };
+
+    debounceIsAlive = debounce(this.doIsAlive, 1000, {leading:false, trailing:true});
+
     componentWillReceiveProps = (nextProps) => {
         if (!nextProps.config.valid) {
             this.setState({selected: SETTINGS, hasSelected: false});
         } else if (nextProps.config.valid && !this.props.config.valid) {
-            console.log("Initialising alive calls on config validation")
-            this.props.isAlive();
-        } 
-        if (!this.state.hasSelected && nextProps.config.valid) {
+            this.debounceIsAlive();
+        } else if (!this.state.hasSelected && nextProps.config.valid) {
             const {commands, playingNow} = nextProps;
-            const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c.title === playingNow) : null;
+            const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c && c.title === playingNow) : null;
             if (playingNowCommand) {
                 this.setState({selected: playingNowCommand.id, hasSelected: false});
             }
@@ -84,41 +91,55 @@ class App extends Component {
         });
     };
 
+    showTheatreView = () => {
+        const {sendCommand, commands} = this.props;
+        sendCommand(commands.find(c => c.control === 'jriver'));
+    };
+
     getSelector = (selectedCommand) => {
         if (selectedCommand && selectedCommand.hasOwnProperty('control')) {
-            if (selectedCommand.control === 'jriver') {
-                return <JRiverSelector command={selectedCommand}/>;
-            } else if (selectedCommand.control === 'tivo') {
+            if (selectedCommand.control === 'tivo') {
                 return <TivoChannelSelector/>;
             }
         }
         return null;
     };
 
+    getMainComponent = (selected, selectedCommand, playingNowCommand) => {
+        if (selected === SETTINGS) {
+            return <Config/>
+        } else {
+            if (playingNowCommand || selectedCommand.control === 'jriver') {
+                return <Control playingNowCommand={playingNowCommand}
+                                selectedCommand={selectedCommand}
+                                jriverIsDead={this.props.jriverIsDead}/>;
+            } else {
+                return <Config/>
+            }
+        }
+    };
+
     render() {
-        const {commands, errors, jriverIsDead, playingNow} = this.props;
-        const playingNowCommand = playingNow ? commands.find(c => c.title === playingNow) : null;
+        const {commands, errors, playingNow} = this.props;
+        const playingNowCommand = playingNow ? commands.find(c => c && c.title === playingNow) : null;
         const {selected, fullscreen} = this.state;
-        const selectedCommand = selected !== SETTINGS ? commands.find(c => c.id === selected) : null;
+        const selectedCommand = selected !== SETTINGS ? commands.find(c => c && c.id === selected) : null;
         const selectorTitle = selected === SETTINGS ? SETTINGS : selectedCommand ? selectedCommand.title : null;
         const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
         return (
             <Fullscreen enabled={fullscreen}>
                 <MuiThemeProvider theme={theme}>
+                    <CssBaseline />
                     <MenuComponent handler={this.handleMenuSelect}
                                    selectorTitle={selectorTitle}
                                    selectedCommand={selectedCommand}
                                    selector={this.getSelector(selectedCommand)}
                                    commands={commands}
                                    fullscreen={fullscreen}
-                                   toggleFullScreen={this.toggleFullScreen}>
+                                   toggleFullScreen={this.toggleFullScreen}
+                                   showTheatreView={this.showTheatreView}>
                         <Grid container>
-                            <Grid item xs={12}>
-                                {selected === SETTINGS || !playingNowCommand
-                                    ? <Config/>
-                                    : <Control playingNowCommand={playingNowCommand} jriverIsDead={jriverIsDead}/>
-                                }
-                            </Grid>
+                            <Grid item xs={12}>{this.getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
                         </Grid>
                         <Grid container>
                             <Grid item>

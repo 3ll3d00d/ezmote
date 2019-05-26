@@ -1,29 +1,29 @@
 import React, {Component} from 'react';
-import Grid from "material-ui/Grid";
-import Button from 'material-ui/Button';
-import UpArrow from 'material-ui-icons/ArrowUpward';
-import KeyboardLeftArrow from 'material-ui-icons/KeyboardArrowLeft';
-import KeyboardRightArrow from 'material-ui-icons/KeyboardArrowRight';
-import FirstPage from 'material-ui-icons/FirstPage';
-import LastPage from 'material-ui-icons/LastPage';
-import DownArrow from 'material-ui-icons/ArrowDownward';
-import LeftArrow from 'material-ui-icons/ArrowBack';
-import RightArrow from 'material-ui-icons/ArrowForward';
-import Check from 'material-ui-icons/Check';
-import Send from 'material-ui-icons/Send';
-import FormControl from "material-ui/Form/FormControl";
-import InputLabel from "material-ui/Input/InputLabel";
-import Input from 'material-ui/Input';
-import {withStyles} from "material-ui/styles/index";
+import Grid from "@material-ui/core/Grid";
+import Button from '@material-ui/core/Button';
+import UpArrow from '@material-ui/icons/ArrowUpward';
+import KeyboardLeftArrow from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardRightArrow from '@material-ui/icons/KeyboardArrowRight';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import DownArrow from '@material-ui/icons/ArrowDownward';
+import LeftArrow from '@material-ui/icons/ArrowBack';
+import RightArrow from '@material-ui/icons/ArrowForward';
+import Check from '@material-ui/icons/Check';
+import Send from '@material-ui/icons/Send';
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Input from '@material-ui/core/Input';
+import {withStyles} from "@material-ui/core/styles/index";
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 const styles = (theme) => ({
     input: {
-        margin: theme.spacing.unit
+        margin: theme.spacing(1)
     },
     formControl: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     padded: {
         marginTop: '1em',
@@ -61,7 +61,9 @@ class RemoteControl extends Component {
 
     makeRCButton = (key, CI) => {
         return (
-            <Button key={key} raised dense
+            <Button key={key}
+                    variant={'contained'}
+                    size={'small'}
                     onClick={() => this.props.controls.sendKeyPresses(key)}
                     className={this.props.classes.rcButton}>
                 <CI/>
@@ -73,8 +75,8 @@ class RemoteControl extends Component {
         const {classes} = this.props;
 
         return (
-            <Grid container className={classNames(classes.padded, classes.bordered)}>
-                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded}>
+            <Grid container className={classNames(classes.padded, classes.bordered)} spacing={1}>
+                <Grid container justify={'center'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                     <Grid item>
                         {this.makeRCButton('Home', FirstPage)}
                     </Grid>
@@ -88,14 +90,14 @@ class RemoteControl extends Component {
                         {this.makeRCButton('End', LastPage)}
                     </Grid>
                 </Grid>
-                <Grid container justify={'space-around'} alignItems={'center'}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
                     <Grid item>
-                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
                             <Grid item>
                                 {this.makeRCButton('Up', UpArrow)}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'space-around'} alignItems={'center'}>
+                        <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
                             <Grid item>
                                 {this.makeRCButton('Left', LeftArrow)}
                             </Grid>
@@ -106,14 +108,14 @@ class RemoteControl extends Component {
                                 {this.makeRCButton('Right', RightArrow)}
                             </Grid>
                         </Grid>
-                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded}>
+                        <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
                             <Grid item>
                                 {this.makeRCButton('Down', DownArrow)}
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid container justify={'flex-start'} alignItems={'center'}>
+                <Grid container justify={'flex-start'} alignItems={'center'} spacing={1}>
                     <Grid item sm>
                         <FormControl className={classes.formControl}>
                             <InputLabel htmlFor="textinput">Text</InputLabel>
@@ -128,7 +130,8 @@ class RemoteControl extends Component {
                         </FormControl>
                     </Grid>
                     <Grid item sm={6}>
-                        <Button disabled={this.state.text.length === 0} dense>
+                        <Button disabled={this.state.text.length === 0}
+                                size={'small'}>
                             <Send onClick={this.sendText}/>
                         </Button>
                     </Grid>
