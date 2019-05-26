@@ -36,8 +36,7 @@ const styles = rootHeight => theme => ({
     appFrame: {
         position: 'relative',
         display: 'flex',
-        width: '100%',
-        height: '100%',
+        width: '100%'
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -61,6 +60,7 @@ const styles = rootHeight => theme => ({
     toolbar: theme.mixins.toolbar,
     content: {
         width: '100%',
+        height: '100%',
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
         padding: '8px'

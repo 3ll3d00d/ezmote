@@ -27,7 +27,7 @@ const styles = theme => ({
     },
     content: {
         flex: '1 100%',
-        padding: theme.spacing.unit
+        padding: theme.spacing(1)
     },
     cover: {
         height: MEDIA_Y,
@@ -48,10 +48,10 @@ const styles = theme => ({
         marginBottom: '0em'
     },
     volumeSlider: {
-        paddingTop: theme.spacing.unit * 3
+        paddingTop: theme.spacing(3)
     },
     volumeContainer: {
-        paddingBottom: theme.spacing.unit * 3
+        paddingBottom: theme.spacing(3)
     }
 });
 
@@ -79,8 +79,8 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
     const {playPause, stopPlaying, playNext, playPrevious, setPosition} = controls;
     return (
         <Card className={classes.card} elevation={0}>
-            <Grid container className={classes.tabAware} spacing={8}>
-                <Grid container justify={'space-around'} alignItems={'center'} spacing={8}>
+            <Grid container className={classes.tabAware} spacing={1}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
                     <Grid item>
                         <Chip label={hhmmss(playingNow.positionMillis)}/>
                     </Grid>

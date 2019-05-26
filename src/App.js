@@ -27,15 +27,13 @@ const theme = createMuiTheme({
         primary: grey,
         secondary: blueGrey,
         error: red,
-    },
-    typography: {
-        useNextVariants: true
     }
 });
 
 export const SETTINGS = 'Settings';
 
 class App extends Component {
+    // TODO move into the store
     state = {
         hasSelected: false,
         selected: SETTINGS,
@@ -63,7 +61,7 @@ class App extends Component {
             this.debounceIsAlive();
         } else if (!this.state.hasSelected && nextProps.config.valid) {
             const {commands, playingNow} = nextProps;
-            const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c.title === playingNow) : null;
+            const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c && c.title === playingNow) : null;
             if (playingNowCommand) {
                 this.setState({selected: playingNowCommand.id, hasSelected: false});
             }
@@ -105,8 +103,22 @@ class App extends Component {
         return null;
     };
 
+    getMainComponent = (selected, selectedCommand, playingNowCommand) => {
+        if (selected === SETTINGS) {
+            return <Config/>
+        } else {
+            if (playingNowCommand || selectedCommand.control === 'jriver') {
+                return <Control playingNowCommand={playingNowCommand}
+                                selectedCommand={selectedCommand}
+                                jriverIsDead={this.props.jriverIsDead}/>;
+            } else {
+                return <Config/>
+            }
+        }
+    };
+
     render() {
-        const {commands, errors, jriverIsDead, playingNow} = this.props;
+        const {commands, errors, playingNow} = this.props;
         const playingNowCommand = playingNow ? commands.find(c => c && c.title === playingNow) : null;
         const {selected, fullscreen} = this.state;
         const selectedCommand = selected !== SETTINGS ? commands.find(c => c && c.id === selected) : null;
@@ -124,12 +136,7 @@ class App extends Component {
                                    fullscreen={fullscreen}
                                    toggleFullScreen={this.toggleFullScreen}>
                         <Grid container>
-                            <Grid item xs={12}>
-                                {selected === SETTINGS || !playingNowCommand
-                                    ? <Config/>
-                                    : <Control playingNowCommand={playingNowCommand} jriverIsDead={jriverIsDead}/>
-                                }
-                            </Grid>
+                            <Grid item xs={12}>{this.getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
                         </Grid>
                         <Grid container>
                             <Grid item>

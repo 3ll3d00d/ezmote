@@ -15,13 +15,13 @@ import {getConfig} from "../../store/config/reducer";
 
 const styles = theme => ({
     smallButton: {
-        height: theme.spacing.unit * 3
+        height: theme.spacing(3)
     },
     volumeSlider: {
-        paddingTop: theme.spacing.unit * 3
+        paddingTop: theme.spacing(3)
     },
     volumeContainer: {
-        paddingBottom: theme.spacing.unit * 3
+        paddingBottom: theme.spacing(3)
     }
 });
 
@@ -61,7 +61,7 @@ class Volume extends Component {
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
-                <Grid container justify={'space-around'} alignItems={'center'} spacing={8} className={classes.volumeContainer}>
+                <Grid container justify={'space-around'} alignItems={'center'} spacing={1} className={classes.volumeContainer}>
                     <Grid item xs={2}>
                         {this.makeMuteButton(zone.id)}
                     </Grid>

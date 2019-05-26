@@ -11,7 +11,7 @@ const styles = theme => ({
         justifyContent: 'space-around'
     },
     icon: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
         height: '6em',
         width: '6em'
     },

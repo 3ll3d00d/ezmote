@@ -27,13 +27,13 @@ const styles = (theme) => ({
         flexWrap: 'wrap',
     },
     input: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     formControl: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
     withoutLabel: {
-        marginTop: theme.spacing.unit * 3,
+        marginTop: theme.spacing(3),
     }
 });
 

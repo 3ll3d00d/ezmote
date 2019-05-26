@@ -14,13 +14,14 @@ import {
 } from "../../../store/jriver/actions";
 import {connect} from "react-redux";
 import {withStyles} from '@material-ui/core/styles';
+import Browser from "./Browser";
 
 const styles = theme => ({
     root: {
         flexGrow: 1
     },
     smallTab: {
-        height: '36px'
+        height: '56px'
     },
 });
 
@@ -34,27 +35,31 @@ class JRiver extends Component {
     };
 
     render() {
-        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, classes} = this.props;
+        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, classes, selectedCommand} = this.props;
+        const {value} = this.state;
+        // TODO only show playingNow if something is playing
         return (
             <div className={classes.root}>
                 <Tabs variant={'fullWidth'}
                       centered={true}
                       indicatorColor="secondary"
                       textColor="secondary"
-                      value={this.state.value}
+                      value={value}
                       onChange={this.handleChange}>
+                    <Tab label="Search" className={classes.smallTab}/>
                     <Tab label="Playing Now" className={classes.smallTab}/>
                     <Tab label="Remote Control" className={classes.smallTab}/>
                 </Tabs>
+                {value === 0 && <Browser selectedCommand={selectedCommand}/>}
                 {
-                    this.state.value === 0
+                    value === 1
                     && playingNow
                     && <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
                                    playingNow={playingNow}
                                    authToken={authToken}
                                    zoneId={activeZone.id}/>
-                }
-                {this.state.value === 1 && <RemoteControl controls={{sendKeyPresses}}/>}
+                } 
+                {value === 2 && <RemoteControl controls={{sendKeyPresses}}/>}
             </div>
         );
     }
@@ -64,7 +69,7 @@ const mapStateToProps = (state) => {
     return {
         playingNow: getPlayingNow(state),
         authToken: getAuthToken(state),
-        activeZone: getActiveZone(state)
+        activeZone: getActiveZone(state),
     };
 };
 export default connect(mapStateToProps, {
