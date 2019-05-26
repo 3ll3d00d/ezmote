@@ -27,7 +27,7 @@ const styles = theme => ({
 
 class JRiver extends Component {
     state = {
-        value: 0
+        value: -1
     };
 
     handleChange = (event, value) => {
@@ -37,29 +37,32 @@ class JRiver extends Component {
     render() {
         const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, classes, selectedCommand} = this.props;
         const {value} = this.state;
-        // TODO only show playingNow if something is playing
+        const selectedTab = value === -1 ? (playingNow && playingNow.status !== 'Stopped' ? 1 : 0) : value;
         return (
             <div className={classes.root}>
                 <Tabs variant={'fullWidth'}
                       centered={true}
                       indicatorColor="secondary"
                       textColor="secondary"
-                      value={value}
+                      value={selectedTab}
                       onChange={this.handleChange}>
                     <Tab label="Search" className={classes.smallTab}/>
                     <Tab label="Playing Now" className={classes.smallTab}/>
                     <Tab label="Remote Control" className={classes.smallTab}/>
                 </Tabs>
-                {value === 0 && <Browser selectedCommand={selectedCommand}/>}
                 {
-                    value === 1
+                    selectedTab === 0 && <Browser selectedCommand={selectedCommand}
+                                                  onPlay={() => this.setState({value: 1})} />
+                }
+                {
+                    selectedTab === 1
                     && playingNow
                     && <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
                                    playingNow={playingNow}
                                    authToken={authToken}
                                    zoneId={activeZone.id}/>
                 } 
-                {value === 2 && <RemoteControl controls={{sendKeyPresses}}/>}
+                {selectedTab === 2 && <RemoteControl controls={{sendKeyPresses}}/>}
             </div>
         );
     }

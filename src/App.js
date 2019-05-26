@@ -16,7 +16,6 @@ import {getErrors, getServerName, isJRiverDead} from "./store/jriver/reducer";
 import {getOrderedCommands} from "./store/commands/reducer";
 import {fetchCommands, sendCommand} from "./store/commands/actions";
 import TivoChannelSelector from "./scenes/control/tivo/TivoChannelSelector";
-import JRiverSelector from "./scenes/control/jriver/JRiverSelector";
 import Errors from "./scenes/errors";
 import {getPlayingNow} from "./store/playingnow/reducer";
 import debounce from 'lodash.debounce';
@@ -92,11 +91,14 @@ class App extends Component {
         });
     };
 
+    showTheatreView = () => {
+        const {sendCommand, commands} = this.props;
+        sendCommand(commands.find(c => c.control === 'jriver'));
+    };
+
     getSelector = (selectedCommand) => {
         if (selectedCommand && selectedCommand.hasOwnProperty('control')) {
-            if (selectedCommand.control === 'jriver') {
-                return <JRiverSelector command={selectedCommand}/>;
-            } else if (selectedCommand.control === 'tivo') {
+            if (selectedCommand.control === 'tivo') {
                 return <TivoChannelSelector/>;
             }
         }
@@ -134,7 +136,8 @@ class App extends Component {
                                    selector={this.getSelector(selectedCommand)}
                                    commands={commands}
                                    fullscreen={fullscreen}
-                                   toggleFullScreen={this.toggleFullScreen}>
+                                   toggleFullScreen={this.toggleFullScreen}
+                                   showTheatreView={this.showTheatreView}>
                         <Grid container>
                             <Grid item xs={12}>{this.getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
                         </Grid>

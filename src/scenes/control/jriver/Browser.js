@@ -20,7 +20,8 @@ const styles = theme => ({
     fullsize: {
         marginTop: theme.spacing(1),
         width: '100%',
-        height: '100%'
+        height: '100%',
+        backgroundColor: theme.palette.background.default,
     },
     autosize: {
         flex: '1 1 auto'
@@ -50,6 +51,7 @@ class Browser extends Component {
         this.state = {
             text: '',
             nodes: [],
+            filtered: [],
             details: new Map(),
             names: new Map(),
             path: [],
@@ -57,8 +59,17 @@ class Browser extends Component {
         }
     };
 
+    matches = (src, filt, contains) => {
+        return contains? src.toLowerCase().indexOf(filt) !== -1 : src.toLowerCase().startsWith(filt);
+    };
+
     doSearch = () => {
-        console.log(`Searching for ${this.state.text}`);
+        this.setState((prevState, prevProps) => {
+            const txt = prevState.text.toLowerCase();
+            const filt = txt.charAt(0) === '*' ? txt.substring(1, txt.length) : txt;
+            const contains = txt.charAt(0) === '*';
+            return {filtered: prevState.nodes.filter(n => this.matches(n.name.toLowerCase(), filt, contains))}
+        }, this.forceReload);
     };
 
     debounceSearch = debounce(this.doSearch, 500, {leading: false, trailing: true});
@@ -76,16 +87,26 @@ class Browser extends Component {
         }
     };
 
+    onPlayNode = (type, id) => {
+        const {onPlay, sendCommand, selectedCommand, startPlayback} = this.props;
+        sendCommand(selectedCommand);
+        startPlayback(type, id);
+        onPlay();
+    };
+
     onSelectNode = async (nodeId, resetPath = false) => {
         await this.onLoadNode(nodeId, resetPath);
+    };
+
+    forceReload = () => {
         this.InfLoader.resetLoadMoreRowsCache(true);
         this.List.forceUpdateGrid();
     };
 
-    onLoadNode = async (nodeId, resetPath) => {
+    onLoadNode = async (nodeId, resetPath, onStateChange) => {
         const children = await this.getChildren(nodeId);
         this.setState((prevState, prevProps) => {
-            let newState = {nodes: children};
+            let newState = {nodes: children, filtered: children, text: ''};
             if (nodeId && prevProps.selectedCommand && nodeId !== prevProps.selectedCommand.nodeId) {
                 const idx = prevState.path.indexOf(nodeId);
                 const newPath = idx === -1 ? prevState.path.concat([nodeId]) : prevState.path.slice(0, idx + 1);
@@ -95,7 +116,7 @@ class Browser extends Component {
             } else {
                 return newState;
             }
-        });
+        }, this.forceReload);
     };
 
     handleInput = (event) => {
@@ -117,8 +138,8 @@ class Browser extends Component {
     };
 
     isRowLoaded = ({index}) => {
-        const {details, nodes} = this.state;
-        return details.has(nodes[index].id);
+        const {details, filtered} = this.state;
+        return details.has(filtered[index].id);
     };
 
     convertNode = c => {
@@ -131,6 +152,7 @@ class Browser extends Component {
                           width={96}
                           height={96}
                           onSelect={this.onSelectNode}
+                          onPlay={this.onPlayNode}
                           classes={this.props.classes}
                           mcwsUrl={`${this.props.jriverURL}/MCWS/v1`}
                           fallbackColour={this.state.fallbackColour}
@@ -139,7 +161,7 @@ class Browser extends Component {
     };
 
     loadMoreRows = async ({startIndex, stopIndex}) => {
-        const nodesToLoad = this.state.nodes.slice(startIndex, stopIndex + 1);
+        const nodesToLoad = this.state.filtered.slice(startIndex, stopIndex + 1);
         const loadedNodes = await Promise.all(nodesToLoad.map(c => this.convertNode(c)));
         this.setState((prevState, prevProps) => {
             const newDetails = prevState.details;
@@ -156,8 +178,8 @@ class Browser extends Component {
     };
 
     renderRow = ({key, index, style}) => {
-        const {nodes, details} = this.state;
-        const id = nodes[index].id;
+        const {filtered, details} = this.state;
+        const id = filtered[index].id;
         return (
             <div key={key} style={style}>
                 {details.get(id)}
@@ -166,8 +188,9 @@ class Browser extends Component {
     };
 
     render() {
-        const {path, nodes, text, names} = this.state;
+        const {path, filtered, text, names} = this.state;
         const {classes, nodeId, selectedCommand} = this.props;
+        const rowCount = filtered.length;
         return (
             <Grid container>
                 {
@@ -193,11 +216,11 @@ class Browser extends Component {
                 }
                 <Grid container>
                     <Grid item className={classes.autosize}>
-                        <Paper className={classes.fullsize}>
+                        <Paper className={classes.fullsize} elevation={3}>
                             <InfiniteLoader key={path.length > 0 ? path[path.length - 1] : nodeId}
                                             isRowLoaded={this.isRowLoaded}
                                             loadMoreRows={this.loadMoreRows}
-                                            rowCount={nodes.length}
+                                            rowCount={rowCount}
                                             ref={ref => { this.InfLoader = ref; }}>
                                 {({onRowsRendered, registerChild}) => (
                                     <div style={{ flex: '1 1 auto' , height: '100vh'}}>
@@ -206,7 +229,7 @@ class Browser extends Component {
                                                 <List height={height}
                                                       onRowsRendered={onRowsRendered}
                                                       ref={ref => { this.List = ref; registerChild(ref); }}
-                                                      rowCount={nodes.length}
+                                                      rowCount={rowCount}
                                                       rowHeight={104}
                                                       rowRenderer={this.renderRow}
                                                       width={width}/>

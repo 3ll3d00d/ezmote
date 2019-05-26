@@ -10,23 +10,17 @@ import React from "react";
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
-    card: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        background: theme.palette.background.default,
-        paddingTop: theme.spacing(1)
-    },
     row: {
         display: 'flex',
         paddingTop: 4,
-        paddingBottom: 4
+        paddingBottom: 4,
+        backgroundColor: theme.palette.background.default,
     },
     details: {
         display: 'flex',
         flexDirection: 'column',
-        width: 224,
         padding: 0,
+        flexGrow: 1
     },
     content: {
         flex: '1 0 auto',
@@ -60,10 +54,10 @@ const getImgUrl = (mcwsURL, type, id, width, height, fallbackColour, authToken) 
     return `${mcwsURL}/${path}?${params}`;
 };
 
-const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbackColour, authToken}) => {
+const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbackColour, authToken, onPlay}) => {
     const classes = useStyles();
     return (
-        <Card key={id} className={classes.row}>
+        <Card key={id} className={classes.row} elevation={3}>
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Typography variant="body2" color="textSecondary">
@@ -71,7 +65,9 @@ const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbac
                     </Typography>
                 </CardContent>
                 <div className={classes.controls}>
-                    <IconButton aria-label="Play" className={classes.unpadded}>
+                    <IconButton aria-label="Play"
+                                className={classes.unpadded}
+                                onClick={() => onPlay(type, id)}>
                         <PlayArrowIcon className={classes.cardIcon}/>
                     </IconButton>
                     {

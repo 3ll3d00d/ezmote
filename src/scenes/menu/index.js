@@ -8,6 +8,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import AppsIcon from '@material-ui/icons/Apps';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PowerIcon from '@material-ui/icons/PowerSettingsNew';
 import FullScreenIcon from '@material-ui/icons/Fullscreen';
@@ -136,7 +137,7 @@ class Menu extends Component {
     };
 
     render() {
-        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, children} = this.props;
+        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, showTheatreView, children} = this.props;
         const drawer = (
             <Drawer variant="permanent"
                     classes={{
@@ -145,14 +146,6 @@ class Menu extends Component {
                     className={classes.drawer}>
                 <div className={classes.toolbar} />
                 <List className={classes.list}>
-                    <ListItem button
-                              key={SETTINGS}
-                              onClick={() => handler(SETTINGS)}
-                              className={classes.listItem}>
-                        <ListItemIcon>
-                            <SettingsIcon className={classes.icon}/>
-                        </ListItemIcon>
-                    </ListItem>
                     {commands.filter(c => c).map(c => this.renderCommandButton(c, selectedCommand, classes, handler))}
                 </List>
             </Drawer>
@@ -168,6 +161,18 @@ class Menu extends Component {
                                 {selectorTitle}
                             </Typography>
                             {selector}
+                            <IconButton aria-owns={'menu-appbar'}
+                                        aria-haspopup='true'
+                                        onClick={() => handler(SETTINGS)}
+                                        color='inherit'>
+                                <SettingsIcon/>
+                            </IconButton>
+                            <IconButton aria-owns={'menu-appbar'}
+                                        aria-haspopup='true'
+                                        onClick={showTheatreView}
+                                        color='inherit'>
+                                <AppsIcon/>
+                            </IconButton>
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup="true"
                                         onClick={toggleFullScreen}
@@ -194,6 +199,7 @@ Menu.propTypes = {
     selectorTitle: PropTypes.string.isRequired,
     fullscreen: PropTypes.bool.isRequired,
     toggleFullScreen: PropTypes.func.isRequired,
+    showTheatreView: PropTypes.func.isRequired,
     commands: PropTypes.array.isRequired,
     selectedCommand: PropTypes.object,
     selector: PropTypes.any,
