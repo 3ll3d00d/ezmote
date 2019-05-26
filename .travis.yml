@@ -1,0 +1,15 @@
+language: node_js
+cache: yarn
+before_deploy:
+- yarn build
+deploy:
+  provider: releases
+  api_key:
+    secure: a2Ju6IVLQjD2RTNlIhDe9saFGcNfdr+F9P2LO1q4zT8Bke8EGlDlBeE5xKmMhD7KWiS5IJDJz9djXlqI0JG3D2Tve2VhpYrLUD7mABTxIZqKReYXL5b/p4B4mkg0KLlUHleyu4t2GWZ1+PNPmCO3Q0G1k7aNl8NQb2wZMBujaKFM/HHf9PBS7ioROrnJjW2VlNg86YDCKZKUYOGc1tOgIYrwX0h4HqE0/oHj7ZNAxLqi2OYr22To4NFJCnMPXxF81n95N2o7AlwLUElaSdHC5D2OPgCVATDzkX7MzD2cpkI1ca0a5exqo3pdX3q0wofygWj3zNwVWKbub+poLtKFV2BowCWrr89UPZYPXlmnivolD5cfFRpgO8SABYnVWzXWhsaxdS2xEBL/SZ0ssuuPiJRSWjsiunjTPQBDoqxBYPSPlUcKbvrE6mcmfjCREQKdXVSnJRtEGhA/JD91oDtNbOr2Vk+u3hSwpNcSr1oXmG/J2PCGgsjcY+RKv/aGF4CzFdBYya4PGqODhiaZKKSW8rKub5ZW+c+8ELCRk5Fu3DAWVvJN7ZhVVuR+gYPG+avKDYwXF1/NwX/IXumS5a8LAwnZTVtzPRwntQr9rIJfXqNaCV1sFFJ+MDaf8K4u0P8T3yGtRO1BtfTYyO+YXRrBMCn4VZ2dN7Qv5L1YdIpbm1M=
+  file_glob: true
+  file: dist/beqdesigner*
+  on:
+    repo: 3ll3d00d/ezmote
+    tags: true
+  skip_cleanup: true
+  prerelease: true
