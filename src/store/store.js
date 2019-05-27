@@ -3,12 +3,26 @@ import thunk from 'redux-thunk';
 import * as reducers from './reducers';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import {persistStore, persistReducer} from 'redux-persist/lib';
-import storage from 'redux-persist/es/storage';
 import Immutable from 'seamless-immutable';
+
+function noop() {}
+const noopStorage = {
+    getItem: noop,
+    setItem: noop,
+    removeItem: noop,
+};
+
+const storage = () => {
+    if (process.env.NODE_ENV === 'test') {
+        return noopStorage;
+    } else {
+        import('redux-persist/es/storage')
+    }
+};
 
 const persistConfig = {
     key: 'config',
-    storage,
+    storage: storage()
 };
 
 export const makeError = (payload, type) => {

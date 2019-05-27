@@ -53,13 +53,16 @@ describe('store/jriver/actions', () => {
             expect(dispatches.length).toBe(1);
             expect(dispatches[0].getAction()).toEqual({type: types.FETCH_ZONES, payload: withActive1.zones});
             expect(poller.startPolling).toHaveBeenCalledTimes(1);
+            expect(poller.startPolling).toHaveBeenCalledWith('jriverZoneInfo_10001', expect.any(Function), expect.any(Number));
             expect(poller.stopPolling).not.toHaveBeenCalled();
-            expect(poller.isPolling).not.toHaveBeenCalled();
+            expect(poller.isPolling).toHaveBeenCalledTimes(1);
+            expect(poller.isPolling).toHaveBeenCalledWith('jriverZoneInfo_10001');
         });
 
         it('should stop a poller when a zone goes inactive', async () => {
             jriver.invoke.mockReturnValueOnce(basicZones.zones);
             poller.stopPolling.mockReturnValue(true);
+            poller.isPolling.mockReturnValue(true);
             const dispatches = await Thunk(uut.fetchZones)
                 .withState({config: goodConfig, jriver: {zones: withActive1.zones}})
                 .execute();
@@ -68,12 +71,16 @@ describe('store/jriver/actions', () => {
             expect(dispatches[0].getAction()).toEqual({type: types.FETCH_ZONES, payload: basicZones.zones});
             expect(poller.startPolling).not.toHaveBeenCalled();
             expect(poller.stopPolling).toHaveBeenCalledTimes(1);
-            expect(poller.isPolling).not.toHaveBeenCalled();
+            expect(poller.stopPolling).toHaveBeenCalledWith('jriverZoneInfo_10001');
+            expect(poller.isPolling).toHaveBeenCalledTimes(1);
+            expect(poller.isPolling).toHaveBeenCalledWith('jriverZoneInfo_10001');
         });
 
         it('should replace the poller when the active zone changes', async () => {
             jriver.invoke.mockReturnValueOnce(withActive2.zones);
             poller.stopPolling.mockReturnValue(true);
+            poller.isPolling.mockReturnValueOnce(true)
+                            .mockReturnValueOnce(false);
             const dispatches = await Thunk(uut.fetchZones)
                 .withState({config: goodConfig, jriver: {zones: withActive1.zones}})
                 .execute();
@@ -81,8 +88,10 @@ describe('store/jriver/actions', () => {
             expect(dispatches.length).toBe(1);
             expect(dispatches[0].getAction()).toEqual({type: types.FETCH_ZONES, payload: withActive2.zones});
             expect(poller.startPolling).toHaveBeenCalledTimes(1);
+            expect(poller.startPolling).toHaveBeenCalledWith('jriverZoneInfo_10002', expect.any(Function), expect.any(Number));
             expect(poller.stopPolling).toHaveBeenCalledTimes(1);
-            expect(poller.isPolling).not.toHaveBeenCalled();
+            expect(poller.stopPolling).toHaveBeenCalledWith('jriverZoneInfo_10001');
+            expect(poller.isPolling).toHaveBeenCalledTimes(2);
         });
     });
 
@@ -93,11 +102,12 @@ describe('store/jriver/actions', () => {
             jriver.invoke.mockReturnValueOnce(enriched1);
             const dispatches = await Thunk(uut.fetchZoneInfo).withState({config: goodConfig, jriver: {zones: {}}}).execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
-            expect(dispatches.length).toBe(1);
+            expect(dispatches.length).toBe(2);
             expect(dispatches[0].getAction()).toEqual({
                 type: types.FETCH_ZONE_INFO,
                 payload: enriched1
             });
+            expect(dispatches[1].getAction()).toBeInstanceOf(Function);
             expect(poller.startPolling).not.toHaveBeenCalled();
             expect(poller.stopPolling).not.toHaveBeenCalled();
             expect(poller.isPolling).not.toHaveBeenCalled();
@@ -174,14 +184,19 @@ describe('store/jriver/actions', () => {
             jriver.invoke.mockReturnValueOnce({serverName: 'hello', version: '23.0.92'});
             const dispatches = await Thunk(uut.isAlive).withState({config: goodConfig, jriver: {}}).execute();
             expect(jriver.invoke.mock.calls.length).toBe(1);
-            expect(dispatches.length).toBe(1);
+            expect(dispatches.length).toBe(2);
             expect(dispatches[0].getAction()).toEqual({
                 type: types.IS_ALIVE,
                 payload: {serverName: 'hello', version: '23.0.92'}
             });
-            expect(poller.startPolling).not.toHaveBeenCalled();
+            expect(dispatches[1].getAction()).toBeInstanceOf(Function); // AUTHENTICATE
+            expect(poller.startPolling).toHaveBeenCalledTimes(2);
+            expect(poller.startPolling).toHaveBeenCalledWith('jriverIsAlive', expect.any(Function), expect.any(Number));
+            expect(poller.startPolling).toHaveBeenCalledWith('jriverFetchZones', expect.any(Function), expect.any(Number));
             expect(poller.stopPolling).not.toHaveBeenCalled();
-            expect(poller.isPolling).not.toHaveBeenCalled();
+            expect(poller.isPolling).toHaveBeenCalledTimes(3);
+            expect(poller.isPolling).toHaveBeenCalledWith('jriverIsAlive');
+            expect(poller.isPolling).toHaveBeenCalledWith('jriverFetchZones');
         });
     });
 
@@ -250,9 +265,19 @@ describe('store/jriver/actions', () => {
                     error: true,
                     payload: errorThrownByJRiver
                 });
-                expect(poller.startPolling).not.toHaveBeenCalled();
-                expect(poller.stopPolling).not.toHaveBeenCalled();
-                expect(poller.isPolling).not.toHaveBeenCalled();
+                if (test === 'alive') {
+                    expect(poller.startPolling).toHaveBeenCalledTimes(1);
+                    expect(poller.startPolling).toHaveBeenCalledWith('jriverIsDead', expect.any(Function), expect.any(Number));
+                    expect(poller.stopPolling).not.toHaveBeenCalled();
+                    expect(poller.isPolling).toHaveBeenCalledTimes(3);
+                    expect(poller.isPolling).toHaveBeenCalledWith('jriverIsDead');
+                    expect(poller.isPolling).toHaveBeenCalledWith('jriverIsAlive');
+                    expect(poller.isPolling).toHaveBeenCalledWith('jriverFetchZones');
+                } else {
+                    expect(poller.startPolling).not.toHaveBeenCalled();
+                    expect(poller.stopPolling).not.toHaveBeenCalled();
+                    expect(poller.isPolling).not.toHaveBeenCalled();
+                }
             });
 
             it(`${test} should fail when the config is bad`, async () => {

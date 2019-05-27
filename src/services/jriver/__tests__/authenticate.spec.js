@@ -26,9 +26,9 @@ describe('services/jriver', () => {
             const after = new Date().getTime();
             expect(response).toHaveProperty('token');
             expect(response.token).toBe('abcdef');
-            expect(response).toHaveProperty('time');
-            expect(response.time).toBeLessThanOrEqual(after);
-            expect(response.time).toBeGreaterThanOrEqual(before);
+            expect(response).toHaveProperty('tokenTime');
+            expect(response.tokenTime).toBeLessThanOrEqual(after);
+            expect(response.tokenTime).toBeGreaterThanOrEqual(before);
         });
 
         it('should handle Failure response', async () => {

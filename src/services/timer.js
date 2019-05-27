@@ -1,15 +1,13 @@
-/**
- * Provides polling capability to arbitrary functions.
- */
+/** Provides polling capability to arbitrary functions. */
 class TimerService {
     pollers = [];
 
-    isPolling = (matcher) => this.getPollerIdx(matcher) > -1;
+    isPolling = id => this.getPollerIdx(id) > -1;
 
-    getPollerIdx = (matcher) => this.pollers.findIndex(matcher);
+    getPollerIdx = id => this.pollers.findIndex(p => p.id === id);
 
     startPolling = (eventId, callback, intervalMillis) => {
-        if (this.isPolling(p => p.id === eventId)) {
+        if (this.isPolling(eventId)) {
             console.log(`Unable to start poller ${eventId}, already polling`);
         } else {
             const data = {id: eventId, intervalId: -1, times: []};
@@ -26,8 +24,8 @@ class TimerService {
         callback();
     };
 
-    stopPolling = (matcher) => {
-        const idx = this.getPollerIdx(matcher);
+    stopPolling = (id) => {
+        const idx = this.getPollerIdx(id);
         if (idx > -1) {
             clearInterval(this.pollers[idx].intervalId);
             this.pollers.splice(idx, 1);

@@ -1,5 +1,5 @@
 import reduce, { initialState, getConfig } from "../reducer";
-import {MC_USE_SSL, MC_USERNAME, MC_HOST, MC_PASSWORD, MC_PORT} from "../config";
+import {MC_USE_SSL, MC_USERNAME, MC_HOST, MC_PASSWORD, MC_PORT, TIVO_NAME} from "../config";
 import {Reducer, Selector} from 'redux-testkit';
 import * as actionTypes from '../actionTypes';
 import Immutable from 'seamless-immutable';
@@ -51,7 +51,8 @@ describe('store/zone/selectors', () => {
             [MC_HOST]: 'localhost',
             [MC_PORT]: 52199,
             [MC_USERNAME]: '',
-            [MC_PASSWORD]: ''
+            [MC_PASSWORD]: '',
+            [TIVO_NAME]: 'CBFB'
         };
         Selector(getConfig).expect({config: initialState}).toReturn(expected);
     });

@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "jest-fetch-mock": "^2.1.2",
+    "jest-when": "^2.5.0",
     "redux-devtools": "^3.5.0",
     "redux-devtools-extension": "^2.13.8",
     "redux-testkit": "^1.0.6"

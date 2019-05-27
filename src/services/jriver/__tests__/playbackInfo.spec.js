@@ -23,14 +23,24 @@ describe('services/jriver', () => {
             fetch.mockResponseOnce(zoneInfo);
             const response = await jriver.invoke(mcws.playbackInfo(goodConfig, '10015'));
             expect(response).toEqual({
+                    active: true,
                     id: '10015',
                     name: 'Tivo & Netflix',
                     volumeRatio: 0.38,
                     volumedb: -31,
                     muted: false,
-                    fileKey: '723010',
-                    imageURL: 'MCWS/v1/File/GetImage?File=723010',
-                    status: 'Stopped'
+                    playingNow: {
+                        status: 'Stopped',
+                        album: null,
+                        artist: null,
+                        durationMillis: 0,
+                        externalSource: true,
+                        fileKey: '723010',
+                        imageURL: 'MCWS/v1/File/GetImage?File=723010',
+                        name: 'Ipc',
+                        positionDisplay: '1 of 1',
+                        positionMillis: 0
+                    }
                 },
             );
         });
@@ -39,14 +49,23 @@ describe('services/jriver', () => {
             fetch.mockResponseOnce(zoneInfoWithNoName);
             const response = await jriver.invoke(mcws.playbackInfo(goodConfig, '10015'));
             expect(response).toEqual({
+                    active: true,
                     id: '10015',
-                    name: null,
                     volumeRatio: 0.38,
                     volumedb: -31,
                     muted: false,
-                    fileKey: '723010',
-                    imageURL: 'MCWS/v1/File/GetImage?File=723010',
-                    status: 'Stopped'
+                    playingNow: {
+                        status: 'Stopped',
+                        album: null,
+                        artist: null,
+                        durationMillis: 0,
+                        externalSource: true,
+                        fileKey: '723010',
+                        imageURL: 'MCWS/v1/File/GetImage?File=723010',
+                        name: 'Ipc',
+                        positionDisplay: '1 of 1',
+                        positionMillis: 0
+                    }
                 },
             );
         });
@@ -55,14 +74,24 @@ describe('services/jriver', () => {
             fetch.mockResponseOnce(zoneInfoWithMutedVolume);
             const response = await jriver.invoke(mcws.playbackInfo(goodConfig, '10015'));
             expect(response).toEqual({
+                    active: true,
                     id: '10015',
                     name: 'Tivo & Netflix',
                     volumeRatio: 0.38,
                     volumedb: -100,
                     muted: true,
-                    fileKey: '723010',
-                    imageURL: 'MCWS/v1/File/GetImage?File=723010',
-                    status: 'Stopped'
+                    playingNow: {
+                        status: 'Stopped',
+                        album: null,
+                        artist: null,
+                        durationMillis: 0,
+                        externalSource: true,
+                        fileKey: '723010',
+                        imageURL: 'MCWS/v1/File/GetImage?File=723010',
+                        name: 'Ipc',
+                        positionDisplay: '1 of 1',
+                        positionMillis: 0
+                    }
                 }
             );
         });

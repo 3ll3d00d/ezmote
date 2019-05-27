@@ -113,7 +113,7 @@ const isAlive = () => {
 };
 
 const _startPollerIfNecessary = (eventId, action, delay) => {
-    if (!poller.isPolling(p => p.id === eventId)) {
+    if (!poller.isPolling(eventId)) {
         console.info(`Starting ${eventId} poller`);
         poller.startPolling(eventId, action, delay);
         return true;
@@ -121,10 +121,9 @@ const _startPollerIfNecessary = (eventId, action, delay) => {
     return false;
 };
 const _stopPollerIfNecessary = (eventId) => {
-    const matcher = p => p.id === eventId;
-    if (poller.isPolling(matcher)) {
+    if (poller.isPolling(eventId)) {
         console.info(`Stopping ${eventId} poller`);
-        poller.stopPolling(matcher);
+        poller.stopPolling(eventId);
         return true;
     }
     return false;
@@ -203,7 +202,7 @@ const _ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
     if (newActiveZone) {
         if (!existingActiveZone || existingActiveZone.id !== newActiveZone.id) {
             _doStart(newActiveZone, dispatch);
-        } else if (!poller.isPolling(_matchPollerByZoneId(newActiveZone))) {
+        } else if (!poller.isPolling(`jriverZoneInfo_${newActiveZone.id}`)) {
             console.info(`Poller for zone ${newActiveZone.id}/${newActiveZone.name} should be running but isn't, starting`);
             _doStart(newActiveZone, dispatch);
         }
@@ -211,8 +210,6 @@ const _ensureZoneInfoPollerIsRunning = (zones, state, dispatch) => {
 };
 
 const _dispatchError = (dispatch, config, type, error) => dispatch({type: type, error: true, payload: error});
-
-const _matchPollerByZoneId = (targetZone) => z => z.id === `jriverZoneInfo_${targetZone.id}`;
 
 const _doStop = (existingActiveZone) => {
     if (!_stopPollerIfNecessary(`jriverZoneInfo_${existingActiveZone.id}`)) {
