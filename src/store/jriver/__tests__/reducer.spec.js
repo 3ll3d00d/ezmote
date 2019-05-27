@@ -4,6 +4,7 @@ import * as actionTypes from '../actionTypes';
 import Immutable from 'seamless-immutable';
 import * as zd from "../__data__";
 
+const withNoErrors = (obj) => Object.assign(obj, {errors: {}});
 
 describe('store/jriver/reducer', () => {
 
@@ -20,7 +21,7 @@ describe('store/jriver/reducer', () => {
         it('should handle load of zones into initial state', () => {
             const basicZones = zd.zones(zd.zone(10001, 'Music'), zd.zone(10002, 'Films'));
             const action = {type: actionTypes.FETCH_ZONES, payload: basicZones.zones};
-            const expectedValue = Immutable(basicZones);
+            const expectedValue = Immutable(withNoErrors(basicZones));
             Reducer(reduce).expect(action).toReturnState(expectedValue);
         });
 
@@ -29,7 +30,7 @@ describe('store/jriver/reducer', () => {
             const enrichedZones = zd.zones(zd.zone(10001, 'Music'), zd.enriched(zd.enrichedData, zd.zone(10002, 'Films')));
             const action = {type: actionTypes.FETCH_ZONES, payload: basicZones.zones};
             Reducer(reduce)
-                .withState(Immutable(enrichedZones))
+                .withState(Immutable(withNoErrors(enrichedZones)))
                 .expect(action)
                 .toReturnState(Immutable(enrichedZones));
         });
@@ -39,9 +40,9 @@ describe('store/jriver/reducer', () => {
             const deletedZones = zd.zones(zd.zone(10001, 'Music'));
             const action = {type: actionTypes.FETCH_ZONES, payload: deletedZones.zones};
             Reducer(reduce)
-                .withState(Immutable(basicZones))
+                .withState(Immutable(withNoErrors(basicZones)))
                 .expect(action)
-                .toReturnState(Immutable(deletedZones));
+                .toReturnState(Immutable(withNoErrors(deletedZones)));
 
         });
     });
@@ -61,9 +62,10 @@ describe('store/jriver/reducer', () => {
                     imageURL: 'URL 1234'
                 }
             };
-            Reducer(reduce).withState(Immutable(basicZones))
+            Reducer(reduce)
+                .withState(Immutable(withNoErrors(basicZones)))
                 .expect(action)
-                .toReturnState(Immutable(enrichedZones));
+                .toReturnState(Immutable(withNoErrors(enrichedZones)));
         });
 
         it('should handle fresh zone info', () => {
@@ -84,9 +86,13 @@ describe('store/jriver/reducer', () => {
                         id: 10002,
                         name: 'Films'
                     }
-                }
+                },
+                errors: {}
             });
-            Reducer(reduce).withState(enrichedZones).expect(action).toReturnState(updatedZone1);
+            Reducer(reduce)
+                .withState(withNoErrors(enrichedZones))
+                .expect(action)
+                .toReturnState(updatedZone1);
         });
 
         it('zone info with no name does not trash existing state', () => {
@@ -98,12 +104,14 @@ describe('store/jriver/reducer', () => {
                     volumeRatio: 0.31,
                     volumedb: -31,
                     fileKey: '123456',
-                    imageURL: 'URL 1234'
+                    imageURL: 'URL 1234',
+                    name: 'Music'
                 }
             };
-            Reducer(reduce).withState(Immutable(basicZones))
+            Reducer(reduce)
+                .withState(Immutable(withNoErrors(basicZones)))
                 .expect(action)
-                .toReturnState(Immutable(enrichedZones));
+                .toReturnState(Immutable(withNoErrors(enrichedZones)));
         });
     });
 
@@ -123,9 +131,13 @@ describe('store/jriver/reducer', () => {
                         id: 10002,
                         name: 'Films'
                     }
-                }
+                },
+                errors: {}
             });
-            Reducer(reduce).withState(enrichedZones).expect(action).toReturnState(updatedZone1);
+            Reducer(reduce)
+                .withState(withNoErrors(enrichedZones))
+                .expect(action)
+                .toReturnState(updatedZone1);
         });
     });
 
@@ -144,9 +156,13 @@ describe('store/jriver/reducer', () => {
                             id: 10002,
                             name: 'Films'
                         }
-                    }
+                    },
+                    errors: {}
                 });
-                Reducer(reduce).withState(enrichedZones).expect(action).toReturnState(updatedZone1);
+                Reducer(reduce)
+                    .withState(withNoErrors(enrichedZones))
+                    .expect(action)
+                    .toReturnState(updatedZone1);
             });
         }
 
@@ -156,7 +172,7 @@ describe('store/jriver/reducer', () => {
 describe('store/zone/selectors', () => {
 
     it('should select no zones', () => {
-        Selector(getAllZones).expect({jriver: {zones: initialState}}).toReturn({zones: {}});
+        Selector(getAllZones).expect({jriver: {zones: initialState}}).toReturn({zones: {}, errors: {}});
     });
 
     it('should select known zones', () => {
