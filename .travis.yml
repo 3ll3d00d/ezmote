@@ -13,4 +13,5 @@ deploy:
   on:
     repo: 3ll3d00d/ezmote
     tags: true
+  skip_cleanup: true
   prerelease: true
