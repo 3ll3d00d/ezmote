@@ -30,3 +30,5 @@ httpRequests/
 .idea/
 
 .vscode/
+
+ezmote-*.tar.gz

@@ -3,13 +3,13 @@ cache: yarn
 before_deploy:
 - yarn build
 - cd build
-- tar cfz ../${REPO}-${TRAVIS_TAG}.tar.gz *
+- tar cfz ../ezmote-${TRAVIS_TAG}.tar.gz *
 - cd ..
 deploy:
   provider: releases
   api_key:
     secure: GX1yFT4jG6rsiMiUtNkrqVF1t8Acf/tn2Em/7nUNu/7UJfFlga8dmHhwPNr+BwLH9wu9Grzt7I5Go6hik372VuFwnIgffou4A4PlrqqAhvLUklqXdqjdiCwXPqkI7iqwhZsdJs35jPmndQbm5K6t75eyKT4RKZM9mMscDJ/S7r6fMDJklFdxqVlDTRoRu4G0COv05eDiIBMQTpB2jVKJks38xFEC97xyw46NxF+cLq1CY/p2XgpeGkl8CVKJCQyg5dF2pxExr7ndZ/faMUn+bs3fOMdlRtmNWuf0wuRnn6WCQQRkhJYYk5SrYdoljX2Bclw+C7wY3N6Kn9QrcRbIyrRae8bbfukafbMqYD8JdoZpuG49fmmANqS6qOHHtf7Wvu1Kgedql9x0fT8ghF+Shzmd1dX8grhjNWvfm2YITRRwGkknQVEHBusTsWFwXsyBKng3IaeBManXLyYTHDqw6v5kdPp/Uhu5klrvA/KhZ50vjw4OX1nW3hWarOrUZF083UJw9WOLmChehyHB+fhyITP9LrXN/fAzzi1XB518WYBn1/9sV/IURpWvODhjQfFeNPmOnSrY/M5Q7kOt58HmwTiJJhvLXxSFB5cgoXb5s0nqxGBr0uMQVpo3Z/N00YJUPzCaSYep3DQSDCH6p2o55ZC2jSHe4h3UmMJOghmCUPo=
-  file: "${REPO}-${TRAVIS_TAG}.tar.gz"
+  file: "ezmote-${TRAVIS_TAG}.tar.gz"
   on:
     repo: 3ll3d00d/ezmote
     tags: true
