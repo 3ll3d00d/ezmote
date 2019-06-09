@@ -32,3 +32,4 @@ httpRequests/
 .vscode/
 
 ezmote-*.tar.gz
+.yarnrc

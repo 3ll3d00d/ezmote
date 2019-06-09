@@ -82,10 +82,15 @@ const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbac
                     }
                 </div>
             </div>
-            <CardMedia className={classes.cover}
-                       image={getImgUrl(mcwsUrl, type, id, width, height, fallbackColour, authToken)}
-                       component='img'
-                       title={name}/>
+            {
+                authToken
+                    ?
+                    <CardMedia className={classes.cover}
+                               image={getImgUrl(mcwsUrl, type, id, width, height, fallbackColour, authToken)}
+                               component='img'
+                               title={name}/>
+                    : null
+            }
         </Card>
     );
 };
