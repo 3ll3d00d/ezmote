@@ -5,26 +5,6 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import {persistStore, persistReducer} from 'redux-persist/lib';
 import Immutable from 'seamless-immutable';
 
-function noop() {}
-const noopStorage = {
-    getItem: noop,
-    setItem: noop,
-    removeItem: noop,
-};
-
-const storage = () => {
-    if (process.env.NODE_ENV === 'test') {
-        return noopStorage;
-    } else {
-        import('redux-persist/es/storage')
-    }
-};
-
-const persistConfig = {
-    key: 'config',
-    storage: storage()
-};
-
 export const makeError = (payload, type) => {
     return Immutable({
         error: payload.message,
@@ -38,7 +18,12 @@ export const makeKeyedError = ({payload, type}) => {
     });
 };
 
-export const configureStore = () => {
+
+const handleStore = (module) => {
+    const persistConfig = {
+        key: 'config',
+        storage: module.default
+    };
     const {config, ...rest} = reducers;
     const reducer = combineReducers({
         config: persistReducer(persistConfig, config),
@@ -48,3 +33,15 @@ export const configureStore = () => {
     const persistor = persistStore(store);
     return {store, persistor};
 };
+
+let handler = null;
+if (process.env.NODE_ENV === 'test') {
+    handler = async () => {
+        return import('./noopstore').then(handleStore);
+    };
+} else {
+    handler = async () => {
+        return import('redux-persist/es/storage').then(handleStore);
+    };
+}
+export const configureStore = handler;
