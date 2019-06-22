@@ -1,9 +1,8 @@
 import * as types from "./actionTypes";
 import cmdserver from '../../services/cmdserver';
-import {getConfig} from "../config/reducer";
 
 const PJ_SEND_COMMAND = 'send';
-const PJ_GET_COMMAND = 'get';
+// const PJ_GET_COMMAND = 'get';
 
 const dispatchError = (dispatch, type, error) => {
     dispatch({type: type, error: true, payload: `${error.name} - ${error.message}`});
@@ -11,8 +10,6 @@ const dispatchError = (dispatch, type, error) => {
 
 const sendCommand = (type, cmd) => {
     return async (dispatch, getState) => {
-        const state = getState();
-        const config = getConfig(state);
         try {
             const response = await cmdserver.sendPJCommand(cmd);
             dispatch({type: types.SEND_COMMAND, payload: response});
@@ -28,10 +25,10 @@ const sendCommand = (type, cmd) => {
  */
 const sendCommandToPJ = (command) => sendCommand(PJ_SEND_COMMAND, command);
 
-/**
- * Gets a value from the PJ.
- * @param command the  command.
- */
-const getStateFromPJ = (command) => sendCommand(PJ_GET_COMMAND, command);
+// /**
+//  * Gets a value from the PJ.
+//  * @param command the  command.
+//  */
+// const getStateFromPJ = (command) => sendCommand(PJ_GET_COMMAND, command);
 
-export {getStateFromPJ, sendCommandToPJ};
+export { sendCommandToPJ};

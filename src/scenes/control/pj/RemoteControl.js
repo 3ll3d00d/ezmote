@@ -17,7 +17,6 @@ import HdrOff from '@material-ui/icons/HdrOff';
 import ScopeAspect from '@material-ui/icons/Crop75';
 import TVAspect from '@material-ui/icons/Crop32';
 import {withStyles} from "@material-ui/core/styles/index";
-import classNames from 'classnames';
 import {getConfig} from "../../../store/config/reducer";
 import {connect} from "react-redux";
 import {sendCommandToPJ} from "../../../store/pj/actions";
