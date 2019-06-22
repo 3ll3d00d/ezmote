@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AppsIcon from '@material-ui/icons/Apps';
 import SettingsIcon from '@material-ui/icons/Settings';
+import ProjectorIcon from '@material-ui/icons/Videocam';
 import PowerIcon from '@material-ui/icons/PowerSettingsNew';
 import FullScreenIcon from '@material-ui/icons/Fullscreen';
 import ExitFullScreenIcon from '@material-ui/icons/FullscreenExit';
@@ -22,7 +23,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar/Avatar";
-import {SETTINGS} from "../../App";
+import {SETTINGS, SHOW_PJ} from "../../App";
 
 const drawerWidth = 56;
 
@@ -161,6 +162,12 @@ class Menu extends Component {
                                 {selectorTitle}
                             </Typography>
                             {selector}
+                            <IconButton aria-owns={'menu-appbar'}
+                                        aria-haspopup='true'
+                                        onClick={() => handler(SHOW_PJ)}
+                                        color='inherit'>
+                                <ProjectorIcon/>
+                            </IconButton>
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup='true'
                                         onClick={() => handler(SETTINGS)}

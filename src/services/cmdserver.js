@@ -68,8 +68,28 @@ class CmdServerService {
         if (!response.ok) {
             throw new Error(`CmdServer.sendTivoCommand failed, HTTP status ${response.status}`);
         }
-        return await response.json();
+        return response.json();
     };
+
+    /**
+     * Sends commands to the JVC bridge.
+     * @param command the command to send.
+     * @returns {Promise<void>}
+     */
+    sendPJCommand = async (command) => {
+        const response = await fetch(`${API_PREFIX}/pj`, {
+            method: 'PUT',
+            body: JSON.stringify([command]),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`CmdServer.sendPjCommand failed, HTTP status ${response.status}`);
+        }
+        return response.json();
+    }
 }
 
 export default new CmdServerService();

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
+import PJ from "./scenes/control/pj";
 import {FullScreenMenu, NotFullScreenMenu} from "./scenes/menu";
 import Grid from '@material-ui/core/Grid';
 import grey from '@material-ui/core/colors/grey';
@@ -30,13 +31,15 @@ const theme = createMuiTheme({
 });
 
 export const SETTINGS = 'Settings';
+export const SHOW_PJ = 'PJ';
 
 class App extends Component {
     // TODO move into the store
     state = {
         hasSelected: false,
         selected: SETTINGS,
-        fullscreen: false
+        fullscreen: false,
+        showPj: false
     };
 
     componentDidMount = () => {
@@ -74,7 +77,13 @@ class App extends Component {
     handleMenuSelect = (selected) => {
         const {sendCommand} = this.props;
         if (typeof selected === 'string') {
-            this.setState({selected: selected, hasSelected: true});
+            if (selected === SHOW_PJ) {
+                this.setState((prevState, prevProps) => {
+                    return {showPj: !prevState.showPj}
+                });
+            } else {
+                this.setState({selected: selected, hasSelected: true});
+            }
         } else {
             if (selected.hasOwnProperty('control') && selected.control === 'jriver') {
                 // only send the command when we select something to play
@@ -122,7 +131,7 @@ class App extends Component {
     render() {
         const {commands, errors, playingNow} = this.props;
         const playingNowCommand = playingNow ? commands.find(c => c && c.title === playingNow) : null;
-        const {selected, fullscreen} = this.state;
+        const {selected, fullscreen, showPj} = this.state;
         const selectedCommand = selected !== SETTINGS ? commands.find(c => c && c.id === selected) : null;
         const selectorTitle = selected === SETTINGS ? SETTINGS : selectedCommand ? selectedCommand.title : null;
         const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
@@ -138,6 +147,16 @@ class App extends Component {
                                    fullscreen={fullscreen}
                                    toggleFullScreen={this.toggleFullScreen}
                                    showTheatreView={this.showTheatreView}>
+                        {
+                            showPj
+                                ?
+                                <Grid container>
+                                    <Grid item xs={12}>
+                                        <PJ/>
+                                    </Grid>
+                                </Grid>
+                                : null
+                        }
                         <Grid container>
                             <Grid item xs={12}>{this.getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
                         </Grid>
