@@ -11,6 +11,23 @@ const dispatchError = (dispatch, type, error) => {
     dispatch({type: type, error: true, payload: `${error.name} - ${error.message}`});
 };
 
+const getTivoInfo = () => {
+    return async (dispatch, getState) => {
+        const state = getState();
+        const config = getConfig(state);
+        if (config[fields.TIVO_NAME]) {
+            try {
+                const response = await cmdserver.getTivoInfo(config[fields.TIVO_NAME]);
+                dispatch({type: types.GET_TIVO_INFO, payload: response});
+            } catch (error) {
+                dispatchError(dispatch, types.GET_TIVO_INFO_FAIL, error);
+            }
+        } else {
+            dispatch({type: types.GET_TIVO_INFO_FAIL, error: true, payload: 'Invalid CMDServer Config'})
+        }
+    };
+};
+
 const sendTivoKey = (type, key) => {
     return async (dispatch, getState) => {
         const state = getState();
@@ -46,4 +63,4 @@ const sendIRToTivo = (command) => sendTivoKey(TIVO_IR_COMMAND, command);
  */
 const setTivoChannel = (channelNumber) => sendTivoKey(TIVO_SETCH_COMMAND, channelNumber);
 
-export {sendTextToTivo, sendIRToTivo, setTivoChannel};
+export {sendTextToTivo, sendIRToTivo, setTivoChannel, getTivoInfo};

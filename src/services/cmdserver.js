@@ -72,6 +72,25 @@ class CmdServerService {
     };
 
     /**
+     * Gets info about the named tivo.
+     * @param tivoName the tivo name.
+     * @returns {Promise<any>}
+     */
+    getTivoInfo = async (tivoName) => {
+        const response = await fetch(`${API_PREFIX}/tivo/${tivoName}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`CmdServer.getTivoInfo failed, HTTP status ${response.status}`);
+        }
+        return response.json();
+    };
+
+    /**
      * Sends commands to the JVC bridge.
      * @param command the command to send.
      * @returns {Promise<void>}

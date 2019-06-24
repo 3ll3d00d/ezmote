@@ -13,9 +13,13 @@ export const initialState = Immutable({channel: ''});
 const reduce = (state = initialState, action = {}) => {
     switch (action.type) {
         case types.SEND_TIVO_KEY:
-            return Immutable.without(Immutable.set(state, {channel: action.payload.channel}), 'keyError');
+            return Immutable.without(Immutable.set(state, 'channel', action.payload.channel), 'keyError');
         case types.SEND_TIVO_KEY_FAIL:
-            return Immutable.set(state, {keyError: makeError(action)});
+            return Immutable.set(state, 'keyError', makeError(action));
+        case types.GET_TIVO_INFO:
+            return Immutable.set(state, 'channel', action.payload.channel);
+        case types.GET_TIVO_INFO_FAIL:
+            return Immutable.set(state, 'getError', makeError(action));
         default:
             return state;
     }
@@ -24,10 +28,22 @@ const reduce = (state = initialState, action = {}) => {
 // selector functions
 const errors = state => {
     return {
-        key: state.keyError
+        key: state.tivos.keyError
     };
 };
-const currentChannel = state => state.channel;
+const currentChannel = state => {
+    if (state.tivos.channel) {
+        if (state.tivos.channel.startsWith('Ch_Status')) {
+            try {
+                // Ch_Status 0108 Local
+                return Number(state.tivos.channel.split(' ')[1]);
+            } catch (e) {
+                console.exception(`Unknown channel ${state.tivos.channel} - ${e.message}`);
+            }
+        }
+    }
+    return null;
+};
 export const getErrors = errors;
 export const getCurrentChannel = currentChannel;
 

@@ -55,7 +55,7 @@ const renderSuggestion = (suggestion, {query, isHighlighted}) => {
 
 const renderSuggestionsContainer = ({containerProps, children}) => {
     return (
-        <Paper {...containerProps} square>
+        <Paper {...containerProps} square style={{zIndex: 100}}>
             {children}
         </Paper>
     );
@@ -139,8 +139,17 @@ class TivoChannelSelector extends Component {
         this.props.setTivoChannel(suggestion.number);
     };
 
+    getChannelName = (channelNumber) => {
+        const  channel = channelNumber.toString();
+        const match = channels.find(c => c.number === channel);
+        if (match) {
+            return match.name;
+        }
+        return null;
+    };
+
     render() {
-        const {classes} = this.props;
+        const {classes, currentChannel} = this.props;
         const {suggestions} = this.state;
         return (
             <div className={classes.searchBox}>
@@ -163,7 +172,7 @@ class TivoChannelSelector extends Component {
                     inputProps={{
                         autoFocus: true,
                         classes,
-                        placeholder: 'Channels',
+                        placeholder: this.getChannelName(currentChannel),
                         value: this.state.suggestionText,
                         onChange: this.handleSuggestionChange,
                     }}/>

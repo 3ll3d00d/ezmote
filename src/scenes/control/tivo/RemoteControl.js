@@ -38,22 +38,18 @@ import {sendIRToTivo, sendTextToTivo} from '../../../store/tivos/actions';
 import * as codes from './CommandCodes';
 import classNames from 'classnames';
 import {getCurrentChannel} from "../../../store/tivos/reducer";
-import FormHelperText from "@material-ui/core/FormHelperText";
+import TivoChannelSelector from "./TivoChannelSelector";
 
 const styles = (theme) => ({
     input: {
         margin: theme.spacing(1),
     },
     formControl: {
-        margin: theme.spacing(1),
+        margin: '0px'
     },
     smallPadded: {
         marginTop: '0.25em',
         marginBottom: '0.25em'
-    },
-    bordered: {
-        borderTop: '2px solid black',
-        borderBottom: '2px solid black'
     },
     rcButton: {
         minWidth: '32px',
@@ -159,18 +155,12 @@ class RemoteControl extends Component {
     render() {
         const {classes, currentChannel} = this.props;
         return (
-            <Grid spacing={1} container className={classes.bordered}>
-                {currentChannel
-                    ?
-                    <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
-                        <Grid item>
-                            <FormControl className={classes.formControl} disabled>
-                                <Input id="current-channel" value={currentChannel}/>
-                                <FormHelperText>Now Playing</FormHelperText>
-                            </FormControl>
-                        </Grid>
+            <Grid spacing={1} container>
+                <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
+                    <Grid item>
+                        <TivoChannelSelector currentChannel={currentChannel}/>
                     </Grid>
-                    : null}
+                </Grid>
                 <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                     <Grid item sm={5} md={3}>
                         <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
