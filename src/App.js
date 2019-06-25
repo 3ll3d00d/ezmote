@@ -142,7 +142,6 @@ class App extends Component {
                     <MenuComponent handler={this.handleMenuSelect}
                                    selectorTitle={selectorTitle}
                                    selectedCommand={selectedCommand}
-                                   selector={this.getSelector(selectedCommand)}
                                    commands={commands}
                                    fullscreen={fullscreen}
                                    toggleFullScreen={this.toggleFullScreen}

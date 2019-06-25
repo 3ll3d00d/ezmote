@@ -6,7 +6,6 @@ import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import AppsIcon from '@material-ui/icons/Apps';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -59,18 +58,26 @@ const styles = rootHeight => theme => ({
     drawerPaper: {
         width: drawerWidth,
     },
-    toolbar: theme.mixins.toolbar,
+    toolbarSpacer: {
+        minHeight: '48px'
+    },
     content: {
         width: '100%',
         height: '100%',
         flexGrow: 1,
         backgroundColor: theme.palette.background.default,
-        padding: '8px'
+        paddingLeft: '8px',
+        paddingTop: '8px',
+        paddingRight: '8px',
+        paddingBottom: '0px'
     },
     title: {
         flex: 1,
         paddingLeft: '0.5em',
         paddingRight: '0.5em'
+    },
+    appToolbar: {
+        justifyContent: 'space-evenly'
     },
     avatar: {
         font: 'inherit',
@@ -83,6 +90,9 @@ const styles = rootHeight => theme => ({
     },
     listItem: {
         paddingLeft: '8px'
+    },
+    commandList: {
+        paddingTop: '0px'
     }
 });
 
@@ -138,15 +148,15 @@ class Menu extends Component {
     };
 
     render() {
-        const {commands, selector, selectedCommand, selectorTitle, classes, handler, fullscreen, toggleFullScreen, showTheatreView, children} = this.props;
+        const {commands, selectedCommand, classes, handler, fullscreen, toggleFullScreen, showTheatreView, children} = this.props;
         const drawer = (
             <Drawer variant="permanent"
                     classes={{
                         paper: classes.drawerPaper,
                     }}
                     className={classes.drawer}>
-                <div className={classes.toolbar} />
-                <List className={classes.list}>
+                <div className={classes.toolbarSpacer} />
+                <List className={classes.commandList}>
                     {commands.filter(c => c).map(c => this.renderCommandButton(c, selectedCommand, classes, handler))}
                 </List>
             </Drawer>
@@ -157,11 +167,7 @@ class Menu extends Component {
             <div className={fsRoot}>
                 <div className={classes.appFrame}>
                     <AppBar position="fixed" className={classes.appBar}>
-                        <Toolbar>
-                            <Typography type="h6" color="inherit" noWrap className={classes.title}>
-                                {selectorTitle}
-                            </Typography>
-                            {selector}
+                        <Toolbar className={classes.appToolbar} variant={'dense'}>
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup='true'
                                         onClick={() => handler(SHOW_PJ)}
@@ -190,9 +196,10 @@ class Menu extends Component {
                     </AppBar>
                     {drawer}
                     <main className={classes.content}>
-                        <div className={classes.toolbar} />
+                        <div className={classes.toolbarSpacer} />
                         {children}
                     </main>
+                    {/*{drawer}*/}
                 </div>
             </div>
         );
@@ -203,13 +210,11 @@ Menu.propTypes = {
     classes: PropTypes.object.isRequired,
     theme: PropTypes.object.isRequired,
     handler: PropTypes.func.isRequired,
-    selectorTitle: PropTypes.string.isRequired,
     fullscreen: PropTypes.bool.isRequired,
     toggleFullScreen: PropTypes.func.isRequired,
     showTheatreView: PropTypes.func.isRequired,
     commands: PropTypes.array.isRequired,
     selectedCommand: PropTypes.object,
-    selector: PropTypes.any,
 };
 
 // 100% works in fullscreen, window.innerHeight works otherwise

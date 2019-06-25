@@ -39,7 +39,7 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand, selectedC
 };
 
 Control.propTypes = {
-    playingNowCommand: PropTypes.object.isRequired,
+    playingNowCommand: PropTypes.object,
     selectedCommand: PropTypes.object,
     jriverIsDead: PropTypes.bool.isRequired
 };
