@@ -60,7 +60,7 @@ const styles = (theme) => ({
     playButton: {
         minWidth: '24px',
         width: '24px',
-        height: theme.spacing(3)
+        height: theme.spacing(4)
     },
     blue: {
         color: 'blue',
@@ -162,7 +162,7 @@ class RemoteControl extends Component {
                     </Grid>
                 </Grid>
                 <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
-                    <Grid item sm={5} md={3}>
+                    <Grid item sm={5} md={4}>
                         <Grid container spacing={1} justify={'center'} align-items={'center'} className={classes.smallPadded}>
                             <Grid item>
                                 {this.makeRCButton({key: codes.LIVE_TV, CI: LiveTV})}
@@ -277,9 +277,10 @@ class RemoteControl extends Component {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item sm={5} md={3}>
+                    <Grid item sm={5} md={4}>
                         <Grid container justify={'center'} alignItems={'center'} spacing={1}>
-                            <Grid item xs={6}>
+                            <Grid item xs={1}/>
+                            <Grid item xs={7}>
                                 <FormControl className={classes.formControl}>
                                     <Input value={this.state.text}
                                            id="textinput"
