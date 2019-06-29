@@ -15,14 +15,57 @@ import {
 import {connect} from "react-redux";
 import {withStyles} from '@material-ui/core/styles';
 import Browser from "./Browser";
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 const styles = theme => ({
-    root: {
+    portrait: {
         flexGrow: 1
+    },
+    landscape: {
+        display: 'flex',
     },
     smallTab: {
         height: '56px'
+    }
+});
+
+const VerticalTabs = withStyles(theme => ({
+    flexContainer: {
+        flexDirection: "column"
     },
+    indicator: {
+        display: "none"
+    },
+}))(Tabs);
+
+const OrientedTabs = withStyles(styles)(({selectedTab, handleChange, classes}) => {
+    return useMediaQuery('(orientation: landscape)')
+        ?
+        <VerticalTabs indicatorColor="secondary"
+                      textColor="secondary"
+                      value={selectedTab}
+                      onChange={handleChange}
+                      style={{marginRight: '24px'}}>
+            <Tab label="Search"/>
+            <Tab label="Playing Now"/>
+            <Tab label="Remote"/>
+        </VerticalTabs>
+        :
+        <Tabs variant={'fullWidth'}
+              centered={true}
+              indicatorColor="secondary"
+              textColor="secondary"
+              value={selectedTab}
+              onChange={handleChange}>
+            <Tab label="Search" className={classes.smallTab}/>
+            <Tab label="Playing Now" className={classes.smallTab}/>
+            <Tab label="Remote" className={classes.smallTab}/>
+        </Tabs>;
+});
+
+const Container = withStyles(styles)(({classes, children}) => {
+    const className = useMediaQuery('(orientation: landscape)') ? 'landscape' : 'portrait';
+    return <div className={classes[className]}>{children}</div>;
 });
 
 class JRiver extends Component {
@@ -35,35 +78,33 @@ class JRiver extends Component {
     };
 
     render() {
-        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, classes, selectedCommand} = this.props;
+        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, selectedCommand} = this.props;
         const {value} = this.state;
         const selectedTab = value === -1 ? (playingNow && playingNow.status !== 'Stopped' ? 1 : 0) : value;
         return (
-            <div className={classes.root}>
-                <Tabs variant={'fullWidth'}
-                      centered={true}
-                      indicatorColor="secondary"
-                      textColor="secondary"
-                      value={selectedTab}
-                      onChange={this.handleChange}>
-                    <Tab label="Search" className={classes.smallTab}/>
-                    <Tab label="Playing Now" className={classes.smallTab}/>
-                    <Tab label="Remote Control" className={classes.smallTab}/>
-                </Tabs>
+            <Container>
+                <OrientedTabs selectedTab={selectedTab} handleChange={this.handleChange}/>
                 {
-                    selectedTab === 0 && <Browser selectedCommand={selectedCommand}
-                                                  onPlay={() => this.setState({value: 1})} />
+                    selectedTab === 0
+                    &&
+                    <Browser selectedCommand={selectedCommand}
+                                              onPlay={() => this.setState({value: 1})}/>
                 }
                 {
                     selectedTab === 1
                     && playingNow
-                    && <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
-                                   playingNow={playingNow}
-                                   authToken={authToken}
-                                   zoneId={activeZone.id}/>
-                } 
-                {selectedTab === 2 && <RemoteControl controls={{sendKeyPresses}}/>}
-            </div>
+                    &&
+                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
+                                playingNow={playingNow}
+                                authToken={authToken}
+                                zoneId={activeZone.id}/>
+                }
+                {
+                    selectedTab === 2
+                    &&
+                    <RemoteControl controls={{sendKeyPresses}}/>
+                }
+            </Container>
         );
     }
 }
@@ -82,4 +123,4 @@ export default connect(mapStateToProps, {
     playPrevious,
     setPosition,
     sendKeyPresses
-})(withStyles(styles)(JRiver));
+})(JRiver);

@@ -15,11 +15,16 @@ import {sendCommand} from "../../../store/commands/actions";
 import Breadcrumbs from './Breadcrumbs';
 import PlayableCard from "./PlayableCard";
 import Search from "./Search";
+import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
 
 const styles = theme => ({
     fullsize: {
         marginTop: theme.spacing(1),
         width: '100%',
+        height: '100%',
+        backgroundColor: theme.palette.background.default,
+    },
+    landscape: {
         height: '100%',
         backgroundColor: theme.palette.background.default,
     },
@@ -43,6 +48,40 @@ const hexToRGB = h => {
     }
     return `${+r},${+g},${+b}`;
 };
+
+const Header = withStyles(styles)(({path, names, onSelectNode, selectedCommand, classes, handleInput, text}) => {
+    return useMediaQuery('(orientation: landscape)')
+        ?
+        <Grid container>
+            <Grid item>
+                <Breadcrumbs path={path}
+                             names={names}
+                             onSelect={onSelectNode}
+                             selectedCommand={selectedCommand}/>
+            </Grid>
+            <Grid item xs={1}/>
+            <Grid item className={classes.landscape}>
+                <Search text={text} onChange={handleInput}/>
+            </Grid>
+        </Grid>
+        :
+        <>
+            <Grid container>
+                <Grid item>
+                    <Breadcrumbs path={path}
+                                 names={names}
+                                 onSelect={onSelectNode}
+                                 selectedCommand={selectedCommand}/>
+                </Grid>
+            </Grid>
+            <Grid container>
+                <Grid item className={classes.fullsize}>
+                    <Search text={text} onChange={handleInput}/>
+                </Grid>
+            </Grid>
+        </>
+        ;
+});
 
 class Browser extends Component {
 
@@ -196,21 +235,13 @@ class Browser extends Component {
                 {
                     path.length > 0
                     ?
-                        <>
-                            <Grid container>
-                                <Grid item>
-                                    <Breadcrumbs path={path}
-                                                 names={names}
-                                                 onSelect={this.onSelectNode}
-                                                 selectedCommand={selectedCommand}/>
-                                </Grid>
-                            </Grid>
-                            <Grid container>
-                                <Grid item className={classes.fullsize}>
-                                    <Search text={text} onChange={this.handleInput}/>
-                                </Grid>
-                            </Grid>
-                        </>
+                        <Header path={path}
+                                names={names}
+                                onSelectNode={this.onSelectNode}
+                                selectedCommand={selectedCommand}
+                                classes={classes}
+                                handleInput={this.handleInput}
+                                text={text}/>
                     :
                         null
                 }

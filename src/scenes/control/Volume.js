@@ -18,10 +18,11 @@ const styles = theme => ({
         height: theme.spacing(3)
     },
     volumeSlider: {
-        paddingTop: theme.spacing(3)
+        paddingTop: theme.spacing(5),
+        paddingBottom: theme.spacing(1)
     },
     volumeContainer: {
-        paddingBottom: theme.spacing(3)
+        paddingBottom: theme.spacing(1)
     }
 });
 
@@ -77,6 +78,7 @@ class Volume extends Component {
                                 min={0}
                                 max={100}
                                 step={1}
+                                valueLabelDisplay={'auto'}
                                 onChange={this.slowSetVolume(zone.id)}
                                 value={currentVolume}
                                 className={classes.volumeSlider}/>
