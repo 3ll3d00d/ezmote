@@ -81,13 +81,13 @@ class RemoteControl extends Component {
                             <Grid item>
                                 <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
                                     <Grid item>
-                                        {this.makeRCButton('Remote.RemoteCode.PictureMode_Natural', HdrOff)}
+                                        {this.makeRCButton('HdrOff', HdrOff)}
                                     </Grid>
                                     <Grid item>
                                         {this.makeRCButton('Remote.RemoteCode.Up', UpArrow)}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton('Remote.RemoteCode.PictureMode_User2', HdrOn)}
+                                        {this.makeRCButton('HdrOn', HdrOn)}
                                     </Grid>
                                 </Grid>
                                 <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
