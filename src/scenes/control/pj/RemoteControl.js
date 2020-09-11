@@ -16,10 +16,14 @@ import HdrOn from '@material-ui/icons/HdrOn';
 import HdrOff from '@material-ui/icons/HdrOff';
 import ScopeAspect from '@material-ui/icons/Crop75';
 import TVAspect from '@material-ui/icons/Crop32';
+import ScopeStreamAspect from '@material-ui/icons/PanoramaHorizontal';
+import Error from '@material-ui/icons/Error';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from "@material-ui/core/styles/index";
 import {getConfig} from "../../../store/config/reducer";
 import {connect} from "react-redux";
-import {sendCommandToPJ} from "../../../store/pj/actions";
+import {getAnamorphicModeFromPJ, getPowerStateFromPJ, sendCommandToPJ} from "../../../store/pj/actions";
+import {getAnamorphicMode, getPowerState} from "../../../store/pj/reducer";
 
 const styles = (theme) => ({
     input: {
@@ -45,34 +49,51 @@ const styles = (theme) => ({
 
 class RemoteControl extends Component {
 
+    componentDidMount = () => {
+        this.props.getPowerStateFromPJ();
+        this.props.getAnamorphicModeFromPJ();
+    };
+
     makeRCButton = (key, CI) => {
         return (
             <Button key={key}
                     variant={'contained'}
                     size={'small'}
                     onClick={() => this.props.sendCommandToPJ(key)}
-                    className={this.props.classes.rcButton}>
+                    className={this.props.classes.rcButton}
+                    disabled={key === null}>
                 <CI/>
             </Button>
         );
     };
 
-    render() {
-        const {classes} = this.props;
+    makePowerButton = (powerState) => {
+        if (!powerState || powerState === "Standby") {
+            return this.makeRCButton('Power.PowerState.LampOn', Power);
+        } else if (powerState === "LampOn") {
+            return this.makeRCButton('Power.PowerState.Standby', PowerOff);
+        } else if (powerState === "Starting" || powerState === "Cooling") {
+            return this.makeRCButton(null, CircularProgress);
+        } else if (powerState === "Error") {
+            return this.makeRCButton(null, Error);
+        }
+    };
 
+    render() {
+        const {classes, powerState} = this.props;
         return (
             <Grid container className={classes.bordered} spacing={1}>
                 <Grid container justify={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                     <Grid item>
                         <Grid container direction={'column'} justify={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                             <Grid item>
-                                {this.makeRCButton('Power.PowerState.LampOn', Power)}
+                                {this.makePowerButton(powerState)}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton('Remote.RemoteCode.Menu_Info', Info)}
+                                {this.makeRCButton('Remote.RemoteCode.Menu', Menu)}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton('Power.PowerState.Standby', PowerOff)}
+                                {this.makeRCButton('Remote.RemoteCode.Menu_Advanced', AdvancedMenu)}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -81,7 +102,7 @@ class RemoteControl extends Component {
                             <Grid item>
                                 <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
                                     <Grid item>
-                                        {this.makeRCButton('HdrOff', HdrOff)}
+                                        {this.makeRCButton('Remote.RemoteCode.Menu_Info', Info)}
                                     </Grid>
                                     <Grid item>
                                         {this.makeRCButton('Remote.RemoteCode.Up', UpArrow)}
@@ -109,7 +130,7 @@ class RemoteControl extends Component {
                                         {this.makeRCButton('Remote.RemoteCode.Down', DownArrow)}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton('Remote.RemoteCode.Menu', Menu)}
+                                        {this.makeRCButton('HdrOff', HdrOff)}
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -121,10 +142,10 @@ class RemoteControl extends Component {
                                 {this.makeRCButton('Remote.RemoteCode.InstallationMode1', TVAspect)}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton('Remote.RemoteCode.InstallationMode2', ScopeAspect)}
+                                {this.makeRCButton(['Remote.RemoteCode.InstallationMode2', 'Remote.RemoteCode.Anamorphic_Off'], ScopeAspect)}
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton('Remote.RemoteCode.Menu_Advanced', AdvancedMenu)}
+                                {this.makeRCButton(['Remote.RemoteCode.InstallationMode2', 'Remote.RemoteCode.Anamorphic_A'], ScopeStreamAspect)}
                             </Grid>
                         </Grid>
                     </Grid>
@@ -137,8 +158,12 @@ class RemoteControl extends Component {
 const mapStateToProps = (state) => {
     return {
         config: getConfig(state),
+        anamorphicMode: getAnamorphicMode(state),
+        powerState: getPowerState(state)
     };
 };
 export default connect(mapStateToProps, {
     sendCommandToPJ,
+    getAnamorphicModeFromPJ,
+    getPowerStateFromPJ
 })(withStyles(styles, {withTheme: true})(RemoteControl));

@@ -7,7 +7,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import VolumeOff from '@material-ui/icons/VolumeOff';
 import VolumeUp from '@material-ui/icons/VolumeUp';
-import Slider from '@material-ui/lab/Slider';
+import Slider from '@material-ui/core/Slider';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
 import {muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";

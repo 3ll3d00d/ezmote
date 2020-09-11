@@ -56,16 +56,21 @@ class App extends Component {
 
     debounceIsAlive = debounce(this.doIsAlive, 1000, {leading:false, trailing:true});
 
-    componentWillReceiveProps = (nextProps) => {
-        if (!nextProps.config.valid) {
+    componentDidUpdate = (prevProps, prevState, snapshot) => {
+        if (!this.props.config.valid) {
             this.setState({selected: SETTINGS, hasSelected: false});
-        } else if (nextProps.config.valid && !this.props.config.valid) {
-            this.debounceIsAlive();
-        } else if (!this.state.hasSelected && nextProps.config.valid) {
-            const {commands, playingNow} = nextProps;
-            const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c && c.title === playingNow) : null;
-            if (playingNowCommand) {
-                this.setState({selected: playingNowCommand.id, hasSelected: false});
+        } else if (this.props.config.valid) {
+            if (!prevProps.config.valid) {
+                this.debounceIsAlive();
+            } else {
+                const {hasSelected, selected} = this.state;
+                if (!hasSelected) {
+                    const {commands, playingNow} = this.props;
+                    const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c && c.title === playingNow) : null;
+                    if (playingNowCommand && playingNowCommand.id !== selected) {
+                        this.setState({selected: playingNowCommand.id, hasSelected: false});
+                    }
+                }
             }
         }
     };

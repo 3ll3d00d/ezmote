@@ -93,12 +93,12 @@ class CmdServerService {
     /**
      * Sends commands to the JVC bridge.
      * @param command the command to send.
-     * @returns {Promise<void>}
+     * @returns {Promise<any>}
      */
     sendPJCommand = async (command) => {
         const response = await fetch(`${API_PREFIX}/pj`, {
             method: 'PUT',
-            body: JSON.stringify([command]),
+            body: JSON.stringify(Array.isArray(command) ? command : [command]),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -108,6 +108,21 @@ class CmdServerService {
             throw new Error(`CmdServer.sendPjCommand failed, HTTP status ${response.status}`);
         }
         return response.json();
+    }
+
+    /**
+     * Reads data from the JVC bridge.
+     * @param command the command to send.
+     * @returns {Promise<string>}
+     */
+    getPJData = async (command) => {
+        const response = await fetch(`${API_PREFIX}/pj/${command}`, {
+            method: 'GET'
+        });
+        if (!response.ok) {
+            throw new Error(`CmdServer.getPJData failed, HTTP status ${response.status}`);
+        }
+        return response.text();
     }
 }
 

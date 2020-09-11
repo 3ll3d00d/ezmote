@@ -2,7 +2,7 @@ import * as types from "./actionTypes";
 import cmdserver from '../../services/cmdserver';
 
 const PJ_SEND_COMMAND = 'send';
-// const PJ_GET_COMMAND = 'get';
+const PJ_GET_DATA = 'get';
 
 const dispatchError = (dispatch, type, error) => {
     dispatch({type: type, error: true, payload: `${error.name} - ${error.message}`});
@@ -19,16 +19,31 @@ const sendCommand = (type, cmd) => {
     };
 };
 
+const getData = (type, cmd) => {
+    return async (dispatch, getState) => {
+        try {
+            const response = await cmdserver.getPJData(cmd);
+            dispatch({type: types.GET_DATA, payload: {response, cmd} });
+        } catch (error) {
+            dispatchError(dispatch, types.GET_DATA_FAIL, error);
+        }
+    };
+};
+
 /**
  * Sends a command to the projector.
  * @param command the command.
  */
 const sendCommandToPJ = (command) => sendCommand(PJ_SEND_COMMAND, command);
 
-// /**
-//  * Gets a value from the PJ.
-//  * @param command the  command.
-//  */
-// const getStateFromPJ = (command) => sendCommand(PJ_GET_COMMAND, command);
+/**
+ * gets some state from the projector.
+ * @param command the command.
+ */
+const getDataFromPJ = (command) => getData(PJ_GET_DATA, command);
 
-export { sendCommandToPJ};
+const getAnamorphicModeFromPJ = () => getDataFromPJ("Anamorphic");
+
+const getPowerStateFromPJ = () => getDataFromPJ("Power");
+
+export { sendCommandToPJ, getDataFromPJ, getAnamorphicModeFromPJ, getPowerStateFromPJ };

@@ -50,7 +50,7 @@ const hexToRGB = h => {
 };
 
 const Header = withStyles(styles)(({path, names, onSelectNode, selectedCommand, classes, handleInput, text}) => {
-    return useMediaQuery('(orientation: landscape)')
+    return useMediaQuery('(orientation: landscape) and (min-height: 580px)')
         ?
         <Grid container>
             <Grid item>

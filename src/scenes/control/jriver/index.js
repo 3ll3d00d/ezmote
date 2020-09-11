@@ -39,7 +39,7 @@ const VerticalTabs = withStyles(theme => ({
 }))(Tabs);
 
 const OrientedTabs = withStyles(styles)(({selectedTab, handleChange, classes}) => {
-    return useMediaQuery('(orientation: landscape)')
+    return useMediaQuery('(orientation: landscape) and (min-height: 580px)')
         ?
         <VerticalTabs indicatorColor="secondary"
                       textColor="secondary"
@@ -64,7 +64,7 @@ const OrientedTabs = withStyles(styles)(({selectedTab, handleChange, classes}) =
 });
 
 const Container = withStyles(styles)(({classes, children}) => {
-    const className = useMediaQuery('(orientation: landscape)') ? 'landscape' : 'portrait';
+    const className = useMediaQuery('(orientation: landscape) and (min-height: 580px)') ? 'landscape' : 'portrait';
     return <div className={classes[className]}>{children}</div>;
 });
 
