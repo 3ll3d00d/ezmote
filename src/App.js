@@ -58,8 +58,10 @@ class App extends Component {
 
     componentDidUpdate = (prevProps, prevState, snapshot) => {
         if (!this.props.config.valid) {
-            this.setState({selected: SETTINGS, hasSelected: false});
-        } else if (this.props.config.valid) {
+            if (prevProps.config.valid) {
+                this.setState({selected: SETTINGS, hasSelected: false});
+            }
+        } else {
             if (!prevProps.config.valid) {
                 this.debounceIsAlive();
             } else {
