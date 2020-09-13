@@ -120,6 +120,7 @@ const _startPollerIfNecessary = (eventId, action, delay) => {
     }
     return false;
 };
+
 const _stopPollerIfNecessary = (eventId) => {
     if (poller.isPolling(eventId)) {
         console.info(`Stopping ${eventId} poller`);

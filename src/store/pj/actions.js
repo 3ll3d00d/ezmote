@@ -23,7 +23,7 @@ const getData = (type, cmd) => {
     return async (dispatch, getState) => {
         try {
             const response = await cmdserver.getPJData(cmd);
-            dispatch({type: types.GET_DATA, payload: {response, cmd} });
+            dispatch({type: types.GET_DATA, payload: {response: response.trim().replaceAll('"', ''), cmd}});
         } catch (error) {
             dispatchError(dispatch, types.GET_DATA_FAIL, error);
         }
@@ -44,6 +44,19 @@ const getDataFromPJ = (command) => getData(PJ_GET_DATA, command);
 
 const getAnamorphicModeFromPJ = () => getDataFromPJ("Anamorphic");
 
+const getPictureModeFromPJ = () => getDataFromPJ("PictureMode");
+
 const getPowerStateFromPJ = () => getDataFromPJ("Power");
 
-export { sendCommandToPJ, getDataFromPJ, getAnamorphicModeFromPJ, getPowerStateFromPJ };
+const clearPowerState = () => {
+    return {type: types.GET_DATA, payload: {response: '', cmd: 'Power'}};
+};
+
+export {
+    sendCommandToPJ,
+    getDataFromPJ,
+    getAnamorphicModeFromPJ,
+    getPowerStateFromPJ,
+    getPictureModeFromPJ,
+    clearPowerState
+};

@@ -2,7 +2,7 @@ import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 import {makeError} from "../store";
 
-export const initialState = Immutable({channel: ''});
+export const initialState = Immutable({Anamorphic: '', Power: '', PictureMode: ''});
 
 /**
  * Reduces the standard flux action for zone action types into the store.
@@ -17,7 +17,7 @@ const reduce = (state = initialState, action = {}) => {
         case types.SEND_COMMAND_FAIL:
             return Immutable.set(state, {keyError: makeError(action)});
         case types.GET_DATA:
-            return Immutable.set(Immutable.without(state, 'getError'), {[action.payload.cmd]: action.payload.response});
+            return Immutable.merge(Immutable.without(state, 'getError'), {[action.payload.cmd]: action.payload.response});
         case types.GET_DATA_FAIL:
             return Immutable.set(state, {getError: makeError(action)});
         default:
@@ -34,10 +34,12 @@ const errors = state => {
 };
 
 const anamorphicMode = state => state.pj.Anamorphic;
-const powerState = state => state.pj.PowerState;
+const pictureMode = state => state.pj.PictureMode;
+const powerState = state => state.pj.Power;
 
 export const getErrors = errors;
 export const getAnamorphicMode = anamorphicMode;
+export const getPictureMode = pictureMode;
 export const getPowerState = powerState;
 
 export default reduce;
