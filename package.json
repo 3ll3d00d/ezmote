@@ -42,7 +42,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-testkit": "^1.0.6"
   },
-  "proxy": "http://localhost:53199",
+  "proxy": "http://paradroid:63512",
   "browserslist": [
     ">0.2%",
     "not dead",

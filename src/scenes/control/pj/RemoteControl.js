@@ -23,14 +23,26 @@ import {withStyles} from "@material-ui/core/styles/index";
 import {getConfig} from "../../../store/config/reducer";
 import {connect} from "react-redux";
 import {
+    clearAnamorphicState,
+    clearInstallationModeState,
+    clearPictureModeState,
     clearPowerState,
     getAnamorphicModeFromPJ,
+    getInstallationModeFromPJ,
     getPictureModeFromPJ,
     getPowerStateFromPJ,
     sendCommandToPJ
 } from "../../../store/pj/actions";
-import {getAnamorphicMode, getPictureMode, getPowerState} from "../../../store/pj/reducer";
-import poller from "../../../services/timer";
+import {
+    getAnamorphicMode,
+    getInstallationMode,
+    getLastUpdateMillis,
+    getPending,
+    getPictureMode,
+    getPowerState
+} from "../../../store/pj/reducer";
+import Immutable from 'seamless-immutable';
+import debounce from "lodash.debounce";
 
 const styles = (theme) => ({
     input: {
@@ -56,60 +68,153 @@ const styles = (theme) => ({
 
 class RemoteControl extends Component {
 
-    pollForPowerState = () => {
-        if (!poller.isPolling('pj-power')) {
-            console.info(`Starting pj-power poller on ${this.props.powerState}`);
-            poller.startPolling('pj-power', this.props.getPowerStateFromPJ, 500);
-            return true;
+    findFunc = (val) => {
+        if (val === 'powerState') {
+            return this.props.getPowerStateFromPJ;
+        } else if (val === 'anamorphicMode') {
+            return this.props.getAnamorphicModeFromPJ;
+        } else if (val === 'installationMode') {
+            return this.props.getInstallationModeFromPJ;
+        } else if (val === 'pictureMode') {
+            return this.props.getPictureModeFromPJ;
+        } else {
+            return null;
         }
-        return false;
     }
 
-    pollForPictureMode = () => {
-        if (!poller.isPolling('pj-picture')) {
-            console.info('Starting pj-picture poller');
-            poller.startPolling('pj-picture', this.props.getPictureModeFromPJ, 500);
-            return true;
-        }
-        return false;
+    debouncePJ = (val) => debounce(this.findFunc(val), 500, {leading:false, trailing:true});
+
+    state = {
+        expected: Immutable({})
     }
 
-    pollForAnamorphic = () => {
-        if (!poller.isPolling('pj-anamorphic')) {
-            console.info('Starting pj-anamorphic poller');
-            poller.startPolling('pj-anamorphic', this.props.getAnamorphicModeFromPJ, 500);
-            return true;
+    expectPowerStateChange = () => {
+        this.expectChange(true, 'powerState');
+    }
+
+    expectPictureModeChange = () => {
+        this.expectChange(false,'pictureMode');
+    }
+
+    expectChangeTo169 = () => {
+        if (this.anamorphicAIsOn()) {
+            this.expectChange(false, 'installationMode', 'anamorphicMode');
+        } else {
+            this.expectChange(false, 'installationMode');
         }
-        return false;
+    };
+
+    expectChangeToScope = () => {
+        if (this.anamorphicAIsOn()) {
+            this.expectChange(false, 'anamorphicMode');
+        } else {
+            this.expectChange(false, 'installationMode');
+        }
+    };
+
+    expectChangeToStreamingScope = () => {
+        if (this.anamorphicModeIsOn()) {
+            this.expectChange(false,'anamorphicMode');
+        } else {
+            this.expectChange(false,'anamorphicMode', 'installationMode');
+        }
+    };
+
+    expectChange = (replace, ...chgs) => {
+        this.setState((prevState, prevProps) => {
+            const {expected} = prevState;
+            const newChgs = chgs.filter(c => !expected.hasOwnProperty(c));
+            if (newChgs.length > 0) {
+                const chgFuncs = Object.assign({}, ...newChgs.map(c => {
+                    return {[c]: this.debouncePJ(c)};
+                }));
+                if (replace) {
+                    return {expected: Immutable(chgFuncs)}
+                } else {
+                    return {expected: Immutable.merge(expected, chgFuncs)}
+                }
+            } else {
+                return prevState;
+            }
+        });
     }
 
     componentDidMount = () => {
-        this.props.getPowerStateFromPJ();
+        this.expectPowerStateChange();
     };
 
     componentDidUpdate = (prevProps, prevState, snapshot) => {
         if (prevProps.powerState !== this.props.powerState) {
             if (this.props.powerState === 'LampOn') {
-                this.props.getAnamorphicModeFromPJ();
-                this.props.getPictureModeFromPJ();
-                poller.stopPolling('pj-power')
-            } else if (this.props.powerState === 'Standby') {
-                poller.stopPolling('pj-power')
-            } else {
-                this.pollForPowerState();
+                this.expectChange(true, 'anamorphicMode', 'pictureMode', 'installationMode');
+            } else if (this.props.powerState === 'Standby' || this.props.powerState === 'Error') {
+                this.cancelAllExpectations();
+            } else if (prevProps.lastUpdateMillis !== this.props.lastUpdateMillis) {
+                this.pollPJ();
             }
-        }
-        if (poller.isPolling('pj-picture') && prevProps.pictureMode !== this.props.pictureMode) {
-            poller.stopPolling('pj-picture')
-        }
-        if (poller.isPolling('pj-anamorphic') && prevProps.anamorphicMode !== this.props.anamorphicMode) {
-            poller.stopPolling('pj-anamorphic')
+        } else if (prevProps.anamorphicMode !== this.props.anamorphicMode) {
+            this.removeExpectedFromState('anamorphicMode');
+        } else if (prevProps.pictureMode !== this.props.pictureMode) {
+            this.removeExpectedFromState('pictureMode');
+        } else if (prevProps.installationMode !== this.props.installationMode) {
+            this.removeExpectedFromState('installationMode');
+        } else if (prevProps.lastUpdateMillis !== this.props.lastUpdateMillis || this.hasExpectedChanged(prevState)) {
+            this.pollPJ();
+        } else {
+            console.log('?');
         }
     };
 
+    pollPJ = () => {
+        const {expected} = this.state;
+        if (expected.hasOwnProperty('powerState')) {
+            expected['powerState']();
+        } else if (expected.hasOwnProperty('anamorphicMode')) {
+            expected['anamorphicMode']();
+        } else if (expected.hasOwnProperty('installationMode')) {
+            expected['installationMode']();
+        } else if (expected.hasOwnProperty('pictureMode')) {
+            expected['pictureMode']();
+        } else if (Object.keys(expected).length === 0) {
+            // all done
+        }
+    };
+
+    hasExpectedChanged = (prevState) => {
+        const {expected} = this.state;
+        const {expected: prevExpected} = prevState;
+        if (prevExpected) {
+            return Object.keys(prevExpected).length !== Object.keys(expected).length
+                    || Object.keys(expected).some(e => !prevExpected.hasOwnProperty(e));
+        } else {
+            return false;
+        }
+    };
+
+    removeExpectedFromState = (toRemove) => {
+        this.setState((prevState, prevProps) => {
+            if (prevState.expected.hasOwnProperty(toRemove)) {
+                prevState.expected[toRemove].cancel();
+                return {expected: Immutable.without(prevState.expected, toRemove)};
+            } else {
+                return prevState;
+            }
+        });
+    };
+
+    cancelAllExpectations = () => {
+        this.setState((prevState, prevProps) => {
+            Object.values(prevState.expected).forEach(v => v.cancel());
+            return {expected: Immutable({})};
+        });
+    };
+
     componentWillUnmount = () => {
-        poller.stopAllMatching('pj-');
+        Object.values(this.state.expected).forEach(v => v.cancel());
         this.props.clearPowerState();
+        this.props.clearPictureModeState();
+        this.props.clearAnamorphicState();
+        this.props.clearInstallationModeState();
     };
 
     pjIsOn = () => this.props.powerState === 'LampOn';
@@ -118,14 +223,16 @@ class RemoteControl extends Component {
 
     anamorphicAIsOn = () => this.props.anamorphicMode === 'A';
 
-    makeRCButton = (key, ci, enabled = this.pjIsOn(), afterSend = k => {}) => {
+    anamorphicModeIsOn = () => this.props.installationMode === 'TWO';
+
+    makeRCButton = (key, ci, enabled = this.pjIsOn(), beforeSend = k => {}) => {
         return (
             <Button key={key}
                     variant={'contained'}
                     size={'small'}
                     onClick={() => {
+                        beforeSend(key);
                         this.props.sendCommandToPJ(key);
-                        afterSend(key);
                     }}
                     className={this.props.classes.rcButton}
                     disabled={key === null || !enabled}>
@@ -136,9 +243,9 @@ class RemoteControl extends Component {
 
     makePowerButton = (powerState) => {
         if (!powerState || powerState === "Standby") {
-            return this.makeRCButton('Power.PowerState.LampOn', <Power/>, true, this.pollForPowerState);
+            return this.makeRCButton('Power.PowerState.LampOn', <Power/>, true, this.expectPowerStateChange);
         } else if (powerState === "LampOn") {
-            return this.makeRCButton('Power.PowerState.Standby', <PowerOff/>, true, this.pollForPowerState);
+            return this.makeRCButton('Power.PowerState.Standby', <PowerOff/>, true, this.expectPowerStateChange);
         } else if (powerState === "Starting" || powerState === "Cooling") {
             return this.makeRCButton(null, <CircularProgress size={24}/>);
         } else if (powerState === "Error") {
@@ -175,7 +282,12 @@ class RemoteControl extends Component {
                                         {this.makeRCButton('Remote.RemoteCode.Up', <UpArrow/>)}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton('Remote.RemoteCode.PictureMode_User5', <HdrOn/>, this.pjIsOn() && !this.hdrIsOn(), this.pollForPictureMode)}
+                                        {
+                                            this.makeRCButton('Remote.RemoteCode.PictureMode_User5',
+                                                <HdrOn/>,
+                                                this.pjIsOn() && !this.hdrIsOn(),
+                                                this.expectPictureModeChange)
+                                        }
                                     </Grid>
                                 </Grid>
                                 <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
@@ -197,7 +309,12 @@ class RemoteControl extends Component {
                                         {this.makeRCButton('Remote.RemoteCode.Down', <DownArrow/>)}
                                     </Grid>
                                     <Grid item>
-                                        {this.makeRCButton('Remote.RemoteCode.PictureMode_User4', <HdrOff/>, this.pjIsOn() && this.hdrIsOn(), this.pollForPictureMode)}
+                                        {
+                                            this.makeRCButton('Remote.RemoteCode.PictureMode_User4',
+                                                <HdrOff/>,
+                                                this.pjIsOn() && this.hdrIsOn(),
+                                                this.expectPictureModeChange)
+                                        }
                                     </Grid>
                                 </Grid>
                             </Grid>
@@ -206,13 +323,30 @@ class RemoteControl extends Component {
                     <Grid item>
                         <Grid container direction={'column'} justify={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                             <Grid item>
-                                {this.makeRCButton('Remote.RemoteCode.InstallationMode1', <TVAspect/>, this.pjIsOn(), this.pollForAnamorphic)}
+                                {
+                                    this.makeRCButton('Remote.RemoteCode.InstallationMode1',
+                                        <TVAspect/>,
+                                        this.pjIsOn() && this.anamorphicModeIsOn(),
+                                        this.expectChangeTo169)
+                                }
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton(['Remote.RemoteCode.InstallationMode2', 'PAUSE3', 'Remote.RemoteCode.Anamorphic_Off'], <ScopeAspect/>, this.pjIsOn(), this.pollForAnamorphic)}
+                                {
+                                    this.makeRCButton(
+                                        ['Remote.RemoteCode.InstallationMode2', 'PAUSE3', 'Remote.RemoteCode.Anamorphic_Off'],
+                                        <ScopeAspect/>,
+                                        this.pjIsOn() && ((this.anamorphicModeIsOn() && this.anamorphicAIsOn()) || !this.anamorphicModeIsOn()),
+                                        this.expectChangeToScope)
+                                }
                             </Grid>
                             <Grid item>
-                                {this.makeRCButton(['Remote.RemoteCode.InstallationMode2', 'PAUSE3', 'Remote.RemoteCode.Anamorphic_A'], <ScopeStreamAspect/>, this.pjIsOn() && !this.anamorphicAIsOn(), this.pollForAnamorphic)}
+                                {
+                                    this.makeRCButton(
+                                        ['Remote.RemoteCode.InstallationMode2', 'PAUSE3', 'Remote.RemoteCode.Anamorphic_A'],
+                                        <ScopeStreamAspect/>,
+                                        this.pjIsOn() && ((this.anamorphicModeIsOn() && !this.anamorphicAIsOn()) || !this.anamorphicModeIsOn()),
+                                        this.expectChangeToStreamingScope)
+                                }
                             </Grid>
                         </Grid>
                     </Grid>
@@ -227,13 +361,20 @@ const mapStateToProps = (state) => {
         config: getConfig(state),
         anamorphicMode: getAnamorphicMode(state),
         pictureMode: getPictureMode(state),
-        powerState: getPowerState(state)
+        installationMode: getInstallationMode(state),
+        powerState: getPowerState(state),
+        pending: getPending(state),
+        lastUpdateMillis: getLastUpdateMillis(state)
     };
 };
 export default connect(mapStateToProps, {
     sendCommandToPJ,
     getAnamorphicModeFromPJ,
     getPictureModeFromPJ,
+    getInstallationModeFromPJ,
     getPowerStateFromPJ,
-    clearPowerState
+    clearPowerState,
+    clearPictureModeState,
+    clearInstallationModeState,
+    clearAnamorphicState,
 })(withStyles(styles, {withTheme: true})(RemoteControl));

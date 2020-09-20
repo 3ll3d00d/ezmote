@@ -22,6 +22,7 @@ const sendCommand = (type, cmd) => {
 const getData = (type, cmd) => {
     return async (dispatch, getState) => {
         try {
+            dispatch({type: types.REQUEST_DATA, payload: {pending: cmd}})
             const response = await cmdserver.getPJData(cmd);
             dispatch({type: types.GET_DATA, payload: {response: response.trim().replaceAll('"', ''), cmd}});
         } catch (error) {
@@ -46,11 +47,21 @@ const getAnamorphicModeFromPJ = () => getDataFromPJ("Anamorphic");
 
 const getPictureModeFromPJ = () => getDataFromPJ("PictureMode");
 
+const getInstallationModeFromPJ = () => getDataFromPJ("InstallationMode");
+
 const getPowerStateFromPJ = () => getDataFromPJ("Power");
 
-const clearPowerState = () => {
-    return {type: types.GET_DATA, payload: {response: '', cmd: 'Power'}};
-};
+const clearState = (cmd) => {
+    return {type: types.GET_DATA, payload: {response: '', cmd}};
+}
+
+const clearPowerState = () => clearState('Power');
+
+const clearAnamorphicState = () => clearState('Anamorphic');
+
+const clearPictureModeState = () => clearState('PictureMode');
+
+const clearInstallationModeState = () => clearState('InstallationMode');
 
 export {
     sendCommandToPJ,
@@ -58,5 +69,9 @@ export {
     getAnamorphicModeFromPJ,
     getPowerStateFromPJ,
     getPictureModeFromPJ,
-    clearPowerState
+    getInstallationModeFromPJ,
+    clearPowerState,
+    clearAnamorphicState,
+    clearPictureModeState,
+    clearInstallationModeState
 };
