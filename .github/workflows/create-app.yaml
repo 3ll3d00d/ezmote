@@ -10,8 +10,6 @@ jobs:
   create_release:
     name: Create Release
     runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - uses: actions/checkout@v2
       - name: Generate changelog
@@ -50,7 +48,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_name: ${{ steps.create_dist.outputs.binary_name }}
           asset_path: ${{ steps.create_dist.outputs.binary_path }}
           asset_content_type: ${{ steps.create_dist.outputs.binary_content_type }}
