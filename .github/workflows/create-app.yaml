@@ -33,12 +33,11 @@ jobs:
       - name: Setup node_modules
         run: yarn install --frozen-lockfile
       - name: Build UI
-        working-directory: ./ui
         run: yarn build
       - name: Get latest release version number
         id: get_version
         uses: battila7/get-version-action@v2
-      - name: Tar
+      - name: Create Distribution
         id: create_dist
         run: |
           cd build
