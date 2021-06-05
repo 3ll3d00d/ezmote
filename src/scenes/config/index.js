@@ -7,19 +7,7 @@ import {updateValue} from "../../store/config/actions";
 import {getConfig} from "../../store/config/reducer";
 import * as configFields from "../../store/config/config";
 import FormControl from "@material-ui/core/FormControl";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import IconButton from "@material-ui/core/IconButton";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import InputLabel from "@material-ui/core/InputLabel";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Switch from "@material-ui/core/Switch";
-import {Visibility, VisibilityOff} from "@material-ui/icons";
-import timer from "../../services/timer";
-import Grid from "@material-ui/core/Grid";
-import {getActiveZone} from "../../store/jriver/reducer";
-import Info from "./Info";
 
 const styles = (theme) => ({
     container: {
@@ -42,114 +30,15 @@ class Config extends Component {
         classes: PropTypes.object.isRequired,
     };
 
-    state = {
-        showPassword: false,
-        showDebug: false
-    };
-
-    changeDebug = () => {
-        this.setState((prevState, prevProps) => {
-            return {showDebug: !prevState.showDebug};
-        });
-    };
-
     handleInput = (field) => (event) => {
         this.props.updateValue(field, event.target.value);
     };
 
-    handleSwitch = (field) => (event, checked) => {
-        this.props.updateValue(field, checked);
-    };
-
-    handleMouseDownPassword = event => {
-        event.preventDefault();
-    };
-
-    handleClickShowPassword = () => {
-        this.setState((prevState, prevProps) => {
-            return {showPassword: !prevState.showPassword}
-        });
-    };
-
-    timerAsListItem = (p) => {
-        return (
-            <Grid key={p.id} item>
-                <List>
-                    <ListItem>
-                        <ListItemText primary={p.id}/>
-                    </ListItem>
-                    {p.times.map(t =>
-                        <ListItem key={t.toString()}>
-                            <ListItemText
-                                secondary={`${t.getHours()}:${t.getMinutes()}:${t.getSeconds() < 10 ? '0' : ''}${t.getSeconds()}.${t.getMilliseconds() < 10 ? '0' : ''}${t.getMilliseconds() < 100 ? '0' : ''}${t.getMilliseconds()}`}/>
-                        </ListItem>
-                    )}
-                </List>
-            </Grid>
-        );
-    };
-
     render() {
-        const {classes, config, activeZone} = this.props;
+        const {classes, config} = this.props;
 
         return (
             <div className={classes.container}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="mchose">Host</InputLabel>
-                    <Input value={config[configFields.MC_HOST]}
-                           id="mchost"
-                           label="JRMC Host"
-                           className={classes.input}
-                           inputProps={{
-                               'aria-label': 'Description',
-                           }}
-                           onChange={this.handleInput(configFields.MC_HOST)}/>
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="mcport">Port</InputLabel>
-                    <Input value={config[configFields.MC_PORT]}
-                           id="mcport"
-                           label="JRMC Port"
-                           type="number"
-                           className={classes.input}
-                           inputProps={{
-                               'aria-label': 'Description',
-                           }}
-                           onChange={this.handleInput(configFields.MC_PORT)}/>
-                </FormControl>
-                <FormControlLabel
-                    control={
-                        <Switch checked={config[configFields.MC_USE_SSL]}
-                                onChange={this.handleSwitch(configFields.MC_USE_SSL)}/>
-                    }
-                    label="Use SSL?"/>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="mcuser">Username</InputLabel>
-                    <Input value={config[configFields.MC_USERNAME]}
-                           id="mcuser"
-                           label="JRMC Username"
-                           className={classes.input}
-                           inputProps={{
-                               'aria-label': 'Description',
-                           }}
-                           onChange={this.handleInput(configFields.MC_USERNAME)}/>
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                    <InputLabel htmlFor="mcpassword">Password</InputLabel>
-                    <Input id="mcpassword"
-                           type={this.state.showPassword ? 'text' : 'password'}
-                           value={config[configFields.MC_PASSWORD]}
-                           onChange={this.handleInput(configFields.MC_PASSWORD)}
-                           endAdornment={
-                               <InputAdornment position="end">
-                                   <IconButton
-                                       onClick={this.handleClickShowPassword}
-                                       onMouseDown={this.handleMouseDownPassword}>
-                                       {this.state.showPassword ? <VisibilityOff/> : <Visibility/>}
-                                   </IconButton>
-                               </InputAdornment>
-                           }/>
-                </FormControl>
                 <FormControl className={classes.formControl}>
                     <InputLabel htmlFor="tivoname">Tivo Name</InputLabel>
                     <Input value={config[configFields.TIVO_NAME]}
@@ -161,26 +50,6 @@ class Config extends Component {
                            }}
                            onChange={this.handleInput(configFields.TIVO_NAME)}/>
                 </FormControl>
-                <FormControlLabel
-                    control={
-                        <Switch checked={this.state.showDebug}
-                                onChange={this.changeDebug}/>
-                    }
-                    label="Show Debug Info?"/>
-                {
-                    this.state.showDebug
-                        ?
-                        <Grid container>
-                            {timer.getPollerData().map(p => this.timerAsListItem(p))}
-                        </Grid>
-                        : null
-                }
-                {
-                    this.state.showDebug
-                        ?
-                        <Info activeZone={activeZone}/>
-                        : null
-                }
             </div>
         );
     };
@@ -189,7 +58,6 @@ class Config extends Component {
 const mapStateToProps = (state) => {
     return {
         config: getConfig(state),
-        activeZone: getActiveZone(state),
     };
 };
 

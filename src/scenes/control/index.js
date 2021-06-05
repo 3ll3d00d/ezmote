@@ -6,7 +6,6 @@ import Tivo from "./tivo";
 import {getActiveZone} from "../../store/jriver/reducer";
 import {getConfig} from "../../store/config/reducer";
 import {connect} from "react-redux";
-import {MC_HOST} from "../../store/config/config";
 import Disconnected from "./Disconnected";
 
 const Control = ({jriverIsDead, config, activeZone, playingNowCommand, selectedCommand}) => {
@@ -27,7 +26,7 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand, selectedC
         Controller = JRiver;
     }
     if (jriverIsDead) {
-        return <Disconnected server={`jriver at ${config[MC_HOST]}`}/>;
+        return <Disconnected/>;
     } else {
         return (
             <div>

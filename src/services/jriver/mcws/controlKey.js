@@ -14,9 +14,9 @@ const endpoint = {
     converter
 };
 
-export default (config, keys) => Object.assign({}, {
+export default (serverURL, keys) => Object.assign({}, {
     suppliedParams: {
         Key: keys.join(';'),
         Focus: '1'
     }
-}, {config}, endpoint);
+}, {serverURL}, endpoint);

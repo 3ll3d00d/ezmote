@@ -12,7 +12,7 @@ const dispatchError = (dispatch, type, error) => {
  * @returns {function(*, *)}
  */
 const fetchCommands = () => {
-    return async (dispatch, getState) => {
+    return async (dispatch) => {
         try {
             const commands = await cmdserver.getCommands();
             const byId = keyBy(commands, 'id');

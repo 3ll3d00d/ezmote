@@ -47,17 +47,17 @@ const browseEndpoint = {
     converter: browseConverter
 };
 
-export const playBrowse = (config, nodeId) => Object.assign({}, {
+export const playBrowse = (serverURL, nodeId) => Object.assign({}, {
     suppliedParams: {
         ID: nodeId,
         Action: 'Play'
     }
-}, {config}, playEndpoint);
+}, {serverURL}, playEndpoint);
 
-export const browseFiles = (config, nodeId) => Object.assign({}, {
+export const browseFiles = (serverURL, nodeId) => Object.assign({}, {
     suppliedParams: {
         ID: nodeId,
         Action: 'MPL',
         Fields: 'Key,Name'
     }
-}, {config}, browseEndpoint);
+}, {serverURL}, browseEndpoint);

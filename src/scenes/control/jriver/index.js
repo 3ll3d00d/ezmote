@@ -87,8 +87,7 @@ class JRiver extends Component {
                 {
                     selectedTab === 0
                     &&
-                    <Browser selectedCommand={selectedCommand}
-                                              onPlay={() => this.setState({value: 1})}/>
+                    <Browser selectedCommand={selectedCommand} onPlay={() => this.setState({value: 1})}/>
                 }
                 {
                     selectedTab === 1

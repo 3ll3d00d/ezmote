@@ -14,9 +14,9 @@ const endpoint = {
     converter
 };
 
-export default (config, fileKey) => Object.assign({}, {
+export default (serverURL, fileKey) => Object.assign({}, {
     suppliedParams: {
         File: fileKey,
         Action: 'Play'
     }
-}, {config}, endpoint);
+}, {serverURL}, endpoint);

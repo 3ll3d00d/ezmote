@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useEffect, useState} from 'react';
 import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
@@ -9,17 +9,13 @@ import grey from '@material-ui/core/colors/grey';
 import blueGrey from '@material-ui/core/colors/blueGrey';
 import red from '@material-ui/core/colors/red';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Fullscreen from "react-full-screen";
+import {FullScreen, useFullScreenHandle} from "react-full-screen";
 import {connect} from 'react-redux';
-import {isAlive, stopAllPlaying, stopAllPollers} from "./store/jriver/actions";
-import {getConfig} from "./store/config/reducer";
-import {getErrors, getServerName, isJRiverDead} from "./store/jriver/reducer";
+import {stopAllPlaying} from "./store/jriver/actions";
+import {getActiveCommand, getErrors, isJRiverDead} from "./store/jriver/reducer";
 import {getOrderedCommands} from "./store/commands/reducer";
-import {fetchCommands, sendCommand} from "./store/commands/actions";
-import TivoChannelSelector from "./scenes/control/tivo/TivoChannelSelector";
+import {sendCommand} from "./store/commands/actions";
 import Errors from "./scenes/errors";
-import {getPlayingNow} from "./store/playingnow/reducer";
-import debounce from 'lodash.debounce';
 
 const theme = createMuiTheme({
     palette: {
@@ -33,63 +29,27 @@ const theme = createMuiTheme({
 export const SETTINGS = 'Settings';
 export const SHOW_PJ = 'PJ';
 
-class App extends Component {
-    // TODO move into the store
-    state = {
-        hasSelected: false,
-        selected: SETTINGS,
-        fullscreen: false,
-        showPj: false
-    };
-
-    componentDidMount = () => {
-        if (this.props.config.valid) {
-            this.props.isAlive();
-        }
-        this.props.fetchCommands();
-    };
-
-    doIsAlive = () => {
-        console.log("Initialising alive calls on config validation");
-        this.props.isAlive();
-    };
-
-    debounceIsAlive = debounce(this.doIsAlive, 1000, {leading:false, trailing:true});
-
-    componentDidUpdate = (prevProps, prevState, snapshot) => {
-        if (!this.props.config.valid) {
-            if (prevProps.config.valid) {
-                this.setState({selected: SETTINGS, hasSelected: false});
-            }
-        } else {
-            if (!prevProps.config.valid) {
-                this.debounceIsAlive();
-            } else {
-                const {hasSelected, selected} = this.state;
-                if (!hasSelected) {
-                    const {commands, playingNow} = this.props;
-                    const playingNowCommand = (playingNow && playingNow !== "") ? commands.find(c => c && c.title === playingNow) : null;
-                    if (playingNowCommand && playingNowCommand.id !== selected) {
-                        this.setState({selected: playingNowCommand.id, hasSelected: false});
-                    }
-                }
+const App = ({commands, activeCommand, sendCommand, jriverIsDead, errors}) => {
+    const [hasSelected, setHasSelected] = useState(false);
+    const [selected, setSelected] = useState(SETTINGS);
+    const [showPj, setShowPj] = useState(false);
+    useEffect(() => {
+        if (!hasSelected) {
+            const playingNowCommand = (activeCommand && activeCommand !== "") ? commands.find(c => c && c.title === activeCommand) : null;
+            if (playingNowCommand && playingNowCommand.id !== selected) {
+                setSelected(playingNowCommand.id);
+                setHasSelected(false);
             }
         }
-    };
+    }, [hasSelected, setSelected, setHasSelected, activeCommand, commands]);
 
-    componentWillUnmount = () => {
-        stopAllPollers();
-    };
-
-    handleMenuSelect = (selected) => {
-        const {sendCommand} = this.props;
+    const handleMenuSelect = (selected) => {
         if (typeof selected === 'string') {
             if (selected === SHOW_PJ) {
-                this.setState((prevState, prevProps) => {
-                    return {showPj: !prevState.showPj}
-                });
+                setShowPj(!showPj);
             } else {
-                this.setState({selected: selected, hasSelected: true});
+                setSelected(selected);
+                setHasSelected(true);
             }
         } else {
             if (selected.hasOwnProperty('control') && selected.control === 'jriver') {
@@ -97,95 +57,75 @@ class App extends Component {
             } else {
                 sendCommand(selected);
             }
-            this.setState({selected: selected.id, hasSelected: true});
+            setSelected(selected.id);
+            setHasSelected(true);
         }
     };
 
-    toggleFullScreen = () => {
-        this.setState((prevState, prevProps) => {
-            return {fullscreen: !prevState.fullscreen};
-        });
-    };
-
-    showTheatreView = () => {
-        const {sendCommand, commands} = this.props;
+    const showTheatreView = () => {
         sendCommand(commands.find(c => c.control === 'jriver'));
     };
 
-    getSelector = (selectedCommand) => {
-        if (selectedCommand && selectedCommand.hasOwnProperty('control')) {
-            if (selectedCommand.control === 'tivo') {
-                return <TivoChannelSelector/>;
-            }
-        }
-        return null;
-    };
-
-    getMainComponent = (selected, selectedCommand, playingNowCommand) => {
+    const getMainComponent = (selected, selectedCommand, playingNowCommand) => {
         if (selected === SETTINGS) {
             return <Config/>
         } else {
             if (playingNowCommand || selectedCommand.control === 'jriver') {
                 return <Control playingNowCommand={playingNowCommand}
                                 selectedCommand={selectedCommand}
-                                jriverIsDead={this.props.jriverIsDead}/>;
+                                jriverIsDead={jriverIsDead}/>;
             } else {
                 return <Config/>
             }
         }
     };
 
-    render() {
-        const {commands, errors, playingNow} = this.props;
-        const playingNowCommand = playingNow ? commands.find(c => c && c.title === playingNow) : null;
-        const {selected, fullscreen, showPj} = this.state;
-        const selectedCommand = selected !== SETTINGS ? commands.find(c => c && c.id === selected) : null;
-        const selectorTitle = selected === SETTINGS ? SETTINGS : selectedCommand ? selectedCommand.title : null;
-        const MenuComponent = fullscreen ? FullScreenMenu : NotFullScreenMenu;
-        return (
-            <Fullscreen enabled={fullscreen}>
-                <MuiThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <MenuComponent handler={this.handleMenuSelect}
-                                   selectorTitle={selectorTitle}
-                                   selectedCommand={selectedCommand}
-                                   commands={commands}
-                                   fullscreen={fullscreen}
-                                   toggleFullScreen={this.toggleFullScreen}
-                                   showTheatreView={this.showTheatreView}>
-                        {
-                            showPj
-                                ?
-                                <Grid container>
-                                    <Grid item xs={12}>
-                                        <PJ/>
-                                    </Grid>
+    const playingNowCommand = activeCommand ? commands.find(c => c && c.title === activeCommand) : null;
+    const selectedCommand = selected !== SETTINGS ? commands.find(c => c && c.id === selected) : null;
+    const selectorTitle = selected === SETTINGS ? SETTINGS : selectedCommand ? selectedCommand.title : null;
+    const fsHandle = useFullScreenHandle();
+    const MenuComponent = fsHandle.active ? FullScreenMenu : NotFullScreenMenu;
+    return (
+        <FullScreen handle={fsHandle}>
+            <MuiThemeProvider theme={theme}>
+                <CssBaseline/>
+                <MenuComponent handler={handleMenuSelect}
+                               selectorTitle={selectorTitle}
+                               selectedCommand={selectedCommand}
+                               commands={commands}
+                               fullscreen={fsHandle.active}
+                               toggleFullScreen={() => fsHandle.active ? fsHandle.exit() : fsHandle.enter()}
+                               showTheatreView={showTheatreView}>
+                    {
+                        showPj
+                            ?
+                            <Grid container>
+                                <Grid item xs={12}>
+                                    <PJ/>
                                 </Grid>
-                                : null
-                        }
-                        <Grid container>
-                            <Grid item xs={12}>{this.getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
-                        </Grid>
-                        <Grid container>
-                            <Grid item>
-                                <Errors errors={errors}/>
                             </Grid>
+                            : null
+                    }
+                    <Grid container>
+                        <Grid item xs={12}>{getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
+                    </Grid>
+                    <Grid container>
+                        <Grid item>
+                            <Errors errors={errors}/>
                         </Grid>
-                    </MenuComponent>
-                </MuiThemeProvider>
-            </Fullscreen>
-        );
-    }
+                    </Grid>
+                </MenuComponent>
+            </MuiThemeProvider>
+        </FullScreen>
+    );
 }
 
 const mapStateToProps = (state) => {
     return {
-        config: getConfig(state),
-        serverName: getServerName(state),
         commands: getOrderedCommands(state),
         errors: getErrors(state),
         jriverIsDead: isJRiverDead(state),
-        playingNow: getPlayingNow(state)
+        activeCommand: getActiveCommand(state)
     };
 };
-export default connect(mapStateToProps, {isAlive, fetchCommands, sendCommand, stopAllPlaying})(App);
+export default connect(mapStateToProps, {sendCommand, stopAllPlaying})(App);

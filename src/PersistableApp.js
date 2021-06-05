@@ -3,6 +3,8 @@ import {Provider} from "react-redux";
 import App from "./App";
 import {PersistGate} from "redux-persist/lib/integration/react";
 import {configureStore} from "./store/store";
+import {connectWsToStore} from "./store/jriver/actions";
+import {fetchCommands} from "./store/commands/actions";
 
 export default class PersistableApp extends Component {
     state = {
@@ -17,6 +19,8 @@ export default class PersistableApp extends Component {
 
     componentDidMount = async () => {
         const {persistor, store} = await this.loader();
+        connectWsToStore(store);
+        store.dispatch(fetchCommands());
         this.setState({persistor, store});
     };
 

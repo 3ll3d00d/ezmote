@@ -17,7 +17,7 @@ const styles = theme => ({
     },
 });
 
-const Disconnected = ({classes, server}) => {
+const Disconnected = ({classes}) => {
     return (
         <Grid container>
             <Grid container alignItems={'center'} justify={'center'}>
@@ -28,7 +28,7 @@ const Disconnected = ({classes, server}) => {
             <Grid container alignItems={'center'} justify={'center'}>
                 <Grid item xs>
                     <Typography color={'secondary'} type={'display1'}>
-                        Unable to connect to {server}
+                        Unable to connect to Media Server
                     </Typography>
                 </Grid>
             </Grid>

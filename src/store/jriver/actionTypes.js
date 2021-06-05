@@ -1,13 +1,3 @@
-// health
-export const AUTHENTICATE = 'jriver.AUTHENTICATE';
-export const AUTHENTICATE_FAIL = 'jriver.AUTHENTICATE_FAIL';
-export const IS_ALIVE = 'jriver.IS_ALIVE';
-export const IS_ALIVE_FAIL = 'jriver.IS_ALIVE_FAIL';
-// info
-export const FETCH_ZONES = 'jriver.FETCH_ZONES';
-export const FETCH_ZONES_FAIL = 'jriver.FETCH_ZONES_FAIL';
-export const FETCH_ZONE_INFO = 'jriver.FETCH_ZONE_INFO';
-export const FETCH_ZONE_INFO_FAIL = 'jriver.FETCH_ZONE_INFO_FAIL';
 // volume
 export const SET_VOLUME = 'jriver.SET_VOLUME';
 export const SET_VOLUME_FAIL = 'jriver.SET_VOLUME_FAIL';
@@ -35,3 +25,6 @@ export const SEND_KEYPRESS = 'jriver.SEND_KEYPRESS';
 export const SEND_KEYPRESS_FAIL = 'jriver.SEND_KEYPRESS_FAIL';
 export const SET_ZONE = 'jriver.SET_ZONE';
 export const SET_ZONE_FAIL = 'jriver.SET_ZONE_FAIL';
+// info
+export const GET_INFO = 'jriver.GET_PLAYING_NOW';
+export const GET_INFO_FAIL = 'jriver.GET_PLAYING_NOW_FAIL';

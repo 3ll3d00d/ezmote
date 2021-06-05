@@ -12,4 +12,4 @@ const endpoint = {
     converter
 };
 
-export default (config, zoneId) => Object.assign({}, {suppliedParams: {Zone: zoneId}}, {config}, endpoint);
+export default (serverURL, zoneId) => Object.assign({}, {suppliedParams: {Zone: zoneId}}, {serverURL}, endpoint);

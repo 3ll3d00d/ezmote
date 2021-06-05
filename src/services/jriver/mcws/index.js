@@ -1,10 +1,7 @@
-import alive from './alive';
-import authenticate from './authenticate';
 import {playable as playChildren, browseable as browseChildren} from "./browseChildren";
 import {browseFiles, playBrowse} from './browseFiles';
 import controlKey from './controlKey';
 import fileGetInfo from './fileGetInfo';
-import playbackInfo from './playbackInfo';
 import playbackMute from './playbackMute';
 import playbackPlayPause from './playbackPlayPause';
 import playbackStop from './playbackStop';
@@ -17,15 +14,12 @@ import playbackVolume from './playbackVolume';
 import playbackZones from './playbackZones';
 
 export {
-    alive,
-    authenticate,
     browseChildren,
     playChildren,
     browseFiles,
     controlKey,
     fileGetInfo,
     playBrowse,
-    playbackInfo,
     playbackMute,
     playbackNext,
     playbackPosition,

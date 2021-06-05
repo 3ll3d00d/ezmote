@@ -8,9 +8,8 @@ import {connect} from "react-redux";
 import debounce from 'lodash.debounce';
 import {browseChildren as mcwsBrowseChildren, browseFiles as mcwsBrowseFiles} from "../../../services/jriver/mcws";
 import jriver from "../../../services/jriver";
-import {getAuthToken} from "../../../store/jriver/reducer";
+import {getAuthToken, getJRiverURL} from "../../../store/jriver/reducer";
 import {startPlayback} from "../../../store/jriver/actions";
-import {getConfig, getJRiverURL} from "../../../store/config/reducer";
 import {sendCommand} from "../../../store/commands/actions";
 import Breadcrumbs from './Breadcrumbs';
 import PlayableCard from "./PlayableCard";
@@ -163,17 +162,13 @@ class Browser extends Component {
     };
 
     getChildren = async (nodeId) => {
-        const {config, authToken} = this.props;
-        if (config.valid === true) {
-            // TODO try-catch
-            const args = mcwsBrowseChildren(config, nodeId);
-            let response = await jriver.invoke({authToken, ...args});
-            if (response.length === 0) {
-                response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId)});
-            }
-            return response;
+        const {serverURL, authToken} = this.props;
+        const args = mcwsBrowseChildren(serverURL, nodeId);
+        let response = await jriver.invoke({authToken, ...args});
+        if (response.length === 0) {
+            response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId)});
         }
-        return [];
+        return response;
     };
 
     isRowLoaded = ({index}) => {
@@ -193,9 +188,8 @@ class Browser extends Component {
                           onSelect={this.onSelectNode}
                           onPlay={this.onPlayNode}
                           classes={this.props.classes}
-                          mcwsUrl={`${this.props.jriverURL}/MCWS/v1`}
-                          fallbackColour={this.state.fallbackColour}
-                          authToken={this.props.authToken}/>
+                          mcwsUrl={`${this.props.serverURL}/MCWS/v1`}
+                          fallbackColour={this.state.fallbackColour}/>
         ];
     };
 
@@ -280,8 +274,7 @@ class Browser extends Component {
 const mapStateToProps = (state) => {
     return {
         authToken: getAuthToken(state),
-        config: getConfig(state),
-        jriverURL: getJRiverURL(state)
+        serverURL: getJRiverURL(state)
     };
 };
 

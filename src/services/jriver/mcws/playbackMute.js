@@ -21,9 +21,9 @@ const endpoint = {
     converter
 };
 
-export default (config, zoneId, mute) => Object.assign({}, {
+export default (serverURL, zoneId, mute) => Object.assign({}, {
     suppliedParams: {
         Set: mute ? 1 : 0,
         Zone: zoneId
     }
-}, {config}, endpoint);
+}, {serverURL}, endpoint);

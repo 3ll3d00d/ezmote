@@ -40,4 +40,4 @@ const endpoint = {
     converter
 };
 
-export default config => Object.assign({}, {config}, endpoint);
+export default serverURL => Object.assign({}, {serverURL}, endpoint);

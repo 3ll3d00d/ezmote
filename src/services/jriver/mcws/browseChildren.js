@@ -39,7 +39,7 @@ const endpoint = {
     requiredParams: ['ID']
 };
 
-const make = (converter) => (config, nodeId) => Object.assign({}, {suppliedParams: {ID: nodeId}}, {config}, Object.assign({converter}, endpoint));
+const make = (converter) => (serverURL, nodeId) => Object.assign({}, {suppliedParams: {ID: nodeId}}, {serverURL}, Object.assign({converter}, endpoint));
 const playable = make(playableChildren);
 const browseable = make(browseableChildren);
 
