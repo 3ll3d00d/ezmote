@@ -40,7 +40,8 @@ jobs:
         run: |
           cd build
           tar cfz ../ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz *
-          echo ::set-output name=binary_path::"build/ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz"
+          cd ..
+          echo ::set-output name=binary_path::"ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz"
           echo ::set-output name=binary_name::"ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz"
           echo ::set-output name=binary_content_type::"application/x-tar"
       - name: Upload asset
