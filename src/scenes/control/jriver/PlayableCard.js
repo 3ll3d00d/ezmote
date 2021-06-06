@@ -54,6 +54,15 @@ const getImgUrl = (mcwsURL, type, id, width, height, fallbackColour, authToken) 
     return `${mcwsURL}/${path}?${params}`;
 };
 
+function formatDuration(content) {
+    try {
+        const dateStr = new Date(content.duration * 1000).toISOString().substr(11, 8);
+        return ` \u2022 ${dateStr}`;
+    } catch (e) {
+        return '';
+    }
+}
+
 const Description = ({content}) => {
     if (content.mediaType === 'Audio') {
         return (
@@ -63,8 +72,7 @@ const Description = ({content}) => {
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                     {content.artist}
-                    {' \u2022 '}
-                    {new Date(content.duration * 1000).toISOString().substr(11, 8)}
+                    {formatDuration(content)}
                 </Typography>
             </>
         )
@@ -79,8 +87,7 @@ const Description = ({content}) => {
                     <Typography variant="body2" color="textSecondary">
                         {content.rez}
                         {year}
-                        {' \u2022 '}
-                        {new Date(content.duration * 1000).toISOString().substr(11, 8)}
+                        {formatDuration(content)}
                     </Typography>
                 </>
             )
@@ -95,7 +102,7 @@ const Description = ({content}) => {
             if (sub) {
                 sub = `${sub} \u2022 `;
             }
-            const rez = content.rez ? `${content.rez} \u2022 ` : '';
+            const rez = content.rez ? `${content.rez}` : '';
             return (
                 <>
                     <Typography variant="body1" color="textSecondary">
@@ -104,7 +111,7 @@ const Description = ({content}) => {
                     <Typography variant="body2" color="textSecondary">
                         {sub}
                         {rez}
-                        {new Date(content.duration * 1000).toISOString().substr(11, 8)}
+                        {formatDuration(content)}
                     </Typography>
                 </>
             )
