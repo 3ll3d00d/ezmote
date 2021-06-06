@@ -56,7 +56,18 @@ const getImgUrl = (mcwsURL, type, id, width, height, fallbackColour, authToken) 
 
 const Description = ({content}) => {
     if (content.mediaType === 'Audio') {
-        // nop
+        return (
+            <>
+                <Typography variant="body1" color="textSecondary">
+                    {content.name}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                    {content.artist}
+                    {' \u2022 '}
+                    {new Date(content.duration * 1000).toISOString().substr(11, 8)}
+                </Typography>
+            </>
+        )
     } else if (content.mediaType === 'Video') {
         if (content.mediaSubType === 'Movie') {
             const year = content.year ? ` \u2022 ${content.year}` : '';

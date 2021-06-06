@@ -23,7 +23,7 @@ const reduce = (state = initialState, action = {}) => {
 };
 
 // selector functions
-export const getConfig = state => state.config;
+const getConfig = state => state.config;
 export const getTivoName = createSelector([getConfig], config => config[fields.TIVO_NAME]);
 
 export default reduce;

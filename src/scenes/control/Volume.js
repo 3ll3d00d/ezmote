@@ -11,7 +11,7 @@ import Slider from '@material-ui/core/Slider';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
 import {muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";
-import {getConfig} from "../../store/config/reducer";
+import {Input} from "@material-ui/core";
 
 const styles = theme => ({
     smallButton: {
@@ -57,12 +57,20 @@ class Volume extends Component {
         }
     };
 
+    setVolumeDirectly = zoneId => event => {
+        const vol = Number(event.target.value);
+        if (!isNaN(vol) && vol >= 0 && vol <= 100) {
+            this.props.setVolume(zoneId, vol / 100);
+        }
+    };
+
     render() {
         const {zone, classes} = this.props;
         if (zone) {
             const currentVolume = zone.volumeRatio ? Math.round(zone.volumeRatio * 100) : 0;
             return (
-                <Grid container justify={'space-around'} alignItems={'center'} spacing={1} className={classes.volumeContainer}>
+                <Grid container justify={'center'} alignItems={'center'} spacing={1}
+                      className={classes.volumeContainer}>
                     <Grid item xs={2}>
                         {this.makeMuteButton(zone.id)}
                     </Grid>
@@ -73,15 +81,28 @@ class Volume extends Component {
                             <ChevronLeft/>
                         </IconButton>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={5}>
                         <Slider id="volume-slider"
                                 min={0}
                                 max={100}
                                 step={1}
-                                valueLabelDisplay={'auto'}
+                                valueLabelDisplay={'off'}
                                 onChange={this.slowSetVolume(zone.id)}
                                 value={currentVolume}
                                 className={classes.volumeSlider}/>
+                    </Grid>
+                    <Grid item xs={1}>
+                        <Input value={currentVolume}
+                               margin="dense"
+                               onChange={this.setVolumeDirectly(zone.id)}
+                               inputProps={{
+                                   step: 1,
+                                   min: 0,
+                                   max: 100,
+                                   type: 'number',
+                                   'aria-labelledby': 'volume-slider',
+                               }}
+                        />
                     </Grid>
                     <Grid item xs={2}>
                         <IconButton className={classes.smallButton}
@@ -100,8 +121,7 @@ class Volume extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        zone: getActiveZone(state),
-        config: getConfig(state)
+        zone: getActiveZone(state)
     };
 };
 export default connect(mapStateToProps, {

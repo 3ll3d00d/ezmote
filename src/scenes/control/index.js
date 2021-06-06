@@ -4,7 +4,6 @@ import Volume from "./Volume";
 import JRiver from "./jriver";
 import Tivo from "./tivo";
 import {getActiveZone} from "../../store/jriver/reducer";
-import {getConfig} from "../../store/config/reducer";
 import {connect} from "react-redux";
 import Disconnected from "./Disconnected";
 
@@ -45,8 +44,7 @@ Control.propTypes = {
 
 const mapStateToProps = (state) => {
     return {
-        activeZone: getActiveZone(state),
-        config: getConfig(state)
+        activeZone: getActiveZone(state)
     };
 };
 export default connect(mapStateToProps)(Control)

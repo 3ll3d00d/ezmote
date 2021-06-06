@@ -32,7 +32,6 @@ import FormControl from "@material-ui/core/FormControl";
 import Tooltip from "@material-ui/core/Tooltip/Tooltip";
 import Input from '@material-ui/core/Input';
 import {connect} from "react-redux";
-import {getConfig} from "../../../store/config/reducer";
 import {withStyles} from "@material-ui/core/styles/index";
 import {sendIRToTivo, sendTextToTivo} from '../../../store/tivos/actions';
 import * as codes from './CommandCodes';
@@ -392,7 +391,6 @@ class RemoteControl extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        config: getConfig(state),
         currentChannel: getCurrentChannel(state)
     };
 };

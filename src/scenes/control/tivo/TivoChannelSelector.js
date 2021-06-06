@@ -7,7 +7,6 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import {withStyles} from '@material-ui/core/styles';
-import {getConfig} from "../../../store/config/reducer";
 import {setTivoChannel} from "../../../store/tivos/actions";
 import channels from "./ChannelList";
 import {connect} from 'react-redux';
@@ -195,8 +194,6 @@ TivoChannelSelector.propTypes = {
 };
 
 const mapStateToProps = (state) => {
-    return {
-        config: getConfig(state)
-    };
+    return {};
 };
 export default connect(mapStateToProps, {setTivoChannel})(withStyles(styles)(TivoChannelSelector));

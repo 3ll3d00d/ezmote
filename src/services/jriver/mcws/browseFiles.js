@@ -42,7 +42,8 @@ const browseConverter = (json) => {
             mediaType: j['Media Type'],
             mediaSubType: j['Media Sub Type'],
             season: j.Season,
-            episode: j.Episode
+            episode: j.Episode,
+            artist: j.Artist
         }
     });
 };
@@ -65,6 +66,6 @@ export const browseFiles = (serverURL, nodeId) => Object.assign({}, {
     suppliedParams: {
         ID: nodeId,
         Action: 'JSON',
-        Fields: 'Key,Name,Duration,Dimensions,Season,Episode,Year,Media Type,Media Sub Type'
+        Fields: 'Key,Name,Duration,Dimensions,Season,Episode,Year,Media Type,Media Sub Type,Artist'
     }
 }, {serverURL}, browseEndpoint);

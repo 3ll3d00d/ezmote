@@ -1,7 +1,6 @@
 import * as types from "./actionTypes";
 import {GET_INFO, GET_INFO_FAIL} from "./actionTypes";
 import jriver from '../../services/jriver';
-import {getConfig} from "../config/reducer";
 import {getAuthToken, getJRiverURL} from "./reducer";
 import * as mcws from '../../services/jriver/mcws';
 import {PLAY_TYPE_BROWSE, PLAY_TYPE_FILE} from '../../services/jriver/mcws/browseChildren';
@@ -115,7 +114,7 @@ const setVolume = (zoneId, volume) => {
     });
 };
 
-const _dispatchError = (dispatch, config, type, error) => dispatch({type: type, error: true, payload: error});
+const _dispatchError = (dispatch, type, error) => dispatch({type: type, error: true, payload: error});
 
 const _dispatchResponseDirectly = (successAction, response, state, dispatch) => {
     dispatch(Object.assign({type: successAction}, {payload: response}));
@@ -130,7 +129,7 @@ const _invoke = (successAction, failureAction, getPayload, dispatcher = _dispatc
         try {
             dispatcher(successAction, await jriver.invoke({serverURL, token, ...payload}), state, dispatch)
         } catch (error) {
-            errorDispatcher(dispatch, config, failureAction, error);
+            errorDispatcher(dispatch, failureAction, error);
         }
     };
 };

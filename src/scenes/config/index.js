@@ -4,7 +4,7 @@ import {withStyles} from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import {connect} from "react-redux";
 import {updateValue} from "../../store/config/actions";
-import {getConfig} from "../../store/config/reducer";
+import {getTivoName} from "../../store/config/reducer";
 import * as configFields from "../../store/config/config";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -35,13 +35,13 @@ class Config extends Component {
     };
 
     render() {
-        const {classes, config} = this.props;
+        const {classes, tivoName} = this.props;
 
         return (
             <div className={classes.container}>
                 <FormControl className={classes.formControl}>
                     <InputLabel htmlFor="tivoname">Tivo Name</InputLabel>
-                    <Input value={config[configFields.TIVO_NAME]}
+                    <Input value={tivoName}
                            id="tivoname"
                            label="TiVo Network Name"
                            className={classes.input}
@@ -57,7 +57,7 @@ class Config extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        config: getConfig(state),
+        tivoName: getTivoName(state),
     };
 };
 

@@ -20,7 +20,6 @@ import ScopeStreamAspect from '@material-ui/icons/PanoramaHorizontal';
 import Error from '@material-ui/icons/Error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from "@material-ui/core/styles/index";
-import {getConfig} from "../../../store/config/reducer";
 import {connect} from "react-redux";
 import {
     clearAnamorphicState,
@@ -358,7 +357,6 @@ class RemoteControl extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        config: getConfig(state),
         anamorphicMode: getAnamorphicMode(state),
         pictureMode: getPictureMode(state),
         installationMode: getInstallationMode(state),

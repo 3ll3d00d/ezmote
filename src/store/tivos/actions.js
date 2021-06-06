@@ -1,7 +1,6 @@
 import * as types from "./actionTypes";
 import cmdserver from '../../services/cmdserver';
-import {getConfig} from "../config/reducer";
-import * as fields from "../config/config";
+import {getTivoName} from "../config/reducer";
 
 const TIVO_KEYBOARD_COMMAND = 'keyboard';
 const TIVO_IR_COMMAND = 'ir';
@@ -14,10 +13,10 @@ const dispatchError = (dispatch, type, error) => {
 const getTivoInfo = () => {
     return async (dispatch, getState) => {
         const state = getState();
-        const config = getConfig(state);
-        if (config[fields.TIVO_NAME]) {
+        const tivoName = getTivoName(state);
+        if (tivoName) {
             try {
-                const response = await cmdserver.getTivoInfo(config[fields.TIVO_NAME]);
+                const response = await cmdserver.getTivoInfo(tivoName);
                 dispatch({type: types.GET_TIVO_INFO, payload: response});
             } catch (error) {
                 dispatchError(dispatch, types.GET_TIVO_INFO_FAIL, error);
@@ -31,10 +30,10 @@ const getTivoInfo = () => {
 const sendTivoKey = (type, key) => {
     return async (dispatch, getState) => {
         const state = getState();
-        const config = getConfig(state);
-        if (config[fields.TIVO_NAME]) {
+        const tivoName = getTivoName(state);
+        if (tivoName) {
             try {
-                const response = await cmdserver.sendTivoCommand(config[fields.TIVO_NAME], type, key);
+                const response = await cmdserver.sendTivoCommand(tivoName, type, key);
                 dispatch({type: types.SEND_TIVO_KEY, payload: response});
             } catch (error) {
                 dispatchError(dispatch, types.SEND_TIVO_KEY_FAIL, error);

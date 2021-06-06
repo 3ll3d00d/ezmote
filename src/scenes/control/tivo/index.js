@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
 import RemoteControl from "./RemoteControl";
-import {getConfig, getTivoName} from "../../../store/config/reducer";
+import {getTivoName} from "../../../store/config/reducer";
 import {getTivoInfo} from "../../../store/tivos/actions";
 import {connect} from "react-redux";
-import * as configFields from "../../../store/config/config";
 
 class Tivo extends Component {
 
