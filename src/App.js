@@ -28,6 +28,8 @@ const theme = createMuiTheme({
 
 export const SETTINGS = 'Settings';
 export const SHOW_PJ = 'PJ';
+export const TIVO = 'Tivo';
+
 
 const App = ({commands, activeCommand, sendCommand, jriverIsDead, errors}) => {
     const [hasSelected, setHasSelected] = useState(false);
@@ -69,6 +71,8 @@ const App = ({commands, activeCommand, sendCommand, jriverIsDead, errors}) => {
     const getMainComponent = (selected, selectedCommand, playingNowCommand) => {
         if (selected === SETTINGS) {
             return <Config/>
+        } else if (selected === TIVO) {
+            return <Control playingNowCommand={{'control': 'tivo'}}/>;
         } else {
             if (playingNowCommand || selectedCommand.control === 'jriver') {
                 return <Control playingNowCommand={playingNowCommand}

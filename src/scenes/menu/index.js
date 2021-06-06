@@ -19,10 +19,11 @@ import MovieIcon from '@material-ui/icons/Movie';
 import MusicIcon from '@material-ui/icons/LibraryMusic';
 import BugIcon from '@material-ui/icons/BugReport';
 import ListItem from "@material-ui/core/ListItem";
+import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar/Avatar";
-import {SETTINGS, SHOW_PJ} from "../../App";
+import {SETTINGS, SHOW_PJ, TIVO} from "../../App";
 
 const drawerWidth = 56;
 
@@ -185,6 +186,12 @@ class Menu extends Component {
                                         onClick={showTheatreView}
                                         color='inherit'>
                                 <AppsIcon/>
+                            </IconButton>
+                            <IconButton aria-owns={'menu-appbar'}
+                                        aria-haspopup='true'
+                                        onClick={() => handler(TIVO)}
+                                        color='inherit'>
+                                <SettingsRemoteIcon/>
                             </IconButton>
                             <IconButton aria-owns={'menu-appbar'}
                                         aria-haspopup="true"

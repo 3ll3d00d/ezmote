@@ -5,7 +5,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
-import VolumeOff from '@material-ui/icons/VolumeOff';
+import VolumeMute from '@material-ui/icons/VolumeMute';
 import VolumeUp from '@material-ui/icons/VolumeUp';
 import Slider from '@material-ui/core/Slider';
 import {connect} from 'react-redux';
@@ -50,10 +50,10 @@ class Volume extends Component {
         const {zone, classes} = this.props;
         if (zone.muted) {
             return <IconButton className={classes.smallButton}
-                               onClick={this.unmuteVolume(zoneId)}><VolumeUp/></IconButton>;
+                               onClick={this.unmuteVolume(zoneId)}><VolumeMute/></IconButton>;
         } else {
             return <IconButton className={classes.smallButton}
-                               onClick={this.muteVolume(zoneId)}><VolumeOff/></IconButton>;
+                               onClick={this.muteVolume(zoneId)}><VolumeUp/></IconButton>;
         }
     };
 

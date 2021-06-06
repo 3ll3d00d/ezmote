@@ -1,4 +1,3 @@
-import {findItemByName, safeGetText} from "./functions";
 import {PLAY_TYPE_FILE} from "./browseChildren";
 
 const playConverter = (json) => {
@@ -17,27 +16,35 @@ const playEndpoint = {
     converter: playConverter
 };
 
-const convert = (item) => {
-    return {
-        type: PLAY_TYPE_FILE,
-        id: safeGetText(item.Field.find(findItemByName('Key'))),
-        name: safeGetText(item.Field.find(findItemByName('Name')))
-    };
-};
-
-const browseConverter = (json) => {
-    if (json.hasOwnProperty('MPL')) {
-        if (json.MPL.hasOwnProperty('Item')) {
-            if (Array.isArray(json.MPL.Item)) {
-                return json.MPL.Item.map(item => convert(item));
-            } else {
-                return [convert(json.MPL.Item)];
-            }
+const toRez = dims => {
+    if (dims) {
+        if (dims === '1920 x 1080') {
+            return 'HD';
+        } else if (dims === '3840 x 2160') {
+            return 'UHD';
         } else {
-            return [];
+            return 'DVD';
         }
     }
-    throw new Error(`Bad response ${JSON.stringify(json)}`)
+    return null;
+}
+
+const browseConverter = (json) => {
+    return json.map(j => {
+        return {
+            type: PLAY_TYPE_FILE,
+            id: j.Key,
+            name: j.Name,
+            duration: j.Duration,
+            dims: j.Dimensions,
+            rez: toRez(j.Dimensions),
+            year: j['Date (year)'],
+            mediaType: j['Media Type'],
+            mediaSubType: j['Media Sub Type'],
+            season: j.Season,
+            episode: j.Episode
+        }
+    });
 };
 
 const browseEndpoint = {
@@ -57,7 +64,7 @@ export const playBrowse = (serverURL, nodeId) => Object.assign({}, {
 export const browseFiles = (serverURL, nodeId) => Object.assign({}, {
     suppliedParams: {
         ID: nodeId,
-        Action: 'MPL',
-        Fields: 'Key,Name'
+        Action: 'JSON',
+        Fields: 'Key,Name,Duration,Dimensions,Season,Episode,Year,Media Type,Media Sub Type'
     }
 }, {serverURL}, browseEndpoint);

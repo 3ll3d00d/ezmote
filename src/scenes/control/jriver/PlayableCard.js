@@ -7,7 +7,7 @@ import EnterIcon from '@material-ui/icons/SubdirectoryArrowLeft';
 import {PLAY_TYPE_BROWSE} from "../../../services/jriver/mcws/browseChildren";
 import CardMedia from "@material-ui/core/CardMedia";
 import React from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
     row: {
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
+        paddingBottom: theme.spacing(0.5),
     },
     cover: {
         height: 96,
@@ -54,15 +54,64 @@ const getImgUrl = (mcwsURL, type, id, width, height, fallbackColour, authToken) 
     return `${mcwsURL}/${path}?${params}`;
 };
 
-const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbackColour, onPlay, authToken}) => {
+const Description = ({content}) => {
+    if (content.mediaType === 'Audio') {
+        // nop
+    } else if (content.mediaType === 'Video') {
+        if (content.mediaSubType === 'Movie') {
+            const year = content.year ? ` \u2022 ${content.year}` : '';
+            return (
+                <>
+                    <Typography variant="body1" color="textSecondary">
+                        {content.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        {content.rez}
+                        {year}
+                        {' \u2022 '}
+                        {new Date(content.duration * 1000).toISOString().substr(11, 8)}
+                    </Typography>
+                </>
+            )
+        } else if (content.mediaSubType === 'TV Show') {
+            let sub = null;
+            if (content.season) {
+                sub = `S${content.season}`;
+            }
+            if (content.episode) {
+                sub = `${sub}E${content.episode}`;
+            }
+            if (sub) {
+                sub = `${sub} \u2022 `;
+            }
+            const rez = content.rez ? `${content.rez} \u2022 ` : '';
+            return (
+                <>
+                    <Typography variant="body1" color="textSecondary">
+                        {content.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                        {sub}
+                        {rez}
+                        {new Date(content.duration * 1000).toISOString().substr(11, 8)}
+                    </Typography>
+                </>
+            )
+        }
+    }
+    return <Typography variant="body2" color="textSecondary">
+        {content.name}
+    </Typography>;
+};
+
+const PlayableCard = ({mcwsUrl, content, width, height, onSelect, fallbackColour, onPlay, authToken}) => {
     const classes = useStyles();
+    const {type, name, id} = content;
     return (
         <Card key={id} className={classes.row} elevation={3}>
             <div className={classes.details}>
                 <CardContent className={classes.content}>
-                    <Typography variant="body2" color="textSecondary">
-                        {name}
-                    </Typography>
+                    <Description content={content}/>
                 </CardContent>
                 <div className={classes.controls}>
                     <IconButton aria-label="Play"

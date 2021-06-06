@@ -8,7 +8,7 @@ import {getConfig} from "../../store/config/reducer";
 import {connect} from "react-redux";
 import Disconnected from "./Disconnected";
 
-const Control = ({jriverIsDead, config, activeZone, playingNowCommand, selectedCommand}) => {
+const Control = ({jriverIsDead, activeZone, playingNowCommand, selectedCommand}) => {
     let Controller = null;
     if (activeZone && playingNowCommand && playingNowCommand.hasOwnProperty('control')) {
         switch (playingNowCommand.control) {
@@ -40,7 +40,7 @@ const Control = ({jriverIsDead, config, activeZone, playingNowCommand, selectedC
 Control.propTypes = {
     playingNowCommand: PropTypes.object,
     selectedCommand: PropTypes.object,
-    jriverIsDead: PropTypes.bool.isRequired
+    jriverIsDead: PropTypes.bool
 };
 
 const mapStateToProps = (state) => {

@@ -19,9 +19,15 @@ class JRiverService {
         if (!response.ok) {
             throw new Error(`JRiverService.${name} failed, HTTP status ${response.status}`);
         }
-        const data = await response.text();
-        const json = xml2js(data, COMPACT);
-        return converter(json);
+        const contentType = response.headers.get('Content-Type');
+        if (contentType && contentType === 'application/json') {
+            const data = await response.json();
+            return converter(data);
+        } else {
+            const data = await response.text();
+            const json = xml2js(data, COMPACT);
+            return converter(json);
+        }
     };
 
     _getParams = (params) => {

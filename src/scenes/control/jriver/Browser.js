@@ -180,9 +180,7 @@ class Browser extends Component {
         return [
             c.id,
             c.name,
-            <PlayableCard type={c.type}
-                          name={c.name}
-                          id={c.id}
+            <PlayableCard content={c}
                           width={96}
                           height={96}
                           onSelect={this.onSelectNode}
@@ -225,7 +223,8 @@ class Browser extends Component {
         const {path, filtered, text, names} = this.state;
         const {classes, nodeId, selectedCommand} = this.props;
         const rowCount = filtered.length;
-        return (
+        const availableHeight = document.documentElement.clientHeight - 205 - (path.length === 0 ? 0 : 90);
+            return (
             <Grid container>
                 {
                     path.length > 0
@@ -249,14 +248,14 @@ class Browser extends Component {
                                             rowCount={rowCount}
                                             ref={ref => { this.InfLoader = ref; }}>
                                 {({onRowsRendered, registerChild}) => (
-                                    <div style={{ flex: '1 1 auto' , height: '100vh'}}>
-                                        <AutoSizer>
+                                    <div style={{ flex: '1 1 auto', height: `${availableHeight}px`}}>
+                                        <AutoSizer disableHeight={true}>
                                             {({ height, width }) => (
-                                                <List height={height}
+                                                <List height={availableHeight}
                                                       onRowsRendered={onRowsRendered}
                                                       ref={ref => { this.List = ref; registerChild(ref); }}
                                                       rowCount={rowCount}
-                                                      rowHeight={104}
+                                                      rowHeight={120}
                                                       rowRenderer={this.renderRow}
                                                       width={width}/>
                                             )}

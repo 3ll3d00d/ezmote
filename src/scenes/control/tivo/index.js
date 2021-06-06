@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import RemoteControl from "./RemoteControl";
-import {getConfig} from "../../../store/config/reducer";
+import {getConfig, getTivoName} from "../../../store/config/reducer";
 import {getTivoInfo} from "../../../store/tivos/actions";
 import {connect} from "react-redux";
+import * as configFields from "../../../store/config/config";
 
 class Tivo extends Component {
 
     componentDidMount = () => {
-        if (this.props.config.valid) {
+        if (this.props.tivoName) {
             this.props.getTivoInfo();
         }
     };
@@ -19,7 +20,7 @@ class Tivo extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        config: getConfig(state)
+        tivoName: getTivoName(state)
     };
 };
 export default connect(mapStateToProps, {getTivoInfo})(Tivo);
