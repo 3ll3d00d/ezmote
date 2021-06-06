@@ -162,11 +162,11 @@ class Browser extends Component {
     };
 
     getChildren = async (nodeId) => {
-        const {serverURL, authToken} = this.props;
+        const {serverURL, token} = this.props;
         const args = mcwsBrowseChildren(serverURL, nodeId);
-        let response = await jriver.invoke({authToken, ...args});
+        let response = await jriver.invoke({token, ...args});
         if (response.length === 0) {
-            response = await jriver.invoke({authToken, ...mcwsBrowseFiles(config, nodeId)});
+            response = await jriver.invoke({token, ...mcwsBrowseFiles(serverURL, nodeId)});
         }
         return response;
     };
@@ -189,7 +189,8 @@ class Browser extends Component {
                           onPlay={this.onPlayNode}
                           classes={this.props.classes}
                           mcwsUrl={`${this.props.serverURL}/MCWS/v1`}
-                          fallbackColour={this.state.fallbackColour}/>
+                          fallbackColour={this.state.fallbackColour}
+                          authToken={this.props.token}/>
         ];
     };
 
@@ -273,7 +274,7 @@ class Browser extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        authToken: getAuthToken(state),
+        token: getAuthToken(state),
         serverURL: getJRiverURL(state)
     };
 };

@@ -54,7 +54,7 @@ const getImgUrl = (mcwsURL, type, id, width, height, fallbackColour, authToken) 
     return `${mcwsURL}/${path}?${params}`;
 };
 
-const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbackColour, onPlay}) => {
+const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbackColour, onPlay, authToken}) => {
     const classes = useStyles();
     return (
         <Card key={id} className={classes.row} elevation={3}>
@@ -83,7 +83,7 @@ const PlayableCard = ({mcwsUrl, type, name, id, width, height, onSelect, fallbac
                 </div>
             </div>
             <CardMedia className={classes.cover}
-                       image={getImgUrl(mcwsUrl, type, id, width, height, fallbackColour)}
+                       image={getImgUrl(mcwsUrl, type, id, width, height, fallbackColour, authToken)}
                        component='img'
                        title={name}/>
         </Card>
