@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import debounce from "lodash.debounce";
 import {withStyles} from '@material-ui/core/styles';
 import IconButton from "@material-ui/core/IconButton";
 import Grid from "@material-ui/core/Grid";
@@ -7,7 +6,8 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import VolumeMute from '@material-ui/icons/VolumeMute';
 import VolumeUp from '@material-ui/icons/VolumeUp';
-import Slider from '@material-ui/core/Slider';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import {connect} from 'react-redux';
 import {getActiveZone} from "../../store/jriver/reducer";
 import {muteVolume, setVolume, unmuteVolume} from "../../store/jriver/actions";
@@ -32,12 +32,6 @@ class Volume extends Component {
         this.props.setVolume(zoneId, newVolume);
     };
 
-    setVolume = zoneId => (event, value) => {
-        this.props.setVolume(zoneId, value / 100);
-    };
-
-    slowSetVolume = zoneId => debounce(this.setVolume(zoneId), 50);
-
     muteVolume = zoneId => () => {
         this.props.muteVolume(zoneId);
     };
@@ -57,13 +51,6 @@ class Volume extends Component {
         }
     };
 
-    setVolumeDirectly = zoneId => event => {
-        const vol = Number(event.target.value);
-        if (!isNaN(vol) && vol >= 0 && vol <= 100) {
-            this.props.setVolume(zoneId, vol / 100);
-        }
-    };
-
     render() {
         const {zone, classes} = this.props;
         if (zone) {
@@ -77,38 +64,32 @@ class Volume extends Component {
                     <Grid item xs={2}>
                         <IconButton className={classes.smallButton}
                                     disabled={zone.volumeRatio === 0}
+                                    onClick={() => this.tweakVolume(zone.id, zone.volumeRatio - 0.05)}>
+                            <ArrowBackIosIcon/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <IconButton className={classes.smallButton}
+                                    disabled={zone.volumeRatio === 0}
                                     onClick={() => this.tweakVolume(zone.id, zone.volumeRatio - 0.01)}>
                             <ChevronLeft/>
                         </IconButton>
                     </Grid>
-                    <Grid item xs={5}>
-                        <Slider id="volume-slider"
-                                min={0}
-                                max={100}
-                                step={1}
-                                valueLabelDisplay={'off'}
-                                onChange={this.slowSetVolume(zone.id)}
-                                value={currentVolume}
-                                className={classes.volumeSlider}/>
-                    </Grid>
                     <Grid item xs={1}>
-                        <Input value={currentVolume}
-                               margin="dense"
-                               onChange={this.setVolumeDirectly(zone.id)}
-                               inputProps={{
-                                   step: 1,
-                                   min: 0,
-                                   max: 100,
-                                   type: 'number',
-                                   'aria-labelledby': 'volume-slider',
-                               }}
-                        />
+                        <Input value={currentVolume} margin="dense" disabled/>
                     </Grid>
                     <Grid item xs={2}>
                         <IconButton className={classes.smallButton}
                                     disabled={zone.volumeRatio === 1}
                                     onClick={() => this.tweakVolume(zone.id, zone.volumeRatio + 0.01)}>
                             <ChevronRight/>
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <IconButton className={classes.smallButton}
+                                    disabled={zone.volumeRatio === 1}
+                                    onClick={() => this.tweakVolume(zone.id, zone.volumeRatio + 0.05)}>
+                            <ArrowForwardIosIcon/>
                         </IconButton>
                     </Grid>
                 </Grid>
