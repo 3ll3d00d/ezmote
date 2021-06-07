@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import EnterIcon from '@material-ui/icons/SubdirectoryArrowLeft';
+import BeenhereIcon from '@material-ui/icons/Beenhere';
 import {PLAY_TYPE_BROWSE} from "../../../services/jriver/mcws/browseChildren";
 import CardMedia from "@material-ui/core/CardMedia";
 import React from "react";
@@ -54,13 +55,26 @@ const getImgUrl = (mcwsURL, type, id, width, height, fallbackColour, authToken) 
     return `${mcwsURL}/${path}?${params}`;
 };
 
-function formatDuration(content) {
+const formatDuration = content => {
     try {
         const dateStr = new Date(content.duration * 1000).toISOString().substr(11, 8);
         return ` \u2022 ${dateStr}`;
     } catch (e) {
         return '';
     }
+}
+
+const wasRecentlyPlayed = content => {
+    if (content.lastPlayed) {
+        if (!isNaN(content.lastPlayed)) {
+            const now = Math.floor(new Date().getTime() / 1000);
+            // played in last 2 months
+            if (content.lastPlayed > (now - (60 * 60 * 24 * 60))) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 const Description = ({content}) => {
@@ -145,6 +159,12 @@ const PlayableCard = ({mcwsUrl, content, width, height, onSelect, fallbackColour
                                         onClick={() => onSelect(id)}>
                                 <EnterIcon className={classes.cardIcon}/>
                             </IconButton>
+                            : null
+                    }
+                    {
+                        wasRecentlyPlayed(content)
+                        ?
+                            <BeenhereIcon fontSize={'small'}/>
                             : null
                     }
                 </div>
