@@ -5,6 +5,17 @@ const API_PREFIX = '/api/1';
  */
 class CmdServerService {
 
+    /** sends the wake command. */
+    wake = async () => {
+        const response = await fetch(`${API_PREFIX}/wake`, {
+            method: 'GET'
+        });
+        if (!response.ok) {
+            throw new Error(`CmdServer.wake failed, HTTP status ${response.status}`);
+        }
+        return await response.text();
+    }
+
     /** Gets all available commands */
     getCommands = async () => {
         const response = await fetch(`${API_PREFIX}/commands`, {

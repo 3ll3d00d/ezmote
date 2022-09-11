@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import Typography from "@material-ui/core/Typography";
 import Error from '@material-ui/icons/Error';
 import Grid from '@material-ui/core/Grid';
+import {connect} from "react-redux";
+import {wake} from "../../store/commands/actions";
+import Button from "@material-ui/core/Button";
 
 const styles = theme => ({
     root: {
@@ -17,19 +20,26 @@ const styles = theme => ({
     },
 });
 
-const Disconnected = ({classes}) => {
+const Disconnected = ({classes, wake}) => {
     return (
         <Grid container>
-            <Grid container alignItems={'center'} justify={'center'}>
+            <Grid container alignItems={'center'} justifyContent={'center'}>
                 <Grid item>
                     <Error className={classes.icon} color={'error'}/>
                 </Grid>
             </Grid>
-            <Grid container alignItems={'center'} justify={'center'}>
+            <Grid container alignItems={'center'} justifyContent={'center'}>
                 <Grid item xs>
                     <Typography color={'secondary'} type={'display1'}>
-                        Unable to connect to Media Server
+                        Media Server is down
                     </Typography>
+                </Grid>
+                <Grid item xs>
+                    <Button variant={'contained'}
+                            color={'primary'}
+                            onClick={wake}>
+                        Wake?
+                    </Button>
                 </Grid>
             </Grid>
         </Grid>
@@ -40,4 +50,5 @@ Disconnected.propTypes = {
     server: PropTypes.string
 };
 
-export default withStyles(styles, {withTheme: true})(Disconnected);
+const styledDisconnect = withStyles(styles, {withTheme: true})(Disconnected);
+export default connect(null, {wake})(styledDisconnect);

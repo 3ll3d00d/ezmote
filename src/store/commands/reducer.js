@@ -23,6 +23,11 @@ const reduce = (state = initialState, action = {}) => {
             }
         case types.SEND_COMMAND:
             return Immutable.without(state, 'sendError');
+        case types.WAKE_SENT:
+            // TODO do something
+            return state;
+        case types.WAKE_SENT_FAIL:
+            return Immutable.set(state, {fetchError: makeError(action)});
         case types.COMMANDS_FETCHED_FAIL:
             return Immutable.set(state, {fetchError: makeError(action)});
         case types.SEND_COMMAND_FAIL:

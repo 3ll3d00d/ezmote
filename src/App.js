@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
+import {createTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
 import PJ from "./scenes/control/pj";
@@ -17,7 +17,7 @@ import {getOrderedCommands} from "./store/commands/reducer";
 import {sendCommand} from "./store/commands/actions";
 import Errors from "./scenes/errors";
 
-const theme = createMuiTheme({
+const theme = createTheme({
     palette: {
         type: 'dark',
         primary: grey,

@@ -24,6 +24,21 @@ const fetchCommands = () => {
 };
 
 /**
+ * Sends a WOL.
+ * @returns {(function(*): Promise<void>)|*}
+ */
+const wake = () => {
+    return async (dispatch) => {
+        try {
+            const payload = await cmdserver.wake();
+            dispatch({type: types.WAKE_SENT, payload: payload});
+        } catch (error) {
+            dispatchError(dispatch, types.WAKE_SENT_FAIL, error);
+        }
+    }
+}
+
+/**
  * Sends the command.
  * @param command the command.
  * @returns {function(*=, *)}
@@ -48,4 +63,4 @@ const sendCommand = (command) => {
     };
 };
 
-export {fetchCommands, sendCommand};
+export {fetchCommands, sendCommand, wake};
