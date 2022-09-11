@@ -36,7 +36,7 @@ class CmdServerService {
      * @returns {Promise<void>}
      */
     sendCommand = async (commandId) => {
-        const response = await fetch(`${API_PREFIX}/commands/${commandId}`, {
+        const response = await fetch(`${API_PREFIX}/command/${commandId}`, {
             method: 'PUT'
         });
         if (!response.ok) {
