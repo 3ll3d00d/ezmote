@@ -8,7 +8,7 @@ import BeenhereIcon from '@mui/icons-material/Beenhere';
 import {PLAY_TYPE_BROWSE} from "../../../services/jriver/mcws/browseChildren";
 import CardMedia from "@mui/material/CardMedia";
 import React from "react";
-import makeStyles from '@mui/styles/makeStyles';
+import {makeStyles} from "@mui/styles"
 
 const useStyles = makeStyles(theme => ({
     row: {

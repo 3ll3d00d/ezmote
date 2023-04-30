@@ -3,7 +3,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import Typography from "@mui/material/Typography";
 import React from "react";
 import {default as MdBreadcrumbs} from "@mui/material/Breadcrumbs";
-import makeStyles from '@mui/styles/makeStyles';
+import {makeStyles} from "@mui/styles"
 
 const useStyles = makeStyles(theme => ({
     container: {
