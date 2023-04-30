@@ -1,28 +1,28 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import classNames from 'classnames';
-import Drawer from '@material-ui/core/Drawer';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import IconButton from '@material-ui/core/IconButton';
-import AppsIcon from '@material-ui/icons/Apps';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ProjectorIcon from '@material-ui/icons/Videocam';
-import PowerIcon from '@material-ui/icons/PowerSettingsNew';
-import FullScreenIcon from '@material-ui/icons/Fullscreen';
-import ExitFullScreenIcon from '@material-ui/icons/FullscreenExit';
-import RadioIcon from '@material-ui/icons/Radio';
-import PlaylistIcon from '@material-ui/icons/PlaylistPlay';
-import MovieIcon from '@material-ui/icons/Movie';
-import MusicIcon from '@material-ui/icons/LibraryMusic';
-import BugIcon from '@material-ui/icons/BugReport';
-import ListItem from "@material-ui/core/ListItem";
-import SettingsRemoteIcon from '@material-ui/icons/SettingsRemote';
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar/Avatar";
+import Drawer from '@mui/material/Drawer';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import IconButton from '@mui/material/IconButton';
+import AppsIcon from '@mui/icons-material/Apps';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ProjectorIcon from '@mui/icons-material/Videocam';
+import PowerIcon from '@mui/icons-material/PowerSettingsNew';
+import FullScreenIcon from '@mui/icons-material/Fullscreen';
+import ExitFullScreenIcon from '@mui/icons-material/FullscreenExit';
+import RadioIcon from '@mui/icons-material/Radio';
+import PlaylistIcon from '@mui/icons-material/PlaylistPlay';
+import MovieIcon from '@mui/icons-material/Movie';
+import MusicIcon from '@mui/icons-material/LibraryMusic';
+import BugIcon from '@mui/icons-material/BugReport';
+import ListItem from "@mui/material/ListItem";
+import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import Avatar from "@mui/material/Avatar/Avatar";
 import {SETTINGS, SHOW_PJ, TIVO} from "../../App";
 
 const drawerWidth = 56;
@@ -169,34 +169,44 @@ class Menu extends Component {
                 <div className={classes.appFrame}>
                     <AppBar position="fixed" className={classes.appBar}>
                         <Toolbar className={classes.appToolbar} variant={'dense'}>
-                            <IconButton aria-owns={'menu-appbar'}
-                                        aria-haspopup='true'
-                                        onClick={() => handler(SHOW_PJ)}
-                                        color='inherit'>
+                            <IconButton
+                                aria-owns={'menu-appbar'}
+                                aria-haspopup='true'
+                                onClick={() => handler(SHOW_PJ)}
+                                color='inherit'
+                                size="large">
                                 <ProjectorIcon/>
                             </IconButton>
-                            <IconButton aria-owns={'menu-appbar'}
-                                        aria-haspopup='true'
-                                        onClick={() => handler(SETTINGS)}
-                                        color='inherit'>
+                            <IconButton
+                                aria-owns={'menu-appbar'}
+                                aria-haspopup='true'
+                                onClick={() => handler(SETTINGS)}
+                                color='inherit'
+                                size="large">
                                 <SettingsIcon/>
                             </IconButton>
-                            <IconButton aria-owns={'menu-appbar'}
-                                        aria-haspopup='true'
-                                        onClick={showTheatreView}
-                                        color='inherit'>
+                            <IconButton
+                                aria-owns={'menu-appbar'}
+                                aria-haspopup='true'
+                                onClick={showTheatreView}
+                                color='inherit'
+                                size="large">
                                 <AppsIcon/>
                             </IconButton>
-                            <IconButton aria-owns={'menu-appbar'}
-                                        aria-haspopup='true'
-                                        onClick={() => handler(TIVO)}
-                                        color='inherit'>
+                            <IconButton
+                                aria-owns={'menu-appbar'}
+                                aria-haspopup='true'
+                                onClick={() => handler(TIVO)}
+                                color='inherit'
+                                size="large">
                                 <SettingsRemoteIcon/>
                             </IconButton>
-                            <IconButton aria-owns={'menu-appbar'}
-                                        aria-haspopup="true"
-                                        onClick={toggleFullScreen}
-                                        color="inherit">
+                            <IconButton
+                                aria-owns={'menu-appbar'}
+                                aria-haspopup="true"
+                                onClick={toggleFullScreen}
+                                color="inherit"
+                                size="large">
                                 {fsIcon}
                             </IconButton>
                         </Toolbar>

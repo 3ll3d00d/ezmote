@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {withStyles} from "@material-ui/core";
-import {withTheme} from '@material-ui/styles';
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
+import withStyles from '@mui/styles/withStyles';
+import {withTheme} from '@mui/styles';
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 import {AutoSizer, InfiniteLoader, List} from "react-virtualized";
 import {connect} from "react-redux";
 import debounce from 'lodash.debounce';
@@ -14,7 +14,7 @@ import {sendCommand} from "../../../store/commands/actions";
 import Breadcrumbs from './Breadcrumbs';
 import PlayableCard from "./PlayableCard";
 import Search from "./Search";
-import useMediaQuery from "@material-ui/core/useMediaQuery/useMediaQuery";
+import useMediaQuery from "@mui/material/useMediaQuery/useMediaQuery";
 
 const styles = theme => ({
     fullsize: {

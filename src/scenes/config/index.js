@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
-import Input from '@material-ui/core/Input';
+import withStyles from '@mui/styles/withStyles';
+import Input from '@mui/material/Input';
 import {connect} from "react-redux";
 import {updateValue} from "../../store/config/actions";
 import {getTivoName} from "../../store/config/reducer";
 import * as configFields from "../../store/config/config";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 
 const styles = (theme) => ({
     container: {
@@ -39,7 +39,7 @@ class Config extends Component {
 
         return (
             <div className={classes.container}>
-                <FormControl className={classes.formControl}>
+                <FormControl variant="standard" className={classes.formControl}>
                     <InputLabel htmlFor="tivoname">Tivo Name</InputLabel>
                     <Input value={tivoName}
                            id="tivoname"

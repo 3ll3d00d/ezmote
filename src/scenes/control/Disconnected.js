@@ -1,12 +1,12 @@
 import React from 'react';
-import {withStyles} from "@material-ui/core/styles/index";
+import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
-import Typography from "@material-ui/core/Typography";
-import Error from '@material-ui/icons/Error';
-import Grid from '@material-ui/core/Grid';
+import Typography from "@mui/material/Typography";
+import Error from '@mui/icons-material/Error';
+import Grid from '@mui/material/Grid';
 import {connect} from "react-redux";
 import {wake} from "../../store/commands/actions";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 
 const styles = theme => ({
     root: {

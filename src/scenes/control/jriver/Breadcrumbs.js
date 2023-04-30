@@ -1,9 +1,9 @@
-import Link from "@material-ui/core/Link";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import Typography from "@material-ui/core/Typography";
+import Link from "@mui/material/Link";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Typography from "@mui/material/Typography";
 import React from "react";
-import {default as MdBreadcrumbs} from "@material-ui/core/Breadcrumbs";
-import {makeStyles} from "@material-ui/core";
+import {default as MdBreadcrumbs} from "@mui/material/Breadcrumbs";
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(theme => ({
     container: {
@@ -14,9 +14,11 @@ const useStyles = makeStyles(theme => ({
 
 const CmdLink = ({cmd, onSelect}) => {
     return (
-        <Link key={cmd.nodeId}
-              color="inherit"
-              onClick={() => onSelect(cmd.nodeId, true)}>
+        <Link
+            key={cmd.nodeId}
+            color="inherit"
+            onClick={() => onSelect(cmd.nodeId, true)}
+            underline="hover">
             {cmd.title}
         </Link>
     );
@@ -24,7 +26,11 @@ const CmdLink = ({cmd, onSelect}) => {
 
 const PathLink = ({path, names, onSelect}) => {
     return (
-        <Link key={path} color="inherit" onClick={() => onSelect(path)}>
+        <Link
+            key={path}
+            color="inherit"
+            onClick={() => onSelect(path)}
+            underline="hover">
             {shortName(names.get(path))}
         </Link>
     );

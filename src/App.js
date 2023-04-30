@@ -1,14 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {createTheme, MuiThemeProvider} from '@material-ui/core/styles';
+import {createTheme, StyledEngineProvider, ThemeProvider} from '@mui/material/styles';
 import Config from "./scenes/config";
 import Control from "./scenes/control";
 import PJ from "./scenes/control/pj";
 import {FullScreenMenu, NotFullScreenMenu} from "./scenes/menu";
-import Grid from '@material-ui/core/Grid';
-import grey from '@material-ui/core/colors/grey';
-import blueGrey from '@material-ui/core/colors/blueGrey';
-import red from '@material-ui/core/colors/red';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@mui/material/Grid';
+import CssBaseline from '@mui/material/CssBaseline';
 import {FullScreen, useFullScreenHandle} from "react-full-screen";
 import {connect} from 'react-redux';
 import {stopAllPlaying} from "./store/jriver/actions";
@@ -17,9 +14,11 @@ import {getOrderedCommands} from "./store/commands/reducer";
 import {sendCommand} from "./store/commands/actions";
 import Errors from "./scenes/errors";
 
+import {blueGrey, grey, red} from '@mui/material/colors';
+
 const theme = createTheme({
     palette: {
-        type: 'dark',
+        mode: 'dark',
         primary: grey,
         secondary: blueGrey,
         error: red,
@@ -91,35 +90,37 @@ const App = ({commands, activeCommand, sendCommand, jriverIsDead, errors}) => {
     const MenuComponent = fsHandle.active ? FullScreenMenu : NotFullScreenMenu;
     return (
         <FullScreen handle={fsHandle}>
-            <MuiThemeProvider theme={theme}>
-                <CssBaseline/>
-                <MenuComponent handler={handleMenuSelect}
-                               selectorTitle={selectorTitle}
-                               selectedCommand={selectedCommand}
-                               commands={commands}
-                               fullscreen={fsHandle.active}
-                               toggleFullScreen={() => fsHandle.active ? fsHandle.exit() : fsHandle.enter()}
-                               showTheatreView={showTheatreView}>
-                    {
-                        showPj
-                            ?
-                            <Grid container>
-                                <Grid item xs={12}>
-                                    <PJ/>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline/>
+                    <MenuComponent handler={handleMenuSelect}
+                                   selectorTitle={selectorTitle}
+                                   selectedCommand={selectedCommand}
+                                   commands={commands}
+                                   fullscreen={fsHandle.active}
+                                   toggleFullScreen={() => fsHandle.active ? fsHandle.exit() : fsHandle.enter()}
+                                   showTheatreView={showTheatreView}>
+                        {
+                            showPj
+                                ?
+                                <Grid container>
+                                    <Grid item xs={12}>
+                                        <PJ/>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            : null
-                    }
-                    <Grid container>
-                        <Grid item xs={12}>{getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
-                    </Grid>
-                    <Grid container>
-                        <Grid item>
-                            <Errors errors={errors}/>
+                                : null
+                        }
+                        <Grid container>
+                            <Grid item xs={12}>{getMainComponent(selected, selectedCommand, playingNowCommand)}</Grid>
                         </Grid>
-                    </Grid>
-                </MenuComponent>
-            </MuiThemeProvider>
+                        <Grid container>
+                            <Grid item>
+                                <Errors errors={errors}/>
+                            </Grid>
+                        </Grid>
+                    </MenuComponent>
+                </ThemeProvider>
+            </StyledEngineProvider>
         </FullScreen>
     );
 }

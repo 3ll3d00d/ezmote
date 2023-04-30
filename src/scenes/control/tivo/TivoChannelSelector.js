@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import {withStyles} from '@material-ui/core/styles';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
+import MenuItem from '@mui/material/MenuItem';
+import withStyles from '@mui/styles/withStyles';
 import {setTivoChannel} from "../../../store/tivos/actions";
 import channels from "./ChannelList";
 import {connect} from 'react-redux';
@@ -15,6 +15,7 @@ const renderInput = (inputProps) => {
     const {classes, disabled, autoFocus, value, ref, ...other} = inputProps;
     return (
         <TextField
+            variant="standard"
             disabled={disabled}
             autoFocus={autoFocus}
             className={classes.textField}
@@ -25,8 +26,7 @@ const renderInput = (inputProps) => {
                     input: classes.input,
                 },
                 ...other,
-            }}
-        />
+            }} />
     );
 };
 

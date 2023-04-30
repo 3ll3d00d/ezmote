@@ -1,25 +1,25 @@
 import React, {Component} from 'react';
-import Grid from "@material-ui/core/Grid";
-import Button from '@material-ui/core/Button';
-import UpArrow from '@material-ui/icons/ArrowUpward';
-import Info from '@material-ui/icons/Info';
-import Power from '@material-ui/icons/Power';
-import PowerOff from '@material-ui/icons/PowerOff';
-import DownArrow from '@material-ui/icons/ArrowDownward';
-import LeftArrow from '@material-ui/icons/ArrowBack';
-import RightArrow from '@material-ui/icons/ArrowForward';
-import Check from '@material-ui/icons/Check';
-import Menu from '@material-ui/icons/Menu';
-import AdvancedMenu from '@material-ui/icons/MoreVert';
-import Back from '@material-ui/icons/ChevronLeft';
-import HdrOn from '@material-ui/icons/HdrOn';
-import HdrOff from '@material-ui/icons/HdrOff';
-import ScopeAspect from '@material-ui/icons/Crop75';
-import TVAspect from '@material-ui/icons/Crop32';
-import ScopeStreamAspect from '@material-ui/icons/PanoramaHorizontal';
-import Error from '@material-ui/icons/Error';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import {withStyles} from "@material-ui/core/styles/index";
+import Grid from "@mui/material/Grid";
+import Button from '@mui/material/Button';
+import UpArrow from '@mui/icons-material/ArrowUpward';
+import Info from '@mui/icons-material/Info';
+import Power from '@mui/icons-material/Power';
+import PowerOff from '@mui/icons-material/PowerOff';
+import DownArrow from '@mui/icons-material/ArrowDownward';
+import LeftArrow from '@mui/icons-material/ArrowBack';
+import RightArrow from '@mui/icons-material/ArrowForward';
+import Check from '@mui/icons-material/Check';
+import Menu from '@mui/icons-material/Menu';
+import AdvancedMenu from '@mui/icons-material/MoreVert';
+import Back from '@mui/icons-material/ChevronLeft';
+import HdrOn from '@mui/icons-material/HdrOn';
+import HdrOff from '@mui/icons-material/HdrOff';
+import ScopeAspect from '@mui/icons-material/Crop75';
+import TVAspect from '@mui/icons-material/Crop32';
+import ScopeStreamAspect from '@mui/icons-material/PanoramaHorizontal';
+import Error from '@mui/icons-material/Error';
+import CircularProgress from '@mui/material/CircularProgress';
+import withStyles from '@mui/styles/withStyles';
 import {connect} from "react-redux";
 import {
     clearAnamorphicState,
@@ -256,9 +256,9 @@ class RemoteControl extends Component {
         const {classes, powerState} = this.props;
         return (
             <Grid container className={classes.bordered} spacing={1}>
-                <Grid container justify={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
+                <Grid container justifyContent={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                     <Grid item>
-                        <Grid container direction={'column'} justify={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
+                        <Grid container direction={'column'} justifyContent={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                             <Grid item>
                                 {this.makePowerButton(powerState)}
                             </Grid>
@@ -271,9 +271,9 @@ class RemoteControl extends Component {
                         </Grid>
                     </Grid>
                     <Grid item>
-                        <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
+                        <Grid container justifyContent={'space-around'} alignItems={'center'} spacing={1}>
                             <Grid item>
-                                <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
+                                <Grid container justifyContent={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton('Remote.RemoteCode.Menu_Info', <Info/>)}
                                     </Grid>
@@ -289,7 +289,7 @@ class RemoteControl extends Component {
                                         }
                                     </Grid>
                                 </Grid>
-                                <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
+                                <Grid container justifyContent={'space-around'} alignItems={'center'} spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton('Remote.RemoteCode.Left', <LeftArrow/>)}
                                     </Grid>
@@ -300,7 +300,7 @@ class RemoteControl extends Component {
                                         {this.makeRCButton('Remote.RemoteCode.Right', <RightArrow/>)}
                                     </Grid>
                                 </Grid>
-                                <Grid container justify={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
+                                <Grid container justifyContent={'space-around'} alignItems={'center'} className={classes.smallPadded} spacing={1}>
                                     <Grid item>
                                         {this.makeRCButton('Remote.RemoteCode.Back', <Back/>)}
                                     </Grid>
@@ -320,7 +320,7 @@ class RemoteControl extends Component {
                         </Grid>
                     </Grid>
                     <Grid item>
-                        <Grid container direction={'column'} justify={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
+                        <Grid container direction={'column'} justifyContent={'space-evenly'} align-items={'center'} className={classes.smallPadded} spacing={1}>
                             <Grid item>
                                 {
                                     this.makeRCButton('Remote.RemoteCode.InstallationMode1',

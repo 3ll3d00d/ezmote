@@ -1,14 +1,14 @@
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import EnterIcon from '@material-ui/icons/SubdirectoryArrowLeft';
-import BeenhereIcon from '@material-ui/icons/Beenhere';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import EnterIcon from '@mui/icons-material/SubdirectoryArrowLeft';
+import BeenhereIcon from '@mui/icons-material/Beenhere';
 import {PLAY_TYPE_BROWSE} from "../../../services/jriver/mcws/browseChildren";
-import CardMedia from "@material-ui/core/CardMedia";
+import CardMedia from "@mui/material/CardMedia";
 import React from "react";
-import {makeStyles} from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(theme => ({
     row: {
@@ -146,17 +146,21 @@ const PlayableCard = ({mcwsUrl, content, width, height, onSelect, fallbackColour
                     <Description content={content}/>
                 </CardContent>
                 <div className={classes.controls}>
-                    <IconButton aria-label="Play"
-                                className={classes.unpadded}
-                                onClick={() => onPlay(type, id)}>
+                    <IconButton
+                        aria-label="Play"
+                        className={classes.unpadded}
+                        onClick={() => onPlay(type, id)}
+                        size="large">
                         <PlayArrowIcon className={classes.cardIcon}/>
                     </IconButton>
                     {
                         type === PLAY_TYPE_BROWSE
                             ?
-                            <IconButton aria-label="Enter"
-                                        className={classes.unpadded}
-                                        onClick={() => onSelect(id)}>
+                            <IconButton
+                                aria-label="Enter"
+                                className={classes.unpadded}
+                                onClick={() => onSelect(id)}
+                                size="large">
                                 <EnterIcon className={classes.cardIcon}/>
                             </IconButton>
                             : null

@@ -1,19 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Grid from "@material-ui/core/Grid";
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import PauseIcon from '@material-ui/icons/Pause';
-import StopIcon from '@material-ui/icons/Stop';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
-import Slider from '@material-ui/core/Slider';
+import withStyles from '@mui/styles/withStyles';
+import Chip from '@mui/material/Chip';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Grid from "@mui/material/Grid";
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import StopIcon from '@mui/icons-material/Stop';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import Slider from '@mui/material/Slider';
 
 const MEDIA_Y = 280;
 const MEDIA_X = 300;
@@ -80,7 +80,7 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
     return (
         <Card className={classes.card} elevation={0}>
             <Grid container className={classes.tabAware} spacing={1}>
-                <Grid container justify={'space-around'} alignItems={'center'} spacing={1}>
+                <Grid container justifyContent={'space-around'} alignItems={'center'} spacing={1}>
                     <Grid item>
                         <Chip label={hhmmss(playingNow.positionMillis)}/>
                     </Grid>
@@ -91,7 +91,7 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                         <Chip label={hhmmss(playingNow.durationMillis - playingNow.positionMillis)}/>
                     </Grid>
                 </Grid>
-                <Grid container justify={'center'} className={classes.volumeContainer}>
+                <Grid container justifyContent={'center'} className={classes.volumeContainer}>
                     <Grid item xs={10}>
                         <Slider id="position-slider"
                                 min={0}
@@ -121,20 +121,20 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 }
             </CardContent>
             <div className={classes.controls}>
-                <IconButton aria-label="Previous" onClick={() => playPrevious(zoneId)}>
+                <IconButton aria-label="Previous" onClick={() => playPrevious(zoneId)} size="large">
                     <SkipPreviousIcon className={classes.icon}/>
                 </IconButton>
-                <IconButton aria-label="Play/pause" onClick={() => playPause(zoneId)}>
+                <IconButton aria-label="Play/pause" onClick={() => playPause(zoneId)} size="large">
                     {
                         (playingNow.status === 'Stopped' || playingNow.status === 'Paused')
                             ? <PlayArrowIcon className={classes.icon}/>
                             : <PauseIcon className={classes.icon}/>
                     }
                 </IconButton>
-                <IconButton aria-label="Stop" onClick={() => stopPlaying(zoneId)}>
+                <IconButton aria-label="Stop" onClick={() => stopPlaying(zoneId)} size="large">
                     <StopIcon className={classes.icon}/>
                 </IconButton>
-                <IconButton aria-label="Next" onClick={() => playNext(zoneId)}>
+                <IconButton aria-label="Next" onClick={() => playNext(zoneId)} size="large">
                     <SkipNextIcon className={classes.icon}/>
                 </IconButton>
             </div>

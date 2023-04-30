@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import PlayingNow from "./PlayingNow";
 import RemoteControl from "./RemoteControl";
 import {getActiveZone, getAuthToken, getPlayingNow} from "../../../store/jriver/reducer";
@@ -13,9 +13,9 @@ import {
     stopPlaying
 } from "../../../store/jriver/actions";
 import {connect} from "react-redux";
-import {withStyles} from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import Browser from "./Browser";
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const styles = theme => ({
     portrait: {

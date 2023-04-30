@@ -1,9 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import 'typeface-roboto'
+import {StrictMode} from 'react';
+import '@fontsource/roboto'
 import PersistableApp from './PersistableApp';
+import ReactDOMClient from "react-dom/client";
 
-ReactDOM.render(
-    <PersistableApp/>,
-    document.getElementById('root')
+const container = document.getElementById('root');
+const root = ReactDOMClient.createRoot(container);
+root.render(
+    <StrictMode>
+        <PersistableApp/>
+    </StrictMode>
 );
