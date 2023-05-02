@@ -21,11 +21,11 @@ const styles = theme => ({
         marginTop: theme.spacing(1),
         width: '100%',
         height: '100%',
-        backgroundColor: theme.palette.background.default,
+        // backgroundColor: theme.palette.background.default,
     },
     landscape: {
         height: '100%',
-        backgroundColor: theme.palette.background.default,
+        // backgroundColor: theme.palette.background.default,
     },
     autosize: {
         flex: '1 1 auto'
@@ -241,7 +241,7 @@ class Browser extends Component {
                 }
                 <Grid container>
                     <Grid item className={classes.autosize}>
-                        <Paper className={classes.fullsize} elevation={3}>
+                        <Paper className={classes.fullsize} elevation={0}>
                             <InfiniteLoader key={path.length > 0 ? path[path.length - 1] : nodeId}
                                             isRowLoaded={this.isRowLoaded}
                                             loadMoreRows={this.loadMoreRows}

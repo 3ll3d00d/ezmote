@@ -1,8 +1,7 @@
 import jriver from '../index';
 import * as configTypes from '../../../store/config/config';
 import * as mcws from '../mcws';
-
-global.fetch = require('jest-fetch-mock');
+import { describe, it, expect } from 'vitest';
 
 describe('services/jriver', () => {
 
@@ -13,10 +12,6 @@ describe('services/jriver', () => {
         [configTypes.MC_USERNAME]: 'mcusername',
         [configTypes.MC_PASSWORD]: 'mcpassword'
     };
-
-    beforeEach(() => {
-        jest.resetAllMocks();
-    });
 
     describe('playbackMute', () => {
         it('should mute', async () => {

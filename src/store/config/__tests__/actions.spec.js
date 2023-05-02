@@ -1,5 +1,6 @@
 import * as types from '../actionTypes';
 import * as uut from '../actions';
+import { describe, it, expect } from 'vitest';
 
 describe('store/config/actions', () => {
 

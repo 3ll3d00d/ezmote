@@ -4,9 +4,13 @@ import jriver from '../../../services/jriver';
 import * as zd from "../__data__";
 import {Thunk} from "redux-testkit";
 import * as configTypes from "../../config/config";
+import {describe, it, expect} from 'vitest';
 
-jest.mock('../../../services/jriver');
-jest.mock('../../../services/timer');
+vi.mock('../../../services/jriver', () => {
+    const JRiver = vi.fn();
+    JRiver.prototype.invoke = vi.fn();
+    return { default: JRiver };
+});
 
 describe('store/jriver/actions', () => {
 
@@ -22,10 +26,6 @@ describe('store/jriver/actions', () => {
     const basicZones = zd.zones(zd.zone(10001, 'Music'), zd.zone(10002, 'Films'));
     const withActive1 = zd.zones(zd.withActive(zd.zone(10001, 'Music')), zd.zone(10002, 'Films'));
     const withActive2 = zd.zones(zd.zone(10001, 'Music'), zd.withActive(zd.zone(10002, 'Films')));
-
-    beforeEach(() => {
-        jest.resetAllMocks();
-    });
 
     describe('setVolume', () => {
 

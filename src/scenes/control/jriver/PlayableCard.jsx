@@ -140,7 +140,7 @@ const PlayableCard = ({mcwsUrl, content, width, height, onSelect, fallbackColour
     const classes = useStyles();
     const {type, name, id} = content;
     return (
-        <Card key={id} className={classes.row} elevation={3}>
+        <Card key={id} className={classes.row} elevation={0}>
             <div className={classes.details}>
                 <CardContent className={classes.content}>
                     <Description content={content}/>

@@ -3,6 +3,7 @@ import {TIVO_NAME} from "../config";
 import {Reducer, Selector} from 'redux-testkit';
 import * as actionTypes from '../actionTypes';
 import Immutable from 'seamless-immutable';
+import { describe, it, expect } from 'vitest';
 
 describe('store/config/reducer', () => {
     const validatedInitialState = Immutable.merge(initialState, {
