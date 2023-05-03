@@ -15,6 +15,7 @@ import {sendCommand} from "./store/commands/actions";
 import Errors from "./scenes/errors";
 
 import {blueGrey, grey, red} from '@mui/material/colors';
+import {SETTINGS, SHOW_PJ, TIVO} from './Constants';
 
 const theme = createTheme({
     palette: {
@@ -24,10 +25,6 @@ const theme = createTheme({
         error: red,
     }
 });
-
-export const SETTINGS = 'Settings';
-export const SHOW_PJ = 'PJ';
-export const TIVO = 'Tivo';
 
 
 const App = ({commands, activeCommand, sendCommand, jriverIsDead, errors}) => {

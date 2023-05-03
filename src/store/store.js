@@ -1,22 +1,8 @@
-import {applyMiddleware, createStore, combineReducers} from 'redux';
+import {applyMiddleware, combineReducers, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import * as reducers from './reducers';
 import {composeWithDevTools} from 'redux-devtools-extension';
-import {persistStore, persistReducer} from 'redux-persist/lib';
-import Immutable from 'seamless-immutable';
-
-export const makeError = (payload, type) => {
-    return Immutable({
-        error: payload.message,
-        type
-    });
-};
-
-export const makeKeyedError = ({payload, type}) => {
-    return Immutable({
-        [new Date().getTime()]: makeError(payload, type)
-    });
-};
+import {persistReducer, persistStore} from 'redux-persist/lib';
 
 
 const handleStore = (module) => {

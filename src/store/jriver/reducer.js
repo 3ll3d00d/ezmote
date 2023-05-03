@@ -1,7 +1,7 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
-import {makeKeyedError} from "../store";
 import {createSelector} from "reselect";
+import {makeKeyedError} from "../errors";
 
 export const initialState = Immutable({
     config: Immutable({}),

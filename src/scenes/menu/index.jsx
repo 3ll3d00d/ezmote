@@ -23,7 +23,8 @@ import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar/Avatar";
-import {SETTINGS, SHOW_PJ, TIVO} from "../../App";
+
+import {SETTINGS, SHOW_PJ, TIVO} from "../../Constants";
 
 const drawerWidth = 56;
 

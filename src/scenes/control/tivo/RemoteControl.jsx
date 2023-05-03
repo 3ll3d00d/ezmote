@@ -47,8 +47,8 @@ const styles = (theme) => ({
         margin: '0px'
     },
     smallPadded: {
-        marginTop: '0.25em',
-        marginBottom: '0.25em'
+        marginTop: '0.125em',
+        marginBottom: '0.125em'
     },
     rcButton: {
         minWidth: '32px',
@@ -318,7 +318,8 @@ class RemoteControl extends Component {
                                         {this.makeRCButton({key: codes.UP, CI: UpArrow})}
                                     </Grid>
                                 </Grid>
-                                <Grid container justifyContent={'space-around'} alignItems={'center'} spacing={1}>
+                                <Grid container justifyContent={'space-around'} alignItems={'center'} spacing={1}
+                                      className={classes.smallPadded}>
                                     <Grid item>
                                         {this.makeRCButton({key: codes.LEFT, CI: LeftArrow})}
                                     </Grid>

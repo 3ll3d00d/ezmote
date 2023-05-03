@@ -1,6 +1,7 @@
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
-import {makeError} from "../store";
+
+import {makeError} from "../errors";
 
 export const initialState = Immutable({
     Anamorphic: '',
