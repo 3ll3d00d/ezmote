@@ -14,7 +14,9 @@ RUN yarn build
 FROM nginx
 # must be set externally
 ARG CMDSERVER_IP_ARG
+ARG CMDSERVER_PORT_ARG=53199
 ENV CMDSERVER_IP=$CMDSERVER_IP_ARG
+ENV CMDSERVER_PORT=$CMDSERVER_PORT_ARG
 
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ./.nginx/nginx.conf.template /etc/nginx/templates/nginx.conf.template

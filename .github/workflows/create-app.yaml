@@ -37,31 +37,6 @@ jobs:
           body: ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: true
-      - name: Setup node_modules
-        run: yarn install --frozen-lockfile
-      - name: Build UI
-        run: yarn build
-      - name: Get latest release version number
-        id: get_version
-        uses: battila7/get-version-action@v2
-      - name: Create Distribution
-        id: create_dist
-        run: |
-          cd build
-          tar cfz ../ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz *
-          cd ..
-          echo ::set-output name=binary_path::"ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz"
-          echo ::set-output name=binary_name::"ezmote-${{ steps.get_version.outputs.version-without-v }}.tar.gz"
-          echo ::set-output name=binary_content_type::"application/x-tar"
-      - name: Upload asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_name: ${{ steps.create_dist.outputs.binary_name }}
-          asset_path: ${{ steps.create_dist.outputs.binary_path }}
-          asset_content_type: ${{ steps.create_dist.outputs.binary_content_type }}
       - name: Log in to the Container registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
@@ -80,5 +55,6 @@ jobs:
           push: true
           build-args: |
             CMDSERVER_IP_ARG=${{ env.CMDSERVER_IP }}
+            CMDSERVER_PORT_ARG=${{ env.CMDSERVER_PORT }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
