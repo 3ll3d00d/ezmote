@@ -44,7 +44,10 @@ const browseConverter = (json) => {
             season: j.Season,
             episode: j.Episode,
             artist: j.Artist,
-            lastPlayed: j['Last Played']
+            lastPlayed: j['Last Played'],
+            cropAR: Number.parseFloat(j.CropAR).toFixed(2),
+            hdrFormat: j['HDR Format'],
+            audioChannels: j['Audio Channels']
         }
     });
 };
@@ -67,6 +70,6 @@ export const browseFiles = (serverURL, nodeId) => Object.assign({}, {
     suppliedParams: {
         ID: nodeId,
         Action: 'JSON',
-        Fields: 'Key,Name,Duration,Dimensions,Season,Episode,Year,Media Type,Media Sub Type,Artist,Last Played'
+        Fields: 'Key,Name,Duration,Dimensions,Season,Episode,Year,Media Type,Media Sub Type,Artist,Last Played,CropAR,HDR Format,Audio Channels'
     }
 }, {serverURL}, browseEndpoint);

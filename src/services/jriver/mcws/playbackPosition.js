@@ -16,13 +16,14 @@ const converter = (json) => {
 const endpoint = {
     name: 'SET_POSITION',
     path: 'MCWS/v1/Playback/Position',
-    requiredParams: ['Position', 'Zone'],
+    requiredParams: ['Position', 'Zone', 'Relative'],
     converter
 };
 
-export default (serverURL, zoneId, position) => Object.assign({}, {
+export default (serverURL, zoneId, position, direction) => Object.assign({}, {
     suppliedParams: {
         Zone: zoneId,
-        Position: position
+        Position: position,
+        Relative: direction
     }
 }, {serverURL}, endpoint);

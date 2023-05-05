@@ -25,6 +25,8 @@ export const SEND_KEYPRESS = 'jriver.SEND_KEYPRESS';
 export const SEND_KEYPRESS_FAIL = 'jriver.SEND_KEYPRESS_FAIL';
 export const SET_ZONE = 'jriver.SET_ZONE';
 export const SET_ZONE_FAIL = 'jriver.SET_ZONE_FAIL';
+export const SEND_MCC = 'jriver.SEND_MCC';
+export const SEND_MCC_FAIL = 'jriver.SEND_MCC_FAIL';
 // info
 export const GET_INFO = 'jriver.GET_PLAYING_NOW';
 export const GET_INFO_FAIL = 'jriver.GET_PLAYING_NOW_FAIL';

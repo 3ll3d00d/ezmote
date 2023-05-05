@@ -53,6 +53,10 @@ const reduce = (state = initialState, action = {}) => {
                 state = Immutable.setIn(state, ['zones', z, 'active'], z.toString() === action.payload.zoneId.toString());
             });
             break;
+        case types.SEND_KEYPRESS:
+            break;
+        case types.SEND_MCC:
+            break;
         case types.GET_INFO:
             return Immutable.merge(state, {...action.payload}, {deep: true});
         // errors
@@ -68,6 +72,8 @@ const reduce = (state = initialState, action = {}) => {
         case types.SET_POSITION_FAIL:
         case types.START_PLAYBACK_FAIL:
         case types.SET_ZONE_FAIL:
+        case types.SEND_MCC_FAIL:
+        case types.SEND_KEYPRESS_FAIL:
             state = storeError(action, state);
             console.error(action.payload);
             break;

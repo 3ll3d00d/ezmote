@@ -12,12 +12,14 @@ import playbackPrevious from './playbackPrevious';
 import playbackSetZone from './playbackSetZone';
 import playbackVolume from './playbackVolume';
 import playbackZones from './playbackZones';
+import controlMcc from './controlMcc';
 
 export {
     browseChildren,
     playChildren,
     browseFiles,
     controlKey,
+    controlMcc,
     fileGetInfo,
     playBrowse,
     playbackMute,

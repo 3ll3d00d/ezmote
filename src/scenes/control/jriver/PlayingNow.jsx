@@ -6,6 +6,8 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from "@mui/material/Grid";
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
@@ -13,7 +15,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import StopIcon from '@mui/icons-material/Stop';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
-import Slider from '@mui/material/Slider';
+import Box from "@mui/material/Box";
 
 const MEDIA_Y = 280;
 const MEDIA_X = 300;
@@ -44,8 +46,8 @@ const styles = theme => ({
         marginTop: '1em'
     },
     paddedContainer: {
-        marginTop: '0em',
-        marginBottom: '0em'
+        marginTop: '0.5em',
+        marginBottom: '0.5em'
     },
     volumeSlider: {
         paddingTop: theme.spacing(3)
@@ -76,7 +78,7 @@ const AlbumArtist = ({playingNow}) => {
 };
 
 const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
-    const {playPause, stopPlaying, playNext, playPrevious, setPosition} = controls;
+    const {playPause, stopPlaying, playNext, playPrevious, shiftPosition} = controls;
     return (
         <Card className={classes.card} elevation={0}>
             <Grid container className={classes.tabAware} spacing={1}>
@@ -91,14 +93,48 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                         <Chip label={hhmmss(playingNow.durationMillis - playingNow.positionMillis)}/>
                     </Grid>
                 </Grid>
-                <Grid container justifyContent={'center'} className={classes.volumeContainer}>
-                    <Grid item xs={10}>
-                        <Slider id="position-slider"
-                                min={0}
-                                max={Math.round(playingNow.durationMillis / 1000)}
-                                value={Math.round(playingNow.positionMillis / 1000)}
-                                onChange={(value, event) => playingNow.status !== 'Stopped' && setPosition(zoneId, value * 1000)}
-                                className={classes.volumeSlider}/>
+                <Grid container justifyContent={'center'} className={classes.paddedContainer}>
+                    <Grid item>
+                        <ButtonGroup variant={'outlined'} >
+                            <Button aria-label="Minus5"
+                                    onClick={() => shiftPosition(zoneId, -300000)}
+                                    variant={'outlined'}
+                                    size={'small'}
+                                    sx={ { borderRadius: 28 } }>
+                                -5m
+                            </Button>
+                            <Button aria-label="Minus30"
+                                    onClick={() => shiftPosition(zoneId, -30000)}
+                                    variant={'outlined'}
+                                    size={'small'}>
+                                -30s
+                            </Button>
+                            <Button aria-label="Minus1"
+                                    onClick={() => shiftPosition(zoneId, -1000)}
+                                    variant={'outlined'}
+                                    size={'small'}>
+                                -1s
+                            </Button>
+                            <Button aria-label="Plus1"
+                                    onClick={() => shiftPosition(zoneId, 1000)}
+                                    variant={'outlined'}
+                                    size={'small'}>
+                                +1s
+                            </Button>
+                            <Button aria-label="Plus30"
+                                    onClick={() => shiftPosition(zoneId, 30000)}
+                                    variant={'outlined'}
+                                    size={'small'}>
+                                +30s
+                            </Button>
+                            <Button aria-label="Plus5"
+                                    onClick={() => shiftPosition(zoneId, 300000)}
+                                    variant={'outlined'}
+                                    size={'small'}
+                                    sx={ { borderRadius: 28 } }>
+                                +5m
+                            </Button>
+                        </ButtonGroup>
                     </Grid>
                 </Grid>
             </Grid>
@@ -120,7 +156,10 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                         : null
                 }
             </CardContent>
-            <div className={classes.controls}>
+            <Box className={classes.controls}>
+                <Typography type="h6">AR: {playingNow.cropAR}</Typography>
+            </Box>
+            <Box className={classes.controls}>
                 <IconButton aria-label="Previous" onClick={() => playPrevious(zoneId)} size="large">
                     <SkipPreviousIcon className={classes.icon}/>
                 </IconButton>
@@ -137,7 +176,7 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 <IconButton aria-label="Next" onClick={() => playNext(zoneId)} size="large">
                     <SkipNextIcon className={classes.icon}/>
                 </IconButton>
-            </div>
+            </Box>
         </Card>
     );
 };

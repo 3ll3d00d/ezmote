@@ -16,6 +16,41 @@ const sendKeyPresses = (keys) => {
 };
 
 /**
+ * Changes the display to crop or uncrop black bars.
+ * @param zoneId
+ * @param aspectRatio 1.78 2.35 or 2.40
+ * @returns {(function(*, *): Promise<void>)|*}
+ */
+const cropBlackBars = (zoneId, aspectRatio) => {
+    if (aspectRatio) {
+        switch (aspectRatio) {
+            case '1.78':
+                return sendMccCommand(zoneId, '28022', '3');
+            case '2.35':
+                return sendMccCommand(zoneId, '28022', '5');
+            case '2.40':
+                return sendMccCommand(zoneId, '28022', '6');
+            default:
+                throw new Error(`Unknown aspect ratio ${aspectRatio}`);
+        }
+    } else {
+        return sendMccCommand(zoneId, '28022', '0');
+    }
+}
+
+/**
+ * Sends an MCC command to the zone.
+ * @param zoneId
+ * @param command
+ * @param parameter
+ * @param block
+ * @returns {(function(*, *): Promise<void>)|*}
+ */
+const sendMccCommand = (zoneId, command, parameter, block = false) => {
+    return _invoke(types.SEND_MCC, types.SEND_MCC_FAIL, (serverURL) => mcws.controlMcc(serverURL, zoneId, command, parameter, block));
+}
+
+/**
  * Starts playback for files at the specified browse node (if type is browse) or the file (if type is file).
  * @param type the play type (browse or file)
  * @param id the play key id.
@@ -32,13 +67,13 @@ const startPlayback = (type, id) => {
 };
 
 /**
- * Sets the position for the currently playing file.
+ * Shift the position for the currently playing file by the specified ms.
  * @param zoneId the zone id.
- * @param position the position in millis.
+ * @param position the position shift in millis.
  * @returns {*}
  */
-const setPosition = (zoneId, position) => {
-    return _invoke(types.SET_POSITION, types.SET_POSITION_FAIL, (config) => mcws.playbackPosition(config, zoneId, position));
+const shiftPosition = (zoneId, position) => {
+    return _invoke(types.SET_POSITION, types.SET_POSITION_FAIL, (config) => mcws.playbackPosition(config, zoneId, Math.abs(position), position > 0 ? 1 : -1));
 };
 
 /**
@@ -157,7 +192,8 @@ export {
     playNext,
     playPrevious,
     sendKeyPresses,
-    setPosition,
+    shiftPosition,
     startPlayback,
-    activateZone
+    activateZone,
+    cropBlackBars
 };

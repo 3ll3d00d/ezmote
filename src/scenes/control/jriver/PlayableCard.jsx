@@ -93,6 +93,7 @@ const Description = ({content}) => {
     } else if (content.mediaType === 'Video') {
         if (content.mediaSubType === 'Movie') {
             const year = content.year ? ` \u2022 ${content.year}` : '';
+            const ar = content.cropAR ? ` \u2022 ${content.cropAR}` : '';
             return (
                 <>
                     <Typography variant="body1" color="textSecondary">
@@ -102,6 +103,7 @@ const Description = ({content}) => {
                         {content.rez}
                         {year}
                         {formatDuration(content)}
+                        {ar}
                     </Typography>
                 </>
             )

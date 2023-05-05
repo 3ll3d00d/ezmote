@@ -9,8 +9,9 @@ import {
     playPause,
     playPrevious,
     sendKeyPresses,
-    setPosition,
-    stopPlaying
+    shiftPosition,
+    stopPlaying,
+    cropBlackBars
 } from "../../../store/jriver/actions";
 import {connect} from "react-redux";
 import withStyles from '@mui/styles/withStyles';
@@ -78,7 +79,19 @@ class JRiver extends Component {
     };
 
     render() {
-        const {playingNow, authToken, activeZone, playPause, stopPlaying, playNext, playPrevious, sendKeyPresses, setPosition, selectedCommand} = this.props;
+        const {
+            playingNow,
+            authToken,
+            activeZone,
+            playPause,
+            stopPlaying,
+            playNext,
+            playPrevious,
+            sendKeyPresses,
+            shiftPosition,
+            selectedCommand,
+            cropBlackBars
+        } = this.props;
         const {value} = this.state;
         const selectedTab = value === -1 ? (playingNow && playingNow.status !== 'Stopped' ? 1 : 0) : value;
         return (
@@ -93,7 +106,7 @@ class JRiver extends Component {
                     selectedTab === 1
                     && playingNow
                     &&
-                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, setPosition}}
+                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, shiftPosition}}
                                 playingNow={playingNow}
                                 authToken={authToken}
                                 zoneId={activeZone.id}/>
@@ -120,6 +133,7 @@ export default connect(mapStateToProps, {
     stopPlaying,
     playNext,
     playPrevious,
-    setPosition,
-    sendKeyPresses
+    shiftPosition,
+    sendKeyPresses,
+    cropBlackBars
 })(JRiver);
