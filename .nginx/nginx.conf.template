@@ -38,8 +38,8 @@ http {
             proxy_pass http://${CMDSERVER_IP}:${CMDSERVER_PORT};
             access_log  /var/log/nginx/ezmote.api.log;
         }
-        location /icons {
-            proxy_pass http://${CMDSERVER_IP}:${CMDSERVER_PORT};
+        location ~ \.(ico) {
+            root ${ICON_PATH};
             access_log  /var/log/nginx/ezmote.icons.log;
         }
         location /ws {
