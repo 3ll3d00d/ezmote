@@ -97,16 +97,10 @@ class Browser extends Component {
         }
     };
 
-    matches = (src, filt, contains) => {
-        return contains? src.toLowerCase().indexOf(filt) !== -1 : src.toLowerCase().startsWith(filt);
-    };
-
     doSearch = () => {
         this.setState((prevState, prevProps) => {
             const txt = prevState.text.toLowerCase();
-            const filt = txt.charAt(0) === '*' ? txt.substring(1, txt.length) : txt;
-            const contains = txt.charAt(0) === '*';
-            return {filtered: prevState.nodes.filter(n => this.matches(n.name.toLowerCase(), filt, contains))}
+            return {filtered: prevState.nodes.filter(n => n.name.toLowerCase().indexOf(txt) !== -1)}
         }, this.forceReload);
     };
 
