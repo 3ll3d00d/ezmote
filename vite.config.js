@@ -16,6 +16,7 @@ export default defineConfig(() => {
         server: {
             proxy: {
                 '/api': 'http://127.0.0.1:53199',
+                '/icons': 'http://127.0.0.1:53199',
                 '/ws': {
                     target: 'ws://127.0.0.1:53199',
                     ws: true

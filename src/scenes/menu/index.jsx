@@ -18,7 +18,7 @@ import PlaylistIcon from '@mui/icons-material/PlaylistPlay';
 import MovieIcon from '@mui/icons-material/Movie';
 import MusicIcon from '@mui/icons-material/LibraryMusic';
 import BugIcon from '@mui/icons-material/BugReport';
-import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
 import SettingsRemoteIcon from '@mui/icons-material/SettingsRemote';
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -137,27 +137,35 @@ class Menu extends Component {
 
     renderCommandButton = (c, selectedCommand, classes, handler) => {
         return (
-            <ListItem button
-                      className={classes.listItem}
-                      key={c.id}
-                      onClick={() => handler(c)}
-                      selected={selectedCommand && selectedCommand.id === c.id}>
+            <ListItemButton className={classes.listItem}
+                            key={c.id}
+                            onClick={() => handler(c)}
+                            selected={selectedCommand && selectedCommand.id === c.id}>
                 {c.icon.startsWith('/icons/mi')
                     ? this.makeIconItem(c, classes.icon)
                     : this.makeAvatarItem(c, classNames(classes.avatar, classes.icon))}
-            </ListItem>
+            </ListItemButton>
         );
     };
 
     render() {
-        const {commands, selectedCommand, classes, handler, fullscreen, toggleFullScreen, showTheatreView, children} = this.props;
+        const {
+            commands,
+            selectedCommand,
+            classes,
+            handler,
+            fullscreen,
+            toggleFullScreen,
+            showTheatreView,
+            children
+        } = this.props;
         const drawer = (
             <Drawer variant="permanent"
                     classes={{
                         paper: classes.drawerPaper,
                     }}
                     className={classes.drawer}>
-                <div className={classes.toolbarSpacer} />
+                <div className={classes.toolbarSpacer}/>
                 <List className={classes.commandList}>
                     {commands.filter(c => c).map(c => this.renderCommandButton(c, selectedCommand, classes, handler))}
                 </List>
@@ -214,7 +222,7 @@ class Menu extends Component {
                     </AppBar>
                     {drawer}
                     <main className={classes.content}>
-                        <div className={classes.toolbarSpacer} />
+                        <div className={classes.toolbarSpacer}/>
                         {children}
                     </main>
                     {/*{drawer}*/}
