@@ -106,7 +106,7 @@ class JRiver extends Component {
                     selectedTab === 1
                     && playingNow
                     &&
-                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, shiftPosition}}
+                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, shiftPosition, cropBlackBars}}
                                 playingNow={playingNow}
                                 authToken={authToken}
                                 zoneId={activeZone.id}/>

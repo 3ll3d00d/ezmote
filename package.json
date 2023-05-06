@@ -34,7 +34,8 @@
     "xml-js": "^1.6.11"
   },
   "scripts": {
-    "dev": "vite",
+    "localdev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "serve": "vite preview",
     "test:unit": "vitest"

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
 import withStyles from '@mui/styles/withStyles';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
@@ -43,17 +44,12 @@ const styles = theme => ({
         width: 38,
     },
     tabAware: {
-        marginTop: '1em'
+        marginTop: '1em',
+        marginBottom: '0.75em'
     },
     paddedContainer: {
-        marginTop: '0.5em',
-        marginBottom: '0.5em'
-    },
-    volumeSlider: {
-        paddingTop: theme.spacing(3)
-    },
-    volumeContainer: {
-        paddingBottom: theme.spacing(3)
+        marginTop: '1em',
+        marginBottom: '1em'
     }
 });
 
@@ -77,8 +73,26 @@ const AlbumArtist = ({playingNow}) => {
     );
 };
 
+const LowerCaseButton = styled(Button)({
+    textTransform: 'lowercase'
+});
+
+const getActiveVideoLayout = vl => {
+    switch (vl) {
+        case '1.78':
+            return 1;
+        case '2.35':
+            return 2;
+        case '2.40':
+            return 3;
+        default:
+            return 0;
+    }
+}
+
 const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
-    const {playPause, stopPlaying, playNext, playPrevious, shiftPosition} = controls;
+    const {playPause, stopPlaying, playNext, playPrevious, shiftPosition, cropBlackBars} = controls;
+    const activeVideoLayout = getActiveVideoLayout(playingNow.videoLayout);
     return (
         <Card className={classes.card} elevation={0}>
             <Grid container className={classes.tabAware} spacing={1}>
@@ -96,44 +110,38 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 <Grid container justifyContent={'center'} className={classes.paddedContainer}>
                     <Grid item>
                         <ButtonGroup variant={'outlined'} >
-                            <Button aria-label="Minus5"
+                            <LowerCaseButton aria-label="Minus5"
                                     onClick={() => shiftPosition(zoneId, -300000)}
                                     variant={'outlined'}
-                                    size={'small'}
                                     sx={ { borderRadius: 28 } }>
                                 -5m
-                            </Button>
-                            <Button aria-label="Minus30"
+                            </LowerCaseButton>
+                            <LowerCaseButton aria-label="Minus30"
                                     onClick={() => shiftPosition(zoneId, -30000)}
-                                    variant={'outlined'}
-                                    size={'small'}>
+                                    variant={'outlined'}>
                                 -30s
-                            </Button>
-                            <Button aria-label="Minus1"
+                            </LowerCaseButton>
+                            <LowerCaseButton aria-label="Minus1"
                                     onClick={() => shiftPosition(zoneId, -1000)}
-                                    variant={'outlined'}
-                                    size={'small'}>
+                                    variant={'outlined'}>
                                 -1s
-                            </Button>
-                            <Button aria-label="Plus1"
+                            </LowerCaseButton>
+                            <LowerCaseButton aria-label="Plus1"
                                     onClick={() => shiftPosition(zoneId, 1000)}
-                                    variant={'outlined'}
-                                    size={'small'}>
+                                    variant={'outlined'}>
                                 +1s
-                            </Button>
-                            <Button aria-label="Plus30"
+                            </LowerCaseButton>
+                            <LowerCaseButton aria-label="Plus30"
                                     onClick={() => shiftPosition(zoneId, 30000)}
-                                    variant={'outlined'}
-                                    size={'small'}>
+                                    variant={'outlined'}>
                                 +30s
-                            </Button>
-                            <Button aria-label="Plus5"
+                            </LowerCaseButton>
+                            <LowerCaseButton aria-label="Plus5"
                                     onClick={() => shiftPosition(zoneId, 300000)}
                                     variant={'outlined'}
-                                    size={'small'}
                                     sx={ { borderRadius: 28 } }>
                                 +5m
-                            </Button>
+                            </LowerCaseButton>
                         </ButtonGroup>
                     </Grid>
                 </Grid>
@@ -157,9 +165,6 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 }
             </CardContent>
             <Box className={classes.controls}>
-                <Typography type="h6">AR: {playingNow.cropAR}</Typography>
-            </Box>
-            <Box className={classes.controls}>
                 <IconButton aria-label="Previous" onClick={() => playPrevious(zoneId)} size="large">
                     <SkipPreviousIcon className={classes.icon}/>
                 </IconButton>
@@ -176,6 +181,33 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                 <IconButton aria-label="Next" onClick={() => playNext(zoneId)} size="large">
                     <SkipNextIcon className={classes.icon}/>
                 </IconButton>
+            </Box>
+            <Box className={classes.controls}>
+                <ButtonGroup variant={'outlined'} >
+                    <Button aria-label="clear"
+                                     onClick={() => cropBlackBars(zoneId, null)}
+                                     variant={activeVideoLayout === 0 ? 'contained' : 'outlined'}
+                                     sx={ { borderRadius: 28 } }>
+                        Clear
+                    </Button>
+                    <Button aria-label="178"
+                                     onClick={() => cropBlackBars(zoneId, '1.78')}
+                                     variant={activeVideoLayout === 1 ? 'contained' : 'outlined'}
+                                     sx={ { borderRadius: 28 } }>
+                        16:9
+                    </Button>
+                    <Button aria-label="235"
+                                     onClick={() => cropBlackBars(zoneId, '2.35')}
+                                     variant={activeVideoLayout === 2 ? 'contained' : 'outlined'}>
+                        2.35
+                    </Button>
+                    <Button aria-label="Minus1"
+                                     onClick={() => cropBlackBars(zoneId, '2.40')}
+                                     variant={activeVideoLayout === 3 ? 'contained' : 'outlined'}
+                                     sx={ { borderRadius: 28 } }>
+                        2.40
+                    </Button>
+                </ButtonGroup>
             </Box>
         </Card>
     );
