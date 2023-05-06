@@ -7,10 +7,10 @@ server {
         try_files $uri $uri/ /index.html;
     }
     location /api {
-        proxy_pass http://$CMDSERVER_IP:$CMDSERVER_PORT;
+        proxy_pass http://${CMDSERVER_IP}:${CMDSERVER_PORT};
     }
     location /ws {
-        proxy_pass http://$CMDSERVER_IP:$CMDSERVER_PORT;
+        proxy_pass http://${CMDSERVER_IP}:${CMDSERVER_PORT};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
