@@ -4,7 +4,7 @@ import * as fields from './config';
 import {createSelector} from 'reselect';
 
 export const initialState = Immutable({
-    [fields.TIVO_NAME]: 'C6800002157CBFB'
+    [fields.TIVO_NAME]: 'Lounge'
 });
 
 /**
