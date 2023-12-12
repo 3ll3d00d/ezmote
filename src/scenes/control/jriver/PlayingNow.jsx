@@ -77,22 +77,13 @@ const LowerCaseButton = styled(Button)({
     textTransform: 'lowercase'
 });
 
-const getActiveVideoLayout = vl => {
-    switch (vl) {
-        case '1.78':
-            return 1;
-        case '2.35':
-            return 2;
-        case '2.40':
-            return 3;
-        default:
-            return 0;
-    }
+const getActiveHdrProfile = hdr => {
+    return hdr ? Number.parseInt(hdr) : 0;
 }
 
 const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
-    const {playPause, stopPlaying, playNext, playPrevious, shiftPosition, cropBlackBars} = controls;
-    const activeVideoLayout = getActiveVideoLayout(playingNow.videoLayout);
+    const {playPause, stopPlaying, playNext, playPrevious, shiftPosition, setHdrPreset} = controls;
+    const activeHdrProfile = getActiveHdrProfile(playingNow.hdr_override);
     return (
         <Card className={classes.card} elevation={0}>
             <Grid container className={classes.tabAware} spacing={1}>
@@ -182,33 +173,38 @@ const PlayingNow = ({classes, authToken, playingNow, controls, zoneId}) => {
                     <SkipNextIcon className={classes.icon}/>
                 </IconButton>
             </Box>
-            <Box className={classes.controls}>
-                <ButtonGroup variant={'outlined'} >
-                    <Button aria-label="clear"
-                                     onClick={() => cropBlackBars(zoneId, null)}
-                                     variant={activeVideoLayout === 0 ? 'contained' : 'outlined'}
-                                     sx={ { borderRadius: 28 } }>
-                        Clear
-                    </Button>
-                    <Button aria-label="178"
-                                     onClick={() => cropBlackBars(zoneId, '1.78')}
-                                     variant={activeVideoLayout === 1 ? 'contained' : 'outlined'}
-                                     sx={ { borderRadius: 28 } }>
-                        16:9
-                    </Button>
-                    <Button aria-label="235"
-                                     onClick={() => cropBlackBars(zoneId, '2.35')}
-                                     variant={activeVideoLayout === 2 ? 'contained' : 'outlined'}>
-                        2.35
-                    </Button>
-                    <Button aria-label="Minus1"
-                                     onClick={() => cropBlackBars(zoneId, '2.40')}
-                                     variant={activeVideoLayout === 3 ? 'contained' : 'outlined'}
-                                     sx={ { borderRadius: 28 } }>
-                        2.40
-                    </Button>
-                </ButtonGroup>
-            </Box>
+            {
+                playingNow.hdr
+                ?
+                    <Box className={classes.controls}>
+                        <ButtonGroup variant={'outlined'} >
+                            <Button aria-label="clear"
+                                    onClick={() => setHdrPreset(zoneId, null)}
+                                    variant={activeHdrProfile === 0 ? 'contained' : 'outlined'}
+                                    sx={ { borderRadius: 28 } }>
+                                Auto
+                            </Button>
+                            <Button aria-label="178"
+                                    onClick={() => setHdrPreset(zoneId, '1')}
+                                    variant={activeHdrProfile === 1 ? 'contained' : 'outlined'}
+                                    sx={ { borderRadius: 28 } }>
+                                1
+                            </Button>
+                            <Button aria-label="235"
+                                    onClick={() => setHdrPreset(zoneId, '2')}
+                                    variant={activeHdrProfile === 2 ? 'contained' : 'outlined'}>
+                                2
+                            </Button>
+                            <Button aria-label="Minus1"
+                                    onClick={() => setHdrPreset(zoneId, '3')}
+                                    variant={activeHdrProfile === 3 ? 'contained' : 'outlined'}
+                                    sx={ { borderRadius: 28 } }>
+                                3
+                            </Button>
+                        </ButtonGroup>
+                    </Box>
+                    : null
+            }
         </Card>
     );
 };

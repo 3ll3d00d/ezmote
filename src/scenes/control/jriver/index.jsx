@@ -11,7 +11,7 @@ import {
     sendKeyPresses,
     shiftPosition,
     stopPlaying,
-    cropBlackBars
+    setHdrPreset
 } from "../../../store/jriver/actions";
 import {connect} from "react-redux";
 import withStyles from '@mui/styles/withStyles';
@@ -90,7 +90,7 @@ class JRiver extends Component {
             sendKeyPresses,
             shiftPosition,
             selectedCommand,
-            cropBlackBars
+            setHdrPreset
         } = this.props;
         const {value} = this.state;
         const selectedTab = value === -1 ? (playingNow && playingNow.status !== 'Stopped' ? 1 : 0) : value;
@@ -106,7 +106,7 @@ class JRiver extends Component {
                     selectedTab === 1
                     && playingNow
                     &&
-                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, shiftPosition, cropBlackBars}}
+                    <PlayingNow controls={{playPause, stopPlaying, playNext, playPrevious, shiftPosition, setHdrPreset}}
                                 playingNow={playingNow}
                                 authToken={authToken}
                                 zoneId={activeZone.id}/>
@@ -135,5 +135,5 @@ export default connect(mapStateToProps, {
     playPrevious,
     shiftPosition,
     sendKeyPresses,
-    cropBlackBars
+    setHdrPreset
 })(JRiver);

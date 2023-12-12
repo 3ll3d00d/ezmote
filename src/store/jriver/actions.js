@@ -16,26 +16,13 @@ const sendKeyPresses = (keys) => {
 };
 
 /**
- * Changes the display to crop or uncrop black bars.
+ * Changes the advanced HDR preset.
  * @param zoneId
- * @param aspectRatio 1.78 2.35 or 2.40
+ * @param preset the configuration id.
  * @returns {(function(*, *): Promise<void>)|*}
  */
-const cropBlackBars = (zoneId, aspectRatio) => {
-    if (aspectRatio) {
-        switch (aspectRatio) {
-            case '1.78':
-                return sendMccCommand(zoneId, '28022', '3');
-            case '2.35':
-                return sendMccCommand(zoneId, '28022', '5');
-            case '2.40':
-                return sendMccCommand(zoneId, '28022', '6');
-            default:
-                throw new Error(`Unknown aspect ratio ${aspectRatio}`);
-        }
-    } else {
-        return sendMccCommand(zoneId, '28022', '0');
-    }
+const setHdrPreset = (zoneId, preset) => {
+    return sendMccCommand(zoneId, '10077', preset ? preset : '-2');
 }
 
 /**
@@ -195,5 +182,5 @@ export {
     shiftPosition,
     startPlayback,
     activateZone,
-    cropBlackBars
+    setHdrPreset
 };
